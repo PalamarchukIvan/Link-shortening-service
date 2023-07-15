@@ -1,0 +1,23 @@
+# Spring Boot configuration
+spring:
+  # Database
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    #    For local usage
+    url: jdbc:postgresql://localhost:5432/link-shortening
+    username: postgres
+    password: postgres
+  # JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+# Server configuration
+server:
+  port: 8080
+
