@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "ShortLinks")
+@Table(name = "ShortLinks", indexes = @Index(name = "idx_hashcode", columnList = "hash"))
 public class ShortLink {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

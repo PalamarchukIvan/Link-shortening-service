@@ -10,12 +10,12 @@ spring:
   # JPA properties
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
 # Server configuration
 server:
