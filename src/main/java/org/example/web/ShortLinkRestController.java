@@ -2,7 +2,10 @@ package org.example.web;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.ShortLink;
+import org.example.model.dto.ShortLinkRequestDto;
+import org.example.model.dto.ShortLinkResponseDto;
 import org.example.service.ShortLinkService;
+import org.example.util.Mapstruct.ShortLinkMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,12 +14,22 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ShortLinkRestController {
     private final ShortLinkService service;
+    private final ShortLinkMapper mapper;
+
     @PostMapping("/create")
-    public ShortLink saveShortLink(@RequestBody ShortLink link) {
-        return service.create(link);
+    public ShortLinkResponseDto saveShortLink(@RequestBody ShortLinkRequestDto link) {
+        return
+                mapper.toResponse(
+                        service.create(
+                                mapper.fromRequest(link)
+                        ));
     }
+
     @DeleteMapping("/")
-    public ShortLink deleteLink(Long id) {
-        return service.deleteById(id);
+    public ShortLinkResponseDto deleteLink(Long id) {
+        return
+                mapper.toResponse(
+                        service.deleteById(id)
+                );
     }
 }
