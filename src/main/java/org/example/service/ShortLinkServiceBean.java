@@ -7,6 +7,9 @@ import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -47,6 +50,31 @@ public class ShortLinkServiceBean implements  ShortLinkService {
 
     @Override
     public String getHashCode(ShortLink link) {
-        return String.valueOf(link.getLink().hashCode());
+        String input = link.getLink();
+        try {
+            // Получаем экземпляр MessageDigest с алгоритмом SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            // Конвертируем входную строку в массив байтов
+            byte[] inputBytes = input.getBytes();
+
+            // Вычисляем хеш
+            byte[] hashBytes = md.digest(inputBytes);
+
+            // Конвертируем байтовый хеш в строку
+            StringBuilder hashCode = new StringBuilder();
+            for (byte b : hashBytes) {
+                // Преобразуем байт в положительное целое число и форматируем его как шестнадцатеричное число
+                hashCode.append(String.format("%02X", b & 0xFF));
+            }
+
+            // Ограничиваем длину хешкода от 3 до 5 символов
+            int length = (int)(Math.random() * 3) + 3;
+            return hashCode.substring(0, length);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+//        return String.valueOf(link.getLink().hashCode());
     }
 }
