@@ -1,8 +1,7 @@
 create table public.short_links
 (
+    id         bigint  not null primary key,
     is_deleted boolean not null,
-    id         bigint  not null
-        primary key,
     hash       varchar(255),
     link       varchar(255)
 );
