@@ -1,7 +1,10 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.model.RawData;
+import org.example.model.RawDataKey;
 import org.example.model.ShortLink;
+import org.example.repository.RawDataRepository;
 import org.example.repository.ShortLinkRepository;
 import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
@@ -9,17 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ShortLinkServiceBean implements  ShortLinkService {
+public class ShortLinkServiceBean implements ShortLinkService {
     private final ShortLinkRepository repository;
+    private final RawDataRepository rawDataRepository;
 
     @Override
     public ShortLink create(ShortLink link) {
-        if(!link.getLink().contains("http")) {
+        if (!link.getLink().contains("http")) {
             link.setLink("https://".concat(link.getLink()));
         }
         link.setHash(getHashCode(link));
@@ -29,7 +36,7 @@ public class ShortLinkServiceBean implements  ShortLinkService {
     @Override
     public ShortLink getById(Long id) {
         ShortLink foundLink = repository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        if(foundLink.isDeleted()) {
+        if (foundLink.isDeleted()) {
             throw new ResourceDeletedException();
         }
         return foundLink;
@@ -69,12 +76,29 @@ public class ShortLinkServiceBean implements  ShortLinkService {
             }
 
             // Ограничиваем длину хешкода от 3 до 5 символов
-            int length = (int)(Math.random() * 3) + 3;
+            int length = (int) (Math.random() * 3) + 3;
             return hashCode.substring(0, length);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return "";
 //        return String.valueOf(link.getLink().hashCode());
+    }
+
+    @Override
+    public void updateOnStatistics(Instant time, Duration duration, String hash) {
+//        RawData rawData = RawData.builder()
+////                .expectedDuration(duration.toDays() + " " + duration.toHoursPart() + ":" + duration.toMinutesPart() + ":" + duration.toSecondsPart() + "." + duration.toMillisPart())
+//                .expectedDuration(null)
+//                .key(RawDataKey.builder()
+//                        .time(time)
+//                        .build())
+//                .hash(hash)
+//                .build();
+        try {
+            rawDataRepository.saveData(hash);
+        } catch(Exception ignored) {
+
+        }
     }
 }
