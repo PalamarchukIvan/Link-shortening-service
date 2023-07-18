@@ -1,22 +1,24 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 --таблица с данными
-CREATE SEQUENCE raw_data_seq;
-create table raw_data (
+CREATE SEQUENCE IF NOT EXISTS raw_data_seq;
+create table IF NOT EXISTS raw_data (
                           id INT NOT NULL DEFAULT NEXTVAL('raw_data_seq'),
                           time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                           hash VARCHAR(255),
                           expected_duration INTERVAL,
+                          lag BIGINT,
+                          is_found BOOLEAN,
                           PRIMARY KEY(id, time)
 );
 
-select create_hypertable('raw_data', 'time');
-
---Continuous Aggregate MV
-CREATE MATERIALIZED VIEW analyzed_data with(timescaledb.continuous) as
-select time_bucket(INTERVAL '1 minute', time) AS time_stamp,
-       hash,
-       SUM(expected_duration) AS expected_duration
-from raw_data group by time_stamp, hash;
+-- select create_hypertable('raw_data', 'time');
+--
+-- --Continuous Aggregate MV
+-- CREATE MATERIALIZED VIEW analyzed_data with(timescaledb.continuous) as
+-- select time_bucket(INTERVAL '1 minute', time) AS time_stamp,
+--        hash,
+--        SUM(expected_duration) AS expected_duration
+-- from raw_data group by time_stamp, hash;
 
 --Функция пересчета последнего ID (по какой-то причине, иногда, последовательность инкрементируется 2, а не 1 раза)
 CREATE OR REPLACE FUNCTION get_prev_id(x_id bigint) RETURNS INT

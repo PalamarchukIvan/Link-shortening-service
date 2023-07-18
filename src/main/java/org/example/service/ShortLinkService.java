@@ -12,5 +12,5 @@ public interface ShortLinkService {
     ShortLink deleteById(Long id);
     ShortLink getByHash(String hash);
     String getHashCode(ShortLink link);
-    void updateOnStatistics(Instant time, Duration duration, String hash);
+    void updateOnStatistics(Duration duration, String hash, boolean isFound);
 }
