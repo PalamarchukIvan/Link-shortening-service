@@ -86,17 +86,9 @@ public class ShortLinkServiceBean implements ShortLinkService {
     }
 
     @Override
-    public void updateOnStatistics(Instant time, Duration duration, String hash) {
-//        RawData rawData = RawData.builder()
-////                .expectedDuration(duration.toDays() + " " + duration.toHoursPart() + ":" + duration.toMinutesPart() + ":" + duration.toSecondsPart() + "." + duration.toMillisPart())
-//                .expectedDuration(null)
-//                .key(RawDataKey.builder()
-//                        .time(time)
-//                        .build())
-//                .hash(hash)
-//                .build();
+    public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
         try {
-            rawDataRepository.saveData(hash);
+            rawDataRepository.saveData(hash, duration.toMillis(), isFound);
         } catch(Exception ignored) {
 
         }

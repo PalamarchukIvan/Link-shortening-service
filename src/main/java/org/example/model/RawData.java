@@ -19,5 +19,7 @@ public class RawData {
     private String hash;
     @Column(columnDefinition = "INTERVAL")
     private String expectedDuration;
+    private boolean isFound;
+    private long lag;
 }
 

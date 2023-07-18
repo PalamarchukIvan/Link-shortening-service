@@ -10,6 +10,6 @@ import java.time.Instant;
 
 @Repository
 public interface RawDataRepository extends JpaRepository<RawData, Long> {
-    @Query(nativeQuery = true, value = "insert into raw_data(id, time, hash) values (NEXTVAL('raw_data_seq'), CURRENT_TIMESTAMP, :hash)")
-    void saveData(String hash) throws SQLException;
+    @Query(nativeQuery = true, value = "insert into raw_data(id, time, hash, lag, is_found) values (NEXTVAL('raw_data_seq'), CURRENT_TIMESTAMP, :hash, :duration, :isFound )")
+    void saveData(String hash, Long duration, boolean isFound) throws SQLException;
 }
