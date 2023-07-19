@@ -4,15 +4,15 @@ CREATE SEQUENCE IF NOT EXISTS raw_data_seq;
 create table IF NOT EXISTS raw_data (
                           id INT NOT NULL DEFAULT NEXTVAL('raw_data_seq'),
                           time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                          hash VARCHAR(255),
+                          hash VARCHAR,
                           expected_duration INTERVAL,
                           lag BIGINT,
                           is_found BOOLEAN,
                           PRIMARY KEY(id, time)
 );
 
--- select create_hypertable('raw_data', 'time');
---
+select create_hypertable('raw_data', 'time');
+
 -- --Continuous Aggregate MV
 -- CREATE MATERIALIZED VIEW analyzed_data with(timescaledb.continuous) as
 -- select time_bucket(INTERVAL '1 minute', time) AS time_stamp,
@@ -33,8 +33,6 @@ $BODY$;
 --Триггерная функция пересчета прошедшего времени на ресурсе
 CREATE OR REPLACE FUNCTION update_expected_duration() RETURNS TRIGGER AS $$
 DECLARE
-    cur_time raw_data.time%TYPE;
-
     prev_time raw_data.time%TYPE;
     prev_duration raw_data.expected_duration%TYPE;
     prev_hash raw_data.hash%TYPE;
@@ -66,7 +64,7 @@ BEGIN
         update raw_data set expected_duration = prev_duration + (CURRENT_TIMESTAMP - prev_time) where raw_data.id = prev_id;
     else
         select time into prev_time from raw_data where raw_data.id = prev_id;
-        UPDATE raw_data SET expected_duration = cur_time - prev_time where raw_data.id = prev_id;
+        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.id = prev_id;
     end if;
     RETURN NEW;
 END; $$
@@ -76,4 +74,3 @@ CREATE OR REPLACE TRIGGER update_expected_duration_trigger
     AFTER INSERT ON raw_data
     FOR EACH ROW
 EXECUTE PROCEDURE update_expected_duration();
-
