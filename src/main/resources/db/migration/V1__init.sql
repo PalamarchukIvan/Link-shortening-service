@@ -1,4 +1,4 @@
-create table public.short_links
+create table if not exists public.short_links
 (
     id         bigint  not null primary key,
     is_deleted boolean not null,
@@ -6,7 +6,4 @@ create table public.short_links
     link       varchar(255)
 );
 
-alter table public.short_links
-    owner to postgres;
-
-CREATE INDEX idx_hashcode ON short_links(hash)
+CREATE INDEX if not exists idx_hashcode ON short_links(hash)
