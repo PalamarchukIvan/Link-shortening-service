@@ -14,8 +14,9 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RawData {
-    @EmbeddedId
-    private RawDataKey key;
+    @Id
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant time;
     private String hash;
     @Column(columnDefinition = "INTERVAL")
     private String expectedDuration;

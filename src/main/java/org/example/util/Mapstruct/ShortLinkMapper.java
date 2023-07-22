@@ -9,6 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ShortLinkMapper {
     ShortLink fromRequest(ShortLinkRequestDto requestDto);
-    @Mapping(target = "link", expression = "java( \"http://localhost:8080/shortening_api/\".concat(shortLink.getHash()) )")
+    @Mapping(target = "link", expression = "java( \"http://localhost:8080/s/\".concat(shortLink.getHash()) )")
     ShortLinkResponseDto toResponse(ShortLink shortLink);
 }

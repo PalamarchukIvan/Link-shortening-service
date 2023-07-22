@@ -3,7 +3,6 @@ package org.example.web;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.service.ShortLinkService;
-import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -15,13 +14,13 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Controller
-@RequestMapping(value = "/shortening_api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
 public class ShortLinkController {
     private final ShortLinkService service;
 
-    @GetMapping("/{hash}")
+    @GetMapping("/s/{hash}")
     public String getRealLink(@PathVariable String hash) {
         Instant start = Instant.now();
         String link;
@@ -32,6 +31,6 @@ public class ShortLinkController {
             throw new ResourceNotFoundException();
         }
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
-        return "redirect:" + link;
+        return "redirect://" + link;
     }
 }
