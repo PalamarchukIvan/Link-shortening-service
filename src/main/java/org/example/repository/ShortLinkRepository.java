@@ -8,8 +8,4 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ShortLinkRepository extends JpaRepository<ShortLink, Long> {
-    @Query("select link from ShortLink link where link.hash = :hash")
-    Optional<ShortLink> findByHash(String hash);
-
-}
+public interface ShortLinkRepository extends JpaRepository<ShortLink, String> { }

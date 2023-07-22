@@ -1,7 +1,6 @@
 package org.example.web;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.ShortLink;
 import org.example.model.dto.ShortLinkRequestDto;
 import org.example.model.dto.ShortLinkResponseDto;
 import org.example.service.ShortLinkService;
@@ -25,11 +24,11 @@ public class ShortLinkRestController {
                         ));
     }
 
-    @DeleteMapping("/")
-    public ShortLinkResponseDto deleteLink(Long id) {
+    @DeleteMapping("/{hash}")
+    public ShortLinkResponseDto deleteLink(@PathVariable String hash) {
         return
                 mapper.toResponse(
-                        service.deleteById(id)
+                        service.deleteByHash(hash)
                 );
     }
 }

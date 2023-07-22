@@ -8,9 +8,8 @@ import java.time.Instant;
 
 public interface ShortLinkService {
     ShortLink create(ShortLink link);
-    ShortLink getById(Long id);
-    ShortLink deleteById(Long id);
     ShortLink getByHash(String hash);
+    ShortLink deleteByHash(String hash);
     String getHashCode(ShortLink link);
     void updateOnStatistics(Duration duration, String hash, boolean isFound);
 }

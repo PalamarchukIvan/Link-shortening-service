@@ -1,14 +1,12 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 --таблица с данными
-CREATE SEQUENCE IF NOT EXISTS raw_data_seq;
 create table IF NOT EXISTS raw_data (
-                          id INT NOT NULL DEFAULT NEXTVAL('raw_data_seq'),
                           time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                           hash VARCHAR,
                           expected_duration INTERVAL,
                           lag BIGINT,
                           is_found BOOLEAN,
-                          PRIMARY KEY(id, time)
+                          PRIMARY KEY(time)
 );
 
 SELECT create_hypertable(

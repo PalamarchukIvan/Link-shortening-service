@@ -18,6 +18,6 @@ import java.time.Instant;
 public class RawDataKey implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE NOT NULL")
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant time;
 }

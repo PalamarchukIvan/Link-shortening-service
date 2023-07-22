@@ -26,16 +26,16 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public ShortLink create(ShortLink link) {
-        if (!link.getLink().contains("http")) {
-            link.setLink("https://".concat(link.getLink()));
-        }
+//        if (!link.getLink().contains("http")) {
+//            link.setLink("https://".concat(link.getLink()));
+//        }
         link.setHash(getHashCode(link));
         return repository.save(link);
     }
 
     @Override
-    public ShortLink getById(Long id) {
-        ShortLink foundLink = repository.findById(id).orElseThrow(ResourceNotFoundException::new);
+    public ShortLink getByHash(String hash) {
+        ShortLink foundLink = repository.findById(hash).orElseThrow(ResourceNotFoundException::new);
         if (foundLink.isDeleted()) {
             throw new ResourceDeletedException();
         }
@@ -43,16 +43,11 @@ public class ShortLinkServiceBean implements ShortLinkService {
     }
 
     @Override
-    public ShortLink deleteById(Long id) {
-        ShortLink toDeleteLink = getById(id);
+    public ShortLink deleteByHash(String hash) {
+        ShortLink toDeleteLink = getByHash(hash);
         toDeleteLink.setDeleted(true);
         repository.save(toDeleteLink);
         return toDeleteLink;
-    }
-
-    @Override
-    public ShortLink getByHash(String hash) {
-        return repository.findByHash(hash).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
