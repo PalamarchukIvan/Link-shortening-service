@@ -26,9 +26,6 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public ShortLink create(ShortLink link) {
-//        if (!link.getLink().contains("http")) {
-//            link.setLink("https://".concat(link.getLink()));
-//        }
         link.setHash(getHashCode(link));
         return repository.save(link);
     }
@@ -52,39 +49,27 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public String getHashCode(ShortLink link) {
-        String input = link.getLink();
-        try {
-            // Получаем экземпляр MessageDigest с алгоритмом SHA-256
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-            // Конвертируем входную строку в массив байтов
-            byte[] inputBytes = input.getBytes();
-
-            // Вычисляем хеш
-            byte[] hashBytes = md.digest(inputBytes);
-
-            // Конвертируем байтовый хеш в строку
-            StringBuilder hashCode = new StringBuilder();
-            for (byte b : hashBytes) {
-                // Преобразуем байт в положительное целое число и форматируем его как шестнадцатеричное число
-                hashCode.append(String.format("%02X", b & 0xFF));
+        String hash = String.valueOf(link.getLink().hashCode());
+        int length = (int) (Math.random() * 3);
+        StringBuilder hashBuilder = new StringBuilder();
+        for (int i = 0; i < 3; i++) { //записываем буквы
+            if (Math.random() > 0.5) {
+                hashBuilder.append((char) ((int) (Math.random() * 25) + 65)); //Случайная буква верхнего регистра
+            } else {
+                hashBuilder.append((char) ((int) (Math.random() * 25) + 97)); //Случайная буква нижнего регистра
             }
-
-            // Ограничиваем длину хешкода от 3 до 5 символов
-            int length = (int) (Math.random() * 3) + 3;
-            return hashCode.substring(0, length);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
         }
-        return "";
-//        return String.valueOf(link.getLink().hashCode());
+        for (int i = 0; i < length; i++) {//записываем цифры (может быть от 0 до 2 цифр)
+            hashBuilder.append(hash.charAt(hash.length() - i - 1));
+        }
+        return hashBuilder.toString();
     }
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
         try {
             rawDataRepository.saveData(hash, duration.toMillis(), isFound);
-        } catch(Exception ignored) {
+        } catch (Exception ignored) {
 
         }
     }
