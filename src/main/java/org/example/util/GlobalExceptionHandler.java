@@ -1,5 +1,6 @@
 package org.example.util;
 
+import org.example.util.exceptions.NoProtocolMentionedException;
 import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceDeletedException.class)
     public ResponseEntity<?> handleResourceDeletedException(WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), "Resource not available", request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.LOCKED);
+    }
+
+    @ExceptionHandler(NoProtocolMentionedException.class)
+    public ResponseEntity<?> handleNoProtocolMentionedException(WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), "You should specify protocol (http, https etc...)", request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.LOCKED);
     }
 }

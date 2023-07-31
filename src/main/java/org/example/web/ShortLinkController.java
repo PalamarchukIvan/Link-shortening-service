@@ -31,6 +31,6 @@ public class ShortLinkController {
             throw new ResourceNotFoundException();
         }
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
-        return "redirect://" + link;
+        return "redirect:" + link;
     }
 }
