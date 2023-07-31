@@ -49,6 +49,10 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public String getHashCode(ShortLink link) {
+        return getHashV2(link);
+    }
+
+    private String getHashV2(ShortLink link) {
         String hash = String.valueOf(link.getLink().hashCode());
         int length = (int) (Math.random() * 3);
         StringBuilder hashBuilder = new StringBuilder();
