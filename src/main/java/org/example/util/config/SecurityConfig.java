@@ -21,8 +21,8 @@ public class SecurityConfig {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .anyRequest().permitAll()
                 .requestMatchers("/shortening_api/**").hasRole("Me")
+                .anyRequest().permitAll()
                 .and()
                 .formLogin().disable()
                 .csrf().disable();

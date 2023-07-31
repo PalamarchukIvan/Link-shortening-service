@@ -49,9 +49,9 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public String getHashCode(ShortLink link) {
-        return getHashV2(link);
+        return getHashV3(link);
     }
-
+    @Deprecated
     private String getHashV2(ShortLink link) {
         String hash = String.valueOf(link.getLink().hashCode());
         int length = (int) (Math.random() * 3);
@@ -65,6 +65,23 @@ public class ShortLinkServiceBean implements ShortLinkService {
         }
         for (int i = 0; i < length; i++) {//записываем цифры (может быть от 0 до 2 цифр)
             hashBuilder.append(hash.charAt(hash.length() - i - 1));
+        }
+        return hashBuilder.toString();
+    }
+
+    private String getHashV3(ShortLink link) {
+        String hash = String.valueOf(Math.abs(link.getLink().hashCode()));
+        int length = 3 + (int) (Math.random() * 3);
+        StringBuilder hashBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) { //записываем буквы
+            double randomDouble = Math.random();
+            if (randomDouble > (2F/3F)) {
+                hashBuilder.append((char) ((int) (Math.random() * 25) + 65)); //Случайная буква верхнего регистра
+            } else if (randomDouble > (1F/3F)) {
+                hashBuilder.append((char) ((int) (Math.random() * 25) + 97)); //Случайная буква нижнего регистра
+            } else {
+                hashBuilder.append(hash.charAt((int) (Math.random() * (hash.length() + 1)))); //берем случайное число из хеша
+            }
         }
         return hashBuilder.toString();
     }
