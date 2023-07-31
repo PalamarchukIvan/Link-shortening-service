@@ -80,7 +80,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
             } else if (randomDouble > (1F/3F)) {
                 hashBuilder.append((char) ((int) (Math.random() * 25) + 97)); //Случайная буква нижнего регистра
             } else {
-                hashBuilder.append(hash.charAt((int) (Math.random() * (hash.length() + 1)))); //берем случайное число из хеша
+                hashBuilder.append(hash.charAt((int) (Math.random() * (hash.length())))); //берем случайное число из хеша
             }
         }
         String result = hashBuilder.toString();
