@@ -1,5 +1,7 @@
 package org.example.web;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.service.ShortLinkService;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -21,7 +25,7 @@ public class ShortLinkController {
     private final ShortLinkService service;
 
     @GetMapping("/s/{hash}")
-    public String getRealLink(@PathVariable String hash) {
+    public String getRealLink(@PathVariable String hash, HttpServletResponse response, HttpServletRequest request) {
         Instant start = Instant.now();
         String link;
         try {
@@ -31,6 +35,11 @@ public class ShortLinkController {
             throw new ResourceNotFoundException();
         }
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
+
+        if(!Pattern.compile("^[a-zA-Z]+://").matcher(link).find()) { //проверяет наличие каких либо латинских символов перед :// в начале ссылки
+            link = request.getScheme() + "://" + link;
+        }
+
         return "redirect:" + link;
     }
 }

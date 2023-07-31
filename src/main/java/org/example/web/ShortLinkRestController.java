@@ -20,9 +20,6 @@ public class ShortLinkRestController {
 
     @PostMapping("/create")
     public ShortLinkResponseDto saveShortLink(@RequestBody ShortLinkRequestDto link) {
-        if(!Pattern.compile("^[a-zA-Z]+://").matcher(link.link).find()) { //проверяет наличие каких либо латинских символов перед :// в начале ссылки
-            throw new NoProtocolMentionedException();
-        }
         return
                 mapper.toResponse(
                         service.create(
