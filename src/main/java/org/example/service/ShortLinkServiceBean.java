@@ -83,7 +83,8 @@ public class ShortLinkServiceBean implements ShortLinkService {
                 hashBuilder.append(hash.charAt((int) (Math.random() * (hash.length() + 1)))); //берем случайное число из хеша
             }
         }
-        return hashBuilder.toString();
+        String result = hashBuilder.toString();
+        return repository.checkIfUniqueHash("Pj1S") == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
     }
 
     @Override
