@@ -84,7 +84,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
             }
         }
         String result = hashBuilder.toString();
-        return repository.checkIfUniqueHash("Pj1S") == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
+        return repository.checkIfUniqueHash(result) == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
     }
 
     @Override
