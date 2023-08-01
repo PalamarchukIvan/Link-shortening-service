@@ -30,32 +30,26 @@ $$ LANGUAGE 'plpgsql';
 --Триггерная функция пересчета прошедшего времени на ресурсе
 CREATE OR REPLACE FUNCTION update_expected_duration() RETURNS TRIGGER AS $$
 DECLARE
-    prev_hash raw_data.hash%TYPE;
+    cur_hash raw_data.hash%TYPE;
 
+    cur_time raw_data.time%TYPE;
     prev_time raw_data.time%TYPE;
-    prev_prev_time raw_data.time%TYPE;
-    prev_relational_time raw_data.time%TYPE;
-
---     record_count INT;
+    cur_relational_time raw_data.time%TYPE;
 BEGIN
-    prev_relational_time := (select get_prev_time());
---     prev_time := (select get_prev_time(new.time));
---     SELECT COUNT(*) INTO record_count FROM raw_data;
+    cur_relational_time := (select get_prev_time());
 
-    select hash, time into prev_hash, prev_time from raw_data where raw_data.time = get_prev_time(new.time);
---     if(record_count < 3) then
---         UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.time = prev_time;
-    if (new.hash = prev_hash) then
-        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_relational_time where raw_data.time = prev_time;
+    select hash, time into cur_hash, cur_time from raw_data order by time DESC limit 1;
+    if (new.hash = cur_hash) then
+        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - cur_relational_time where raw_data.time = cur_time;
     else
-        prev_prev_time := (select get_prev_time(prev_time));
-        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_prev_time where raw_data.time = prev_time;
+        prev_time := (select get_prev_time(cur_time));
+        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.time = cur_time;
     end if;
     RETURN NEW;
 END; $$
     LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE TRIGGER update_expected_duration_trigger
-    AFTER INSERT ON raw_data
+    BEFORE INSERT ON raw_data
     FOR EACH ROW
 EXECUTE PROCEDURE update_expected_duration();
