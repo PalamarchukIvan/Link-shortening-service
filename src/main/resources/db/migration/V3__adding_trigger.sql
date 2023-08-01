@@ -36,16 +36,16 @@ DECLARE
     prev_prev_time raw_data.time%TYPE;
     prev_relational_time raw_data.time%TYPE;
 
-    record_count INT;
+--     record_count INT;
 BEGIN
     prev_relational_time := (select get_prev_time());
-    prev_time := (select get_prev_time(new.time));
-    SELECT COUNT(*) INTO record_count FROM raw_data;
+--     prev_time := (select get_prev_time(new.time));
+--     SELECT COUNT(*) INTO record_count FROM raw_data;
 
-    select hash into prev_hash from raw_data where raw_data.time = prev_time;
-    if(record_count < 3) then
-        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.time = prev_time;
-    elsif (new.hash = prev_hash) then
+    select hash, time into prev_hash, prev_time from raw_data where raw_data.time = get_prev_time(new.time);
+--     if(record_count < 3) then
+--         UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.time = prev_time;
+    if (new.hash = prev_hash) then
         UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_relational_time where raw_data.time = prev_time;
     else
         prev_prev_time := (select get_prev_time(prev_time));
