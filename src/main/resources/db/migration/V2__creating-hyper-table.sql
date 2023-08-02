@@ -11,8 +11,8 @@ create table IF NOT EXISTS raw_data (
 
 SELECT create_hypertable(
                'raw_data', 'time',
-                chunk_time_interval => INTERVAL '1 minute',
+                chunk_time_interval => INTERVAL '1 day',
                 migrate_data => true
            );
 
-select add_retention_policy('raw_data', INTERVAL '1 minute');
+select add_retention_policy('raw_data', INTERVAL '14 day');
