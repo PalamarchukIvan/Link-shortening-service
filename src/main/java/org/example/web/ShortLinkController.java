@@ -1,10 +1,9 @@
 package org.example.web;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.service.ShortLinkService;
+import org.example.service.ShortLinkService.ShortLinkService;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.regex.Pattern;
@@ -25,7 +23,7 @@ public class ShortLinkController {
     private final ShortLinkService service;
 
     @GetMapping("/s/{hash}")
-    public String getRealLink(@PathVariable String hash, HttpServletResponse response, HttpServletRequest request) {
+    public String getRealLink(@PathVariable String hash, HttpServletRequest request) {
         Instant start = Instant.now();
         String link;
         try {

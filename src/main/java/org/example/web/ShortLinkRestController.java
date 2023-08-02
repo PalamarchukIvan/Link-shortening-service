@@ -3,13 +3,10 @@ package org.example.web;
 import lombok.RequiredArgsConstructor;
 import org.example.model.dto.ShortLinkRequestDto;
 import org.example.model.dto.ShortLinkResponseDto;
-import org.example.service.ShortLinkService;
+import org.example.service.ShortLinkService.ShortLinkService;
 import org.example.util.Mapstruct.ShortLinkMapper;
-import org.example.util.exceptions.NoProtocolMentionedException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/shortening_api", produces = MediaType.APPLICATION_JSON_VALUE)

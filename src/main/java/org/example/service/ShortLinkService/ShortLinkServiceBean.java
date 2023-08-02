@@ -1,8 +1,6 @@
-package org.example.service;
+package org.example.service.ShortLinkService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.RawData;
-import org.example.model.RawDataKey;
 import org.example.model.ShortLink;
 import org.example.repository.RawDataRepository;
 import org.example.repository.ShortLinkRepository;
@@ -10,13 +8,7 @@ import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

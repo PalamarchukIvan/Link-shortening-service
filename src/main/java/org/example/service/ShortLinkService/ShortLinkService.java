@@ -1,10 +1,8 @@
-package org.example.service;
+package org.example.service.ShortLinkService;
 
-import org.example.model.RawData;
 import org.example.model.ShortLink;
 
 import java.time.Duration;
-import java.time.Instant;
 
 public interface ShortLinkService {
     ShortLink create(ShortLink link);
