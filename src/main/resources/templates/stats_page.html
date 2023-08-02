@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Stats</title>
+    <style>table th, table td {
+        padding: 5px;
+    }</style>
+</head>
+
+<body>
+
+<table border="1">
+    <tr>
+        <th>строка</th>
+        <th>время</th>
+        <th>хеш</th>
+        <th>ожидаемая длительность</th>
+    </tr>
+
+    <tr th:each="record, recordStats : ${list}">
+        <td th:text="${recordStats.count}"></td>
+        <td th:text= "${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
+        <td th:text="${record.hash}"></td>
+        <td th:text="${#strings.substringBefore(record.expectedDuration, '.')}"></td> <!--так как expectedDuration у меня строка,
+                                                                                        при выводе я откидываю все, что идет после точки
+                                                                                        (т.е. округляю до целой секунды)-->
+    </tr>
+
+</table>
+
+</body>
+
+</html>

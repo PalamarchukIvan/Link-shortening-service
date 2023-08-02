@@ -1,6 +1,6 @@
 package org.example.util;
 
-import org.example.util.exceptions.NoProtocolMentionedException;
+import org.example.util.exceptions.HashNotFoundException;
 import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.LOCKED);
     }
 
-    @ExceptionHandler(NoProtocolMentionedException.class)
+    @ExceptionHandler(HashNotFoundException.class)
     public ResponseEntity<?> handleNoProtocolMentionedException(WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), "You should specify protocol (http, https etc...)", request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.LOCKED);
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), "There is no such record with this hash", request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_ACCEPTABLE);
     }
 }

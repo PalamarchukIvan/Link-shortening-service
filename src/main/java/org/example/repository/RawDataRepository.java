@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
-import java.time.Instant;
+import java.util.List;
 
 @Repository
 public interface RawDataRepository extends JpaRepository<RawData, Long> {
     @Query(nativeQuery = true, value = "insert into raw_data(time, hash, lag, is_found) values (CURRENT_TIMESTAMP, :hash, :duration, :isFound )")
     void saveData(String hash, Long duration, boolean isFound) throws SQLException;
+    List<RawData> findAllByHash(String hash);
 }
