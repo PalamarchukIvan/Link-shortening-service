@@ -49,15 +49,29 @@ public class DataServiceBean implements DataService {
         }
         return resultList.subList(i, resultList.size());
     }
-    //Их реализация
-//    @Override
-//    public List<RawData> getAll(int amount) {
-//        return getAll().subList(0, amount);
 
-//    }
+    @Override
+    public List<RawData> getAll(int amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
+        }
+        List<RawData> result = getAll();
+        if(amount > result.size()) {
+            amount = result.size();
+        }
+        return result.subList(result.size() - amount, result.size());
 
-//    @Override
-//    public List<RawData> getAllWithHash(String hash, int amount) {
-//        return getAllWithHash(hash).subList(0, amount);
-//    }
+    }
+
+    @Override
+    public List<RawData> getAllWithHash(String hash, int amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
+        }
+        List<RawData> result = getAllWithHash(hash);
+        if(amount > result.size()) {
+            amount = result.size();
+        }
+        return result.subList(result.size() - amount, result.size());
+    }
 }
