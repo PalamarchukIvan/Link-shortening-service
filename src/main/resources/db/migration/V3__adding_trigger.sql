@@ -40,10 +40,10 @@ BEGIN
 
     select hash, time into cur_hash, cur_time from raw_data order by time DESC limit 1;
     if (new.hash = cur_hash) then
-        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - cur_relational_time where raw_data.time = cur_time;
+        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP at time zone 'UTC' - cur_relational_time where raw_data.time = cur_time;
     else
         prev_time := (select get_prev_time(cur_time));
-        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP - prev_time where raw_data.time = cur_time;
+        UPDATE raw_data SET expected_duration = CURRENT_TIMESTAMP at time zone 'UTC' - prev_time where raw_data.time = cur_time;
     end if;
     RETURN NEW;
 END; $$
