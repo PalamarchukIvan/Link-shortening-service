@@ -28,7 +28,7 @@ public class DataController {
         return  "stats_page";
     }
 
-    @GetMapping("/stat/statistic/{hash}")
+    @GetMapping("/stat/{hash}")
     public String getLocalStats(@PathVariable String hash, Model model, @RequestParam(required = false) Integer amount) {
         if(amount != null) {
             model.addAttribute("list", dataService.getAllWithHash(hash, amount));

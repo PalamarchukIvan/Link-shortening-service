@@ -23,9 +23,11 @@
         <td th:text="${recordStats.count}"></td>
         <td th:text= "${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
         <td th:text="${record.hash}"></td>
-        <td th:text="${#strings.substringBefore(record.expectedDuration, '.')}"></td> <!--так как expectedDuration у меня строка,
-                                                                                        при выводе я откидываю все, что идет после точки
-                                                                                        (т.е. округляю до целой секунды)-->
+        <th:block th:with="shortenDuration=${#strings.substringBefore(record.expectedDuration, '.')}"> <!--Это для того, что бы заново не считать strings.substringBefore(record.expectedDuration, '.')-->
+            <td th:text="${shortenDuration == '00:00:00' ? '&lt; 1 second' : shortenDuration}"></td> <!--так как expectedDuration у меня строка,
+                                                                                                     при выводе я откидываю все, что идет после точки
+                                                                                                     (т.е. округляю до целой секунды)-->
+        </th:block>
     </tr>
 
 </table>
