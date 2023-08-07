@@ -32,11 +32,11 @@ public class ShortLinkController {
             service.updateOnStatistics(Duration.between(start, Instant.now()), hash, false);
             throw new ResourceNotFoundException();
         }
-        service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
-
         if(!Pattern.compile("^[a-zA-Z]+://").matcher(link).find()) { //проверяет наличие каких либо латинских символов перед :// в начале ссылки
             link = request.getScheme() + "://" + link;
         }
+
+        service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
 
         return "redirect:" + link;
     }
