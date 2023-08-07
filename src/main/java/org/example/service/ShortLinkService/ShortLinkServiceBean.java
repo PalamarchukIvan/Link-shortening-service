@@ -81,6 +81,10 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
-        rawDataRepository.saveData(hash, duration.toMillis(), isFound);
+        try {
+            rawDataRepository.saveData(hash, duration.toMillis(), isFound);
+        } catch (Exception ignored) {
+
+        }
     }
 }

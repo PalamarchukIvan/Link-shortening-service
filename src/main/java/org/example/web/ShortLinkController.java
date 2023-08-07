@@ -23,7 +23,7 @@ public class ShortLinkController {
     private final ShortLinkService service;
 
     @GetMapping("/s/{hash}")
-    public String getRealLink(@PathVariable String hash, HttpServletRequest request) {
+    public String getRealLink(@PathVariable String hash) {
         Instant start = Instant.now();
         String link;
         try {
@@ -33,10 +33,9 @@ public class ShortLinkController {
             throw new ResourceNotFoundException();
         }
         if(!Pattern.compile("^[a-zA-Z]+://").matcher(link).find()) { //проверяет наличие каких либо латинских символов перед :// в начале ссылки
-            link = request.getScheme() + "://" + link;
+            service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
+            return  "redirect:/" + link;
         }
-
-        service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
 
         return "redirect:" + link;
     }
