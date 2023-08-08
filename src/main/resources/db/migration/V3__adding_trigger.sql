@@ -32,18 +32,18 @@ CREATE OR REPLACE FUNCTION update_expected_duration() RETURNS TRIGGER AS $$
 DECLARE
     cur_hash raw_data.hash%TYPE;
 
+    prev_hash raw_data.hash%TYPE;
     cur_time raw_data.time%TYPE;
-    prev_time raw_data.time%TYPE;
     cur_relational_time raw_data.time%TYPE;
 BEGIN
     cur_relational_time := (select get_prev_time());
 
     select hash, time into cur_hash, cur_time from raw_data order by time DESC limit 1;
-    if (new.hash = cur_hash) then
+    select hash into prev_hash from raw_data where time = get_prev_time(cur_time);
+    if (new.hash = cur_hash or prev_hash = cur_hash) then
         UPDATE raw_data SET expected_duration = new.time - cur_relational_time where raw_data.time = cur_time;
     else
-        prev_time := (select get_prev_time(cur_time));
-        UPDATE raw_data SET expected_duration = new.time - prev_time where raw_data.time = cur_time;
+        UPDATE raw_data SET expected_duration = new.time - cur_time where raw_data.time = cur_time;
     end if;
     RETURN NEW;
 END; $$
