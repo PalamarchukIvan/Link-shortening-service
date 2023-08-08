@@ -9,6 +9,7 @@ import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public String getHashCode(ShortLink link) {
-        return getHashV3(link);
+        return getHashV4(link);
     }
     @Deprecated
     private String getHashV2(ShortLink link) {
@@ -60,7 +61,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
         }
         return hashBuilder.toString();
     }
-
+    @Deprecated
     private String getHashV3(ShortLink link) {
         String hash = String.valueOf(Math.abs(link.getLink().hashCode()));
         int length = 3 + (int) (Math.random() * 3);
@@ -77,6 +78,28 @@ public class ShortLinkServiceBean implements ShortLinkService {
         }
         String result = hashBuilder.toString();
         return repository.checkIfUniqueHash(result) == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
+    }
+
+    private String getHashV4(ShortLink link) {
+        Random random = new Random(link.hashCode());
+        String result;
+        StringBuilder hashBuilder;
+        do {
+            hashBuilder = new StringBuilder();
+            int length = random.nextInt(3) + 3;
+            for (int i = 0; i < length; i++) { //записываем буквы
+                int symbol = random.nextInt(62);
+                if(symbol < 26) {
+                    hashBuilder.append((char) ('a' + symbol));
+                } else if (symbol < 52){
+                    hashBuilder.append((char) ('A' + symbol - 26));
+                } else {
+                    hashBuilder.append((char) ('0' + (symbol - 52)));
+                }
+            }
+            result = hashBuilder.toString();
+        } while (repository.checkIfUniqueHash(result) != 0);
+        return  result;
     }
 
     @Override
