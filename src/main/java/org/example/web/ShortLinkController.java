@@ -32,7 +32,14 @@ public class ShortLinkController {
             service.updateOnStatistics(Duration.between(start, Instant.now()), hash, false);
             throw new ResourceNotFoundException();
         }
+
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
-        return "redirect:" + link;
+        if(Pattern.compile("^[a-zA-Z0-9]+://").matcher(link).find() || link.startsWith("//")) { // Если указан протокол - идем с ним в Интернет
+            return "redirect:" + link;
+        }
+        if(link.startsWith("/")) { // Если ссылка начинается с '/', то пускаем ссылку внутри нашего сервиса
+            return "redirect:" + link;
+        }
+        return "redirect://" + link; // Если протокол не указан, то идем во внешнею сеть и даем выбор протокола на откуп автоматике
     }
 }

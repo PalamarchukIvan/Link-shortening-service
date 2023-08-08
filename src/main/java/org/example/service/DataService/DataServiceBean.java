@@ -27,11 +27,17 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<RawData> getAll(int amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
+        }
         return repository.findLast(amount);
     }
 
     @Override
     public List<RawData> getAllWithHash(String hash, int amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
+        }
         List<RawData> resultList = repository.findAllByHash(hash, amount);
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
