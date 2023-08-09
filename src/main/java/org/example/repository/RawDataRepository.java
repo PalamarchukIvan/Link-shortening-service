@@ -2,7 +2,6 @@ package org.example.repository;
 
 import org.example.model.RawData;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -20,14 +19,16 @@ public interface RawDataRepository extends JpaRepository<RawData, Long> {
                                         "            time IN (SELECT MAX(time) FROM raw_data)) as tb\n" +
                                         "where hash = :hash")
     List<RawData> findAllByHash(String hash);
-    @Query(nativeQuery = true, value =  " SELECT * FROM ( " +
+    @Query(nativeQuery = true, value =  " SELECT * FROM (" +
+                                        "   SELECT * FROM ( " +
                                         "   SELECT * FROM raw_data\n" +
                                         "       WHERE expected_duration IS NOT NULL OR \n" +
                                         "         expected_duration IS NULL AND \n" +
                                         "            time IN (SELECT MAX(time) FROM raw_data)) as tb\n" +
                                         " where hash = :hash" +
-                                        " ORDER BY time DESC LIMIT :amount")
-    List<RawData> findAllByHash(String hash, int amount);
+                                        " ORDER BY time DESC LIMIT :amount) as limitedTB" +
+                                        " ORDER BY time")
+    List<RawData> findLastByHash(String hash, int amount);
 
     @Query(nativeQuery = true, value =  "SELECT * FROM raw_data\n" +
                                         "   WHERE expected_duration IS NOT NULL OR \n" +
@@ -35,11 +36,13 @@ public interface RawDataRepository extends JpaRepository<RawData, Long> {
                                         "          time IN (SELECT MAX(time) FROM raw_data)")
     List<RawData> findAllFiltered();
 
-    @Query(nativeQuery = true, value =  "SELECT * FROM(" +
-                                        "   SELECT * FROM raw_data\n" +
-                                        "       WHERE expected_duration IS NOT NULL OR \n" +
-                                        "        expected_duration IS NULL AND \n" +
-                                        "              time IN (SELECT MAX(time) FROM raw_data)) as tb" +
-                                        " ORDER BY time DESC LIMIT :amount")
+    @Query(nativeQuery = true, value =  " SELECT * FROM(" +
+                                        "  SELECT * FROM(" +
+                                        "    SELECT * FROM raw_data\n" +
+                                        "        WHERE expected_duration IS NOT NULL OR \n" +
+                                        "         expected_duration IS NULL AND \n" +
+                                        "               time IN (SELECT MAX(time) FROM raw_data)) as tb" +
+                                        " ORDER BY time DESC LIMIT :amount) as limitedTB" +
+                                        " ORDER BY time")
     List<RawData> findLast(int amount);
 }
