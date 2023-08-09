@@ -53,11 +53,11 @@ public class DataServiceBean implements DataService {
         return formatLastRecord(resultList);
     }
 
-    private static List<RawData> formatLastRecord(List<RawData> result) {
+    private static List<RawData> formatLastRecord(List<RawData> result) { //этот метод переделывает последнюю строку. через него проходят все другие
         RawData last = result.get(result.size() - 1);
         int i = result.size() - 1;
         for (; i > 1; i--) {
-            if(!result.get(i).getHash().equals(result.get(i - 1).getHash())) {
+            if(!result.get(i).getHash().equals(result.get(i - 1).getHash())) { //итерируемся, пока не дойдем до того момента, где отличный от нашего хеш
                 break;
             }
         }
@@ -67,7 +67,8 @@ public class DataServiceBean implements DataService {
                 LocalTime.parse(
                         duration.toHours() + ":" + duration.toMinutesPart() + ":" + duration.toSecondsPart(),
                         DateTimeFormatter.ofPattern("H:m:s")
-                ).format(DateTimeFormatter.ofPattern("HH:mm:ss."))
+                ).format(DateTimeFormatter.ofPattern("HH:mm:ss."))  //согласен, не лучший способ подсчета времени для последнего элемента,
+                                                                    // но так как нам это нужно сделать всего 1 раз, думаю не сильно страшно по производительности
         );
 
         return result;

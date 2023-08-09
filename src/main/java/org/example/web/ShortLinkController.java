@@ -1,6 +1,5 @@
 package org.example.web;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.service.ShortLinkService.ShortLinkService;
