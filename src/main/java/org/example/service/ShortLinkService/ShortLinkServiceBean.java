@@ -8,6 +8,8 @@ import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.rmi.ServerError;
+import java.rmi.ServerException;
 import java.time.Duration;
 import java.util.Random;
 
@@ -84,6 +86,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
         Random random = new Random(link.hashCode());
         String result;
         StringBuilder hashBuilder;
+        int counter = 0;
         do {
             hashBuilder = new StringBuilder();
             int length = random.nextInt(3) + 3;
@@ -98,6 +101,10 @@ public class ShortLinkServiceBean implements ShortLinkService {
                 }
             }
             result = hashBuilder.toString();
+            counter++;
+            if(counter == 10) {
+                throw new RuntimeException("hash was not able not be formed");
+            }
         } while (repository.checkIfUniqueHash(result) != 0);
         return  result;
     }
