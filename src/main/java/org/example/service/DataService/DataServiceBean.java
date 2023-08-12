@@ -22,8 +22,7 @@ public class DataServiceBean implements DataService {
     @Override
     public List<RawData> getAll() {
         List<RawData> result = repository.findAllFiltered();
-
-        return formatLastRecordV2(result);
+        return result.isEmpty() ? result : formatLastRecordV2(result);
     }
 
     @Override
@@ -38,16 +37,17 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<RawData> getAll(int amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("Amount must be bigger than 0");
+        if (amount < 2) {
+            throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        return formatLastRecordV2(repository.findLast(amount));
+        List<RawData> result = repository.findLast(amount);
+        return result.isEmpty() ? result : formatLastRecordV2(result);
     }
 
     @Override
     public List<RawData> getAllWithHash(String hash, int amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("Amount must be bigger than 0");
+        if (amount < 2) {
+            throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<RawData> resultList = repository.findLastByHash(hash, amount);
         if (resultList.isEmpty()) {
@@ -79,6 +79,9 @@ public class DataServiceBean implements DataService {
 
     private static List<RawData> formatLastRecordV2(List<RawData> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
         RawData last = result.get(result.size() - 1);
+        if(last.getExpectedDuration() != null) {
+            return result;
+        }
         Instant relativeLastTime;
         if (result.size() >= 2 && result.get(result.size() - 2).getHash().equals(last.getHash())) {
             RawData preLast = result.get(result.size() - 2);
