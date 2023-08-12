@@ -7,11 +7,6 @@ import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAmount;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,8 +16,8 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<RawData> getAll() {
-        List<RawData> result = repository.findAllFiltered();
-        return result.isEmpty() ? result : formatLastRecordV2(result);
+        List<RawData> result = repository.findAll();
+        return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
@@ -32,7 +27,7 @@ public class DataServiceBean implements DataService {
             throw new HashNotFoundException();
         }
 
-        return formatLastRecordV2(result);
+        return formatLastRecord(result);
     }
 
     @Override
@@ -41,7 +36,7 @@ public class DataServiceBean implements DataService {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<RawData> result = repository.findLast(amount);
-        return result.isEmpty() ? result : formatLastRecordV2(result);
+        return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
@@ -53,56 +48,24 @@ public class DataServiceBean implements DataService {
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
         }
-        return formatLastRecordV2(resultList);
+        return formatLastRecord(resultList);
     }
 
-    private static List<RawData> formatLastRecord(List<RawData> result) { // этот метод переделывает последнюю строку. через него проходят все другие
-        RawData last = result.get(result.size() - 1);
-        int i = result.size() - 1;
-        for (; i > 1; i--) {
-            if (!result.get(i).getHash().equals(result.get(i - 1).getHash())) { // итерируемся, пока не дойдем до того момента, где отличный от нашего хеш
-                break;
+    private static List<RawData> formatLastRecord(List<RawData> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
+        int size = result.size();
+
+        if(size > 0) {
+            RawData lastRecord = result.get(result.size() - 1); //из-за сортировки они будут меняться местами
+            RawData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
+
+            long calculatedDuration;
+            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
+                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
+            } else {
+                calculatedDuration = Duration.between(lastRecord.getTime(), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
             }
+            lastRecord.setExpectedDuration(calculatedDuration);
         }
-        RawData relativeLast = result.get(i);
-        Duration duration = Duration.between(relativeLast.getTime(), Instant.now().atOffset(ZoneOffset.UTC));
-        last.setExpectedDuration(
-                LocalTime.parse(
-                        duration.toHours() + ":" + duration.toMinutesPart() + ":" + duration.toSecondsPart(),
-                        DateTimeFormatter.ofPattern("H:m:s")
-                ).format(DateTimeFormatter.ofPattern("HH:mm:ss."))  //согласен, не лучший способ подсчета времени для последнего элемента,
-                                                                    // но так как нам это нужно сделать всего 1 раз, думаю не сильно страшно по производительности
-        );
-
-        return result;
-    }
-
-    private static List<RawData> formatLastRecordV2(List<RawData> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
-        RawData last = result.get(result.size() - 1);
-        if(last.getExpectedDuration() != null) {
-            return result;
-        }
-        Instant relativeLastTime;
-        if (result.size() >= 2 && result.get(result.size() - 2).getHash().equals(last.getHash())) {
-            RawData preLast = result.get(result.size() - 2);
-            String[] duration = preLast.getExpectedDuration().split("\\.")[0].split(":");
-            Duration extractedDuration = Duration.ofHours(Long.parseLong(duration[0])).plusMinutes(Long.parseLong(duration[1])).plusSeconds(Long.parseLong(duration[2]));
-            relativeLastTime = last.getTime().minus(extractedDuration);
-
-        } else {
-            relativeLastTime = last.getTime();
-        }
-        Duration duration = Duration.between(relativeLastTime, Instant.now().atOffset(ZoneOffset.UTC));
-        String durationString;
-        if(duration.toDaysPart() != 0) {
-            durationString = String.format("%d day %02d:%02d:%02d.", duration.toDaysPart(), duration.toHours(), duration.toMinutesPart(), duration.toSecondsPart());
-        } else {
-            durationString = String.format("%02d:%02d:%02d.", duration.toHours(), duration.toMinutesPart(), duration.toSecondsPart());
-        }
-
-        last.setExpectedDuration(
-                durationString
-        );
 
         return result;
     }

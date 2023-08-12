@@ -23,10 +23,8 @@
         <td th:text="${recordStats.count}"></td>
         <td th:text= "${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
         <td th:text="${record.hash}"></td>
-        <th:block th:with="shortenDuration=${#strings.substringBefore(record.expectedDuration, '.')}"> <!--Это для того, что бы заново не считать strings.substringBefore(record.expectedDuration, '.')-->
-            <td th:text="${shortenDuration == '00:00:00' ? '&lt; 1 second' : shortenDuration}"></td> <!--так как expectedDuration у меня строка,
-                                                                                                     при выводе я откидываю все, что идет после точки
-                                                                                                     (т.е. округляю до целой секунды)-->
+        <th:block th:with="shortenDuration=${record.getExpectedDuration() / 3600000 + ':' + record.getExpectedDuration() / 60000 + ':' + record.getExpectedDuration() % 60000 / 1000}">
+            <td th:text="${shortenDuration == '0:0:0' ? '&lt; 1 секунды' : shortenDuration}"></td> <!--что бы не выводить 00:00:00, а написать "< 1 second"-->
         </th:block>
     </tr>
 

@@ -18,8 +18,7 @@ public class RawData {
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant time;
     private String hash;
-    @Column(columnDefinition = "INTERVAL")
-    private String expectedDuration;
+    private long expectedDuration;
     private boolean isFound;
     private long lag;
 }

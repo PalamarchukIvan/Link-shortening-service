@@ -8,6 +8,6 @@ public interface ShortLinkService {
     ShortLink create(ShortLink link);
     ShortLink getByHash(String hash);
     ShortLink deleteByHash(String hash);
-    String getHashCode(ShortLink link);
+    String getHashCode();
     void updateOnStatistics(Duration duration, String hash, boolean isFound);
 }

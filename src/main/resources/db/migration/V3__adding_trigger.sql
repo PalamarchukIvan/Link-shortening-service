@@ -36,6 +36,9 @@ DECLARE
     cur_time raw_data.time%TYPE;
     cur_relational_time raw_data.time%TYPE;
 BEGIN
+    if(new.expected_duration is not null) then
+        RETURN new;
+    end if;
     cur_relational_time := (select get_prev_time());
 
     select hash, time into cur_hash, cur_time from raw_data order by time DESC limit 1;

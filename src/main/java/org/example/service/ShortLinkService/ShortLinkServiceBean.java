@@ -1,6 +1,7 @@
 package org.example.service.ShortLinkService;
 
 import lombok.RequiredArgsConstructor;
+import org.example.model.RawData;
 import org.example.model.ShortLink;
 import org.example.repository.RawDataRepository;
 import org.example.repository.ShortLinkRepository;
@@ -8,9 +9,10 @@ import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.rmi.ServerError;
-import java.rmi.ServerException;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -21,7 +23,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public ShortLink create(ShortLink link) {
-        link.setHash(getHashCode(link));
+        link.setHash(getHashCode());
         return repository.save(link);
     }
 
@@ -43,8 +45,8 @@ public class ShortLinkServiceBean implements ShortLinkService {
     }
 
     @Override
-    public String getHashCode(ShortLink link) {
-        return getHashV4(link);
+    public String getHashCode() {
+        return getHashV4();
     }
     @Deprecated
     private String getHashV2(ShortLink link) {
@@ -82,14 +84,14 @@ public class ShortLinkServiceBean implements ShortLinkService {
         return repository.checkIfUniqueHash(result) == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
     }
 
-    private String getHashV4(ShortLink link) {
-        Random random = new Random(link.hashCode());
+    private String getHashV4() {
+        Random random = new Random();
         String result;
         StringBuilder hashBuilder;
         int counter = 0;
+        int length = 3;
         do {
             hashBuilder = new StringBuilder();
-            int length = random.nextInt(3) + 3;
             for (int i = 0; i < length; i++) { //записываем буквы
                 int symbol = random.nextInt(62);
                 if(symbol < 26) {
@@ -102,7 +104,10 @@ public class ShortLinkServiceBean implements ShortLinkService {
             }
             result = hashBuilder.toString();
             counter++;
-            if(counter == 10) {
+            if(counter % 10 == 0) { //Каждые 10 раз увеличиваем длину
+                length++;
+            }
+            if(counter == 30) {
                 throw new RuntimeException("hash was not able not be formed");
             }
         } while (repository.checkIfUniqueHash(result) != 0);
@@ -111,10 +116,29 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
-        try {
-            rawDataRepository.saveData(hash, duration.toMillis(), isFound);
-        } catch (Exception ignored) {
+        RawData newRecord = RawData.builder()
+                .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
+                .hash(hash)
+                .lag(duration.toMillis())
+                .isFound(isFound)
+                .build();
 
+        List<RawData> lastTwoRecords = rawDataRepository.findLast(2);
+        int size = lastTwoRecords.size();
+
+        if(size > 0) {
+            RawData lastRecord = size == 2 ? lastTwoRecords.get(1) : lastTwoRecords.get(0); //из-за сортировки они будут меняться местами
+            RawData preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
+
+            long calculatedDuration;
+            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
+                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), newRecord.getTime()).toMillis();
+            } else {
+                calculatedDuration = Duration.between(lastRecord.getTime(), newRecord.getTime()).toMillis();
+            }
+            lastRecord.setExpectedDuration(calculatedDuration);
+            rawDataRepository.save(lastRecord);
         }
+        rawDataRepository.save(newRecord);
     }
 }
