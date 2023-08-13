@@ -5,6 +5,8 @@ spring:
     driver-class-name: org.postgresql.Driver
     #    For local usage
     url: jdbc:postgresql://localhost:5432/link-shortening
+    #    For docker
+#    url: jdbc:postgresql://postgres/link-shortening
     username: postgres
     password: postgres
   # JPA properties
@@ -15,7 +17,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
 # Server configuration
 server:

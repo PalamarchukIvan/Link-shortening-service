@@ -9,7 +9,6 @@
     </parent>
     <groupId>org.example</groupId>
     <artifactId>Link-shortening-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>Link-shortening-service</name>
     <description>Demo project for Spring Boot</description>
     <properties>
