@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)

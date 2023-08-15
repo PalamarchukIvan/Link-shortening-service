@@ -6,7 +6,9 @@ import org.example.repository.RawDataRepository;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -55,7 +57,7 @@ public class DataServiceBean implements DataService {
         int size = result.size();
 
         if(size > 0) {
-            RawData lastRecord = result.get(result.size() - 1); //из-за сортировки они будут меняться местами
+            RawData lastRecord = result.get(result.size() - 1);
             RawData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
 
             long calculatedDuration;
