@@ -127,14 +127,14 @@ public class ShortLinkServiceBean implements ShortLinkService {
         int size = lastTwoRecords.size();
 
         if(size > 0) {
-            RawData lastRecord = size == 2 ? lastTwoRecords.get(1) : lastTwoRecords.get(0); //из-за сортировки они будут меняться местами
+            RawData lastRecord = lastTwoRecords.get(size - 1) ; //из-за сортировки они будут меняться местами
             RawData preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
 
             long calculatedDuration;
             if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), newRecord.getTime()).toMillis();
+                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli() + preLastRecord.getExpectedDuration();
             } else {
-                calculatedDuration = Duration.between(lastRecord.getTime(), newRecord.getTime()).toMillis();
+                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli();
             }
             lastRecord.setExpectedDuration(calculatedDuration);
             rawDataRepository.save(lastRecord);
