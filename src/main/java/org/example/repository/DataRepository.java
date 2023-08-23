@@ -39,16 +39,14 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
     @Query(nativeQuery = true, value =
             "WITH lagged_data as ( " +
             "  SELECT *, " +
-            "     LAG(hash) OVER(ORDER BY time) as prev_hash " +
+            "     LAG(hash) OVER(ORDER BY time) as prev_hash, " +
+            "     LEAD(time) OVER(ORDER BY time) as next_time" +
             "    FROM raw_data_light " +
             "), " +
             " " +
             "filtred_data AS ( " +
             "  select * from ( " +
-            "    select * from ( " +
-            "       SELECT *, " +
-            "        LEAD(time) OVER(ORDER BY time) as next_time " +
-            "       FROM lagged_data) t " +
+            "    select * from  lagged_data" +
             "    where hash = :hash or prev_hash = :hash " +
             "    ) tb " +
             "  where hash = :hash " +

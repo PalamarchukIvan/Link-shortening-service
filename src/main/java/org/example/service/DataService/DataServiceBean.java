@@ -59,14 +59,15 @@ public class DataServiceBean implements DataService {
         if(size > 0) {
             AnalyzedData lastRecord = result.get(result.size() - 1);
             AnalyzedData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
-
-            long calculatedDuration;
-            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
-            } else {
-                calculatedDuration = Duration.between(lastRecord.getTime(), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
+            if(lastRecord.getExpectedDuration() == null) {
+                long calculatedDuration;
+                if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
+                    calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
+                } else {
+                    calculatedDuration = Duration.between(lastRecord.getTime(), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
+                }
+                lastRecord.setExpectedDuration(calculatedDuration);
             }
-            lastRecord.setExpectedDuration(calculatedDuration);
         }
 
         return result;
