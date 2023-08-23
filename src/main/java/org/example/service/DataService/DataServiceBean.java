@@ -1,8 +1,8 @@
 package org.example.service.DataService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.RawData;
-import org.example.repository.RawDataRepository;
+import org.example.model.AnalyzedData;
+import org.example.repository.DataRepository;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +14,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DataServiceBean implements DataService {
-    private final RawDataRepository repository;
+    private final DataRepository repository;
 
     @Override
-    public List<RawData> getAll() {
-        List<RawData> result = repository.findAll();
+    public List<AnalyzedData> getAll() {
+        List<AnalyzedData> result = repository.findAllRaws();
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<RawData> getAllWithHash(String hash) {
-        List<RawData> result = repository.findAllByHash(hash);
+    public List<AnalyzedData> getAllWithHash(String hash) {
+        List<AnalyzedData> result = repository.findAllByHash(hash);
         if (result.isEmpty()) {
             throw new HashNotFoundException();
         }
@@ -33,32 +33,32 @@ public class DataServiceBean implements DataService {
     }
 
     @Override
-    public List<RawData> getAll(int amount) {
-        if (amount < 2) {
+    public List<AnalyzedData> getAll(int amount) {
+        if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<RawData> result = repository.findLast(amount);
+        List<AnalyzedData> result = repository.findLast(amount);
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<RawData> getAllWithHash(String hash, int amount) {
-        if (amount < 2) {
+    public List<AnalyzedData> getAllWithHash(String hash, int amount) {
+        if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<RawData> resultList = repository.findLastByHash(hash, amount);
+        List<AnalyzedData> resultList = repository.findLastByHash(hash, amount);
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
         }
         return formatLastRecord(resultList);
     }
 
-    private static List<RawData> formatLastRecord(List<RawData> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
+    private static List<AnalyzedData> formatLastRecord(List<AnalyzedData> result) {
         int size = result.size();
 
         if(size > 0) {
-            RawData lastRecord = result.get(result.size() - 1);
-            RawData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
+            AnalyzedData lastRecord = result.get(result.size() - 1);
+            AnalyzedData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
 
             long calculatedDuration;
             if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {

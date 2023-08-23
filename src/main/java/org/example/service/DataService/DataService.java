@@ -1,12 +1,12 @@
 package org.example.service.DataService;
 
-import org.example.model.RawData;
+import org.example.model.AnalyzedData;
 
 import java.util.List;
 
 public interface DataService {
-    List<RawData> getAll();
-    List<RawData> getAllWithHash(String hash);
-    List<RawData> getAll(int amount); // - это те же методы, но с ограничением по числу записей.
-    List<RawData> getAllWithHash(String hash, int amount);
+    List<AnalyzedData> getAll();
+    List<AnalyzedData> getAllWithHash(String hash);
+    List<AnalyzedData> getAll(int amount); // - это те же методы, но с ограничением по числу записей.
+    List<AnalyzedData> getAllWithHash(String hash, int amount);
 }

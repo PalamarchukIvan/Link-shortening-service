@@ -1,7 +1,7 @@
 package org.example.service.ShortLinkService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.RawData;
+import org.example.model.RawDataLight;
 import org.example.model.ShortLink;
 import org.example.repository.RawDataRepository;
 import org.example.repository.ShortLinkRepository;
@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class ShortLinkServiceBean implements ShortLinkService {
     private final ShortLinkRepository repository;
-    private final RawDataRepository rawDataRepository;
+    private final RawDataRepository dataRepository;
 
     @Override
     public ShortLink create(ShortLink link) {
@@ -116,29 +115,40 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
-        RawData newRecord = RawData.builder()
+        RawDataLight newRecord = RawDataLight.builder()
                 .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
                 .hash(hash)
                 .lag(duration.toMillis())
                 .isFound(isFound)
                 .build();
-
-        List<RawData> lastTwoRecords = rawDataRepository.findLast(2);
-        int size = lastTwoRecords.size();
-
-        if(size > 0) {
-            RawData lastRecord = lastTwoRecords.get(size - 1) ; //из-за сортировки они будут меняться местами
-            RawData preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
-
-            long calculatedDuration;
-            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli() + preLastRecord.getExpectedDuration();
-            } else {
-                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli();
-            }
-            lastRecord.setExpectedDuration(calculatedDuration);
-            rawDataRepository.save(lastRecord);
-        }
-        rawDataRepository.save(newRecord);
+        dataRepository.save(newRecord);
     }
+
+//Метод для тест
+//    public void updateOnStatisticsTest(Duration duration, String hash, boolean isFound) {
+//        AnalyzedData newRecord = AnalyzedData.builder()
+//                .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
+//                .hash(hash)
+//                .lag(duration.toMillis())
+//                .isFound(isFound)
+//                .build();
+//
+//        List<AnalyzedData> lastTwoRecords = dataRepository.findLast(2);
+//        int size = lastTwoRecords.size();
+//
+//        if(size > 0) {
+//            AnalyzedData lastRecord = lastTwoRecords.get(size - 1) ; //из-за сортировки они будут меняться местами
+//            AnalyzedData preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
+//
+//            long calculatedDuration;
+//            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
+//                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli() + preLastRecord.getExpectedDuration();
+//            } else {
+//                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli();
+//            }
+//            lastRecord.setExpectedDuration(calculatedDuration);
+//            dataRepository.save(lastRecord);
+//        }
+//        dataRepository.save(newRecord);
+//    }
 }
