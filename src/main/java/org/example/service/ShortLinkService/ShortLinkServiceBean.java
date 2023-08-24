@@ -1,6 +1,7 @@
 package org.example.service.ShortLinkService;
 
 import lombok.RequiredArgsConstructor;
+import org.example.model.AnalyzedData;
 import org.example.model.RawDataLight;
 import org.example.model.ShortLink;
 import org.example.repository.RawDataRepository;
@@ -12,23 +13,24 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class ShortLinkServiceBean implements ShortLinkService {
-    private final ShortLinkRepository repository;
-    private final RawDataRepository dataRepository;
+    private final ShortLinkRepository shortLinkrepository;
+    private final RawDataRepository rawDataRepository;
 
     @Override
     public ShortLink create(ShortLink link) {
         link.setHash(getHashCode());
-        return repository.save(link);
+        return shortLinkrepository.save(link);
     }
 
     @Override
     public ShortLink getByHash(String hash) {
-        ShortLink foundLink = repository.findById(hash).orElseThrow(ResourceNotFoundException::new);
+        ShortLink foundLink = shortLinkrepository.findById(hash).orElseThrow(ResourceNotFoundException::new);
         if (foundLink.isDeleted()) {
             throw new ResourceDeletedException();
         }
@@ -39,7 +41,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
     public ShortLink deleteByHash(String hash) {
         ShortLink toDeleteLink = getByHash(hash);
         toDeleteLink.setDeleted(true);
-        repository.save(toDeleteLink);
+        shortLinkrepository.save(toDeleteLink);
         return toDeleteLink;
     }
 
@@ -80,7 +82,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
             }
         }
         String result = hashBuilder.toString();
-        return repository.checkIfUniqueHash(result) == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
+        return shortLinkrepository.checkIfUniqueHash(result) == 0 ? result : getHashV3(link); //Если это уникальный хеш, то мы вернем result. Если нет - рекурсивно пойдем пересоздавать новый
     }
 
     private String getHashV4() {
@@ -109,19 +111,24 @@ public class ShortLinkServiceBean implements ShortLinkService {
             if(counter == 30) {
                 throw new RuntimeException("hash was not able not be formed");
             }
-        } while (repository.checkIfUniqueHash(result) != 0);
+        } while (shortLinkrepository.checkIfUniqueHash(result) != 0);
         return  result;
     }
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
+        RawDataLight last = rawDataRepository.findLast();
         RawDataLight newRecord = RawDataLight.builder()
                 .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
                 .hash(hash)
                 .lag(duration.toMillis())
                 .isFound(isFound)
                 .build();
-        dataRepository.save(newRecord);
+        if(last != null) {
+            newRecord.setPrevHash(last.getHash());
+            newRecord.setPrevTime(last.getTime());
+        }
+        rawDataRepository.save(newRecord);
     }
 
 //Метод для тест

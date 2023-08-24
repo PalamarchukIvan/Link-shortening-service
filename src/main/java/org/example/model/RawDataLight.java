@@ -19,5 +19,8 @@ public class RawDataLight {
     private String hash;
     private boolean isFound;
     private long lag;
+    private String prevHash;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant prevTime; //для корректного форматирования последней записи в таблице при выводе ее
 }
 
