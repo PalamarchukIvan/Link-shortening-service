@@ -18,7 +18,7 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             "   breakpoints AS ( " +
             "    SELECT hash, time as prev_time_rl  " +
             "    FROM raw_data_light  " +
-            "    WHERE hash != prev_hash OR prev_hash is null  " +
+            "    WHERE (hash != prev_hash OR prev_hash is null) and hash = :hash " +
             "  )  " +
             "  select fd.time, fd.hash,  " +
             "       CAST(EXTRACT(EPOCH FROM(next_time - prev_time_rl)) * 1000 AS BIGINT) as expected_duration,  " +
@@ -33,16 +33,16 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             "  select * from ( " +
             "    SELECT *, LEAD(time) OVER(ORDER BY time) as next_time   " +
             "      FROM raw_data_light   " +
-            "     where hash =  'test' or prev_hash = 'test' " +
+            "     where hash = :hash or prev_hash = :hash " +
             "    order by time desc " +
             "  ) tb " +
-            "  where hash = 'test' " +
+            "  where hash = :hash " +
             "  limit :amount " +
             " ),  " +
             "  breakpoints AS (   " +
             "   SELECT hash, time as prev_time_rl   " +
             "   FROM raw_data_light   " +
-            "   WHERE hash != prev_hash OR prev_hash is null   " +
+            "   WHERE (hash != prev_hash OR prev_hash is null) and hash = :hash " +
             " )   " +
             " select fd.time, fd.hash,   " +
             "    CAST(EXTRACT(EPOCH FROM(next_time - prev_time_rl)) * 1000 AS BIGINT) as expected_duration,   " +

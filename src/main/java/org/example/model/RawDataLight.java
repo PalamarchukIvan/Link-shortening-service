@@ -6,7 +6,8 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "raw_data_light", indexes = @Index(name = "idx_hashcode_raw_data", columnList = "hash"))
+@Table(name = "raw_data_light", indexes = { @Index(name = "idx_hashcode_raw_data", columnList = "hash"),
+                                            @Index(name = "idx_prev_hash_raw_data", columnList = "prevHash")} )
 @Getter
 @Setter
 @Builder
