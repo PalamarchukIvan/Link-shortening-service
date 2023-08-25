@@ -17,7 +17,7 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             "  ),  " +
             "   breakpoints AS ( " +
             "    SELECT hash, time as prev_time_rl  " +
-            "    FROM raw_data_light  " +
+            "    FROM filtred_data  " +
             "    WHERE (hash != prev_hash OR prev_hash is null) and hash = :hash " +
             "  )  " +
             "  select fd.time, fd.hash,  " +
@@ -41,7 +41,7 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             " ),  " +
             "  breakpoints AS (   " +
             "   SELECT hash, time as prev_time_rl   " +
-            "   FROM raw_data_light   " +
+            "   FROM filtred_data   " +
             "   WHERE (hash != prev_hash OR prev_hash is null) and hash = :hash " +
             " )   " +
             " select fd.time, fd.hash,   " +
@@ -56,8 +56,8 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
     @Query(nativeQuery = true, value =
             // не идеальный вариант,
             // так как имеет косяк в виде потенциально
-            // некоректного обсчета первых записей
-            // если первые записи были частью длинной последовательности
+            // пропуска первых записей, если они были
+            //  частью длинной последовательности
             // записей с одним хешем
             " WITH last_raw_data AS (  " +
             "  select * from   " +
@@ -71,7 +71,7 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             "),  " +
             "breakpoints AS (  " +
             "  SELECT hash, time as prev_time_rl  " +
-            "    FROM raw_data_light  " +
+            "    FROM last_raw_data  " +
             "  WHERE hash != prev_hash OR prev_hash is null  " +
             ")  " +
             "select ld.time, ld.hash,  " +
