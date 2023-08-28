@@ -15,7 +15,6 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             "     LAG(hash) OVER(ORDER BY time) as prev_hash " +
             "    FROM raw_data_light " +
             "), " +
-            " " +
             "filtred_data AS ( " +
             "    select * from ( " +
             "     SELECT *, " +

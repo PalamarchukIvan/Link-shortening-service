@@ -18,7 +18,9 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<AnalyzedData> getAll() {
+        Instant start = Instant.now();
         List<AnalyzedData> result = repository.findAllRaws();
+        System.err.println(Duration.between(start, Instant.now()));
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
@@ -34,10 +36,12 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<AnalyzedData> getAll(int amount) {
+        Instant start = Instant.now();
         if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<AnalyzedData> result = repository.findLast(amount);
+        System.err.println(Duration.between(start, Instant.now()));
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 

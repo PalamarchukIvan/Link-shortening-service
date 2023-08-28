@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.thymeleaf.exceptions.TemplateInputException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -33,5 +34,13 @@ public class ShortLinkController {
 
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
         return "redirect:" + link;
+    }
+    @GetMapping("/{amount}")
+    public void generateTest(@PathVariable int amount) {
+        try {
+            service.generateDataRecords(amount);
+        } catch (TemplateInputException ignored) {
+            System.out.println();
+        }
     }
 }

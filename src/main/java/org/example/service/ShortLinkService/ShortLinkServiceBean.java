@@ -123,32 +123,29 @@ public class ShortLinkServiceBean implements ShortLinkService {
                 .build();
         dataRepository.save(newRecord);
     }
+    public void generateDataRecords(int amount) {
+        Random random = new Random();
+        int N = 100;
+        String[] hashes = new String[N];
 
-//Метод для тест
-//    public void updateOnStatisticsTest(Duration duration, String hash, boolean isFound) {
-//        AnalyzedData newRecord = AnalyzedData.builder()
-//                .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
-//                .hash(hash)
-//                .lag(duration.toMillis())
-//                .isFound(isFound)
-//                .build();
-//
-//        List<AnalyzedData> lastTwoRecords = dataRepository.findLast(2);
-//        int size = lastTwoRecords.size();
-//
-//        if(size > 0) {
-//            AnalyzedData lastRecord = lastTwoRecords.get(size - 1) ; //из-за сортировки они будут меняться местами
-//            AnalyzedData preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
-//
-//            long calculatedDuration;
-//            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-//                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli() + preLastRecord.getExpectedDuration();
-//            } else {
-//                calculatedDuration = newRecord.getTime().toEpochMilli() - lastRecord.getTime().toEpochMilli();
-//            }
-//            lastRecord.setExpectedDuration(calculatedDuration);
-//            dataRepository.save(lastRecord);
-//        }
-//        dataRepository.save(newRecord);
-//    }
+        for (int i = 0; i < N; i++) {
+            hashes[i] = getHashV4();
+        }
+        int time = 0;
+        for (int i = 0; i < amount; i++) {
+            int length = random.nextInt(10);
+            String hash = hashes[random.nextInt(N)];
+            for (int j = 0; j < length; j++, time += 4000) {
+                time += random.nextInt(10000);
+                RawDataLight newRecord = RawDataLight.builder()
+                        .time(Instant.ofEpochMilli(time))
+                        .hash(hash)
+                        .lag(0)
+                        .isFound(true)
+                        .build();
+                dataRepository.save(newRecord);
+            }
+            amount-= length;
+        }
+    }
 }
