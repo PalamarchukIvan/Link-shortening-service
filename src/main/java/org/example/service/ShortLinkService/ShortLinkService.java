@@ -10,4 +10,6 @@ public interface ShortLinkService {
     ShortLink deleteByHash(String hash);
     String getHashCode();
     void updateOnStatistics(Duration duration, String hash, boolean isFound);
+    void generateDataRecords(int amount);
+    void editData();
 }

@@ -8,6 +8,7 @@ import org.example.repository.RawDataRepository;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -20,7 +21,9 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<AnalyzedData> getAll() {
+        Instant start = Instant.now();
         List<AnalyzedData> result = dataRepository.findAllRaws();
+        System.err.println(Duration.between(start, Instant.now()));
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
@@ -36,10 +39,12 @@ public class DataServiceBean implements DataService {
 
     @Override
     public List<AnalyzedData> getAll(int amount) {
+        Instant start = Instant.now();
         if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<AnalyzedData> result = dataRepository.findLast(amount);
+        System.err.println(Duration.between(start, Instant.now()));
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 

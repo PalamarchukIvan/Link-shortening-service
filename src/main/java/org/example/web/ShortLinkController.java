@@ -34,4 +34,12 @@ public class ShortLinkController {
         service.updateOnStatistics(Duration.between(start, Instant.now()), hash, true);
         return "redirect:" + link;
     }
+    @GetMapping("/{amount}")
+    public void test(@PathVariable int amount) {
+        service.generateDataRecords(amount);
+    }
+    @GetMapping("/edit")
+    public void edit() {
+        service.editData();
+    }
 }

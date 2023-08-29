@@ -51,7 +51,7 @@ public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
             " join breakpoints br on br.hash = fd.hash and br.prev_time_rl = ANY (SELECT MAX(prev_time_rl) FROM breakpoints where prev_time_rl <= fd.time)   " +
             " where fd.hash = :hash   " +
             " order by time ")
-    List<AnalyzedData> findLastByHash(String hash, int amount);
+                List<AnalyzedData> findLastByHash(String hash, int amount);
 
     @Query(nativeQuery = true, value =
             // не идеальный вариант,
