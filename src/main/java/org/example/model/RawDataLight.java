@@ -19,5 +19,7 @@ public class RawDataLight {
     private String hash;
     private boolean isFound;
     private long lag;
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant prevRelationalTime;
 }
 

@@ -115,14 +115,19 @@ public class ShortLinkServiceBean implements ShortLinkService {
 
     @Override
     public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
+        RawDataLight prevRecord = dataRepository.findLast();
+        Instant time = Instant.now().atOffset(ZoneOffset.UTC).toInstant();
+        Instant prevRelationalTime = prevRecord.getHash().equals(hash) ? prevRecord.getPrevRelationalTime() : time;
         RawDataLight newRecord = RawDataLight.builder()
-                .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
+                .time(time)
                 .hash(hash)
                 .lag(duration.toMillis())
                 .isFound(isFound)
+                .prevRelationalTime(prevRelationalTime)
                 .build();
         dataRepository.save(newRecord);
     }
+    @Override
     public void generateDataRecords(int amount) {
         Random random = new Random();
         int N = 100;
@@ -135,6 +140,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
         for (int i = 0; i < amount; i++) {
             int length = random.nextInt(10);
             String hash = hashes[random.nextInt(N)];
+            int startTime = time;
             for (int j = 0; j < length; j++, time += 4000) {
                 time += random.nextInt(10000);
                 RawDataLight newRecord = RawDataLight.builder()
@@ -142,6 +148,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
                         .hash(hash)
                         .lag(0)
                         .isFound(true)
+                        .prevRelationalTime(Instant.ofEpochMilli(startTime))
                         .build();
                 dataRepository.save(newRecord);
             }
