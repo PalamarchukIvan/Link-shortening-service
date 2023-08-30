@@ -10,59 +10,44 @@ import java.util.List;
 @Repository
 public interface DataRepository extends JpaRepository<AnalyzedData, Long> {
     @Query(nativeQuery = true, value =  
-            "WITH lagged_data as ( " +
-            "  SELECT *, " +
-            "     LAG(hash) OVER(ORDER BY time) as prev_hash " +
-            "    FROM raw_data_light " +
-            "), " +
-            "filtred_data AS ( " +
-            "    select * from ( " +
-            "     SELECT *, " +
-            "      LEAD(time) OVER(ORDER BY time) as next_time " +
-            "     FROM lagged_data) t " +
-            "  where hash = :hash or prev_hash = :hash " +
-            "), " +
-            " breakpoints AS ( " +
-            "  SELECT hash, time as prev_time_rl " +
-            "    FROM lagged_data " +
-            "  WHERE hash != prev_hash OR prev_hash is null " +
-            ") " +
-            "select fd.time, fd.hash, " +
-            "       CAST(EXTRACT(EPOCH FROM(next_time - prev_time_rl)) * 1000 AS BIGINT) as expected_duration, " +
-            "       fd.is_found, fd.lag " +
-            "from filtred_data fd " +
-            "join breakpoints br on br.hash = fd.hash and br.prev_time_rl = ANY (SELECT MAX(prev_time_rl) FROM breakpoints where prev_time_rl <= fd.time) " +
-            "where fd.hash = :hash " +
+            "WITH filtred_data AS (   " +
+            "  select * from (   " +
+            "   SELECT *,   " +
+            "    LAG(hash) OVER(ORDER BY time) as prev_hash " +
+            "   FROM raw_data_light) t   " +
+            "  where hash = :hash or prev_hash = :hash   " +
+            "),   " +
+            " breakpoints AS (   " +
+            "  SELECT hash, time, LEAD(time) OVER(ORDER BY time) as next_time, is_found, lag " +
+            "  FROM filtred_data   " +
+            "  WHERE hash != prev_hash OR prev_hash is null   " +
+            ")   " +
+            "select br.time, br.hash,   " +
+            "     CAST(EXTRACT(EPOCH FROM(next_time - time)) * 1000 AS BIGINT) as expected_duration,   " +
+            "     br.is_found, br.lag   " +
+            "from breakpoints br " +
+            "where br.hash = :hash " +
             "order by time")
     List<AnalyzedData> findAllByHash(String hash);
     @Query(nativeQuery = true, value =
-            "WITH lagged_data as ( " +
-            "  SELECT *, " +
-            "     LAG(hash) OVER(ORDER BY time) as prev_hash, " +
-            "     LEAD(time) OVER(ORDER BY time) as next_time" +
-            "    FROM raw_data_light " +
-            "), " +
-            " " +
-            "filtred_data AS ( " +
-            "  select * from ( " +
-            "    select * from  lagged_data" +
-            "    where hash = :hash or prev_hash = :hash " +
-            "    ) tb " +
-            "  where hash = :hash " +
-            "  order by time desc " +
-            "  limit :amount " +
-            ")," +
-            " breakpoints AS ( " +
-            "  SELECT hash, time as prev_time_rl " +
-            "    FROM lagged_data " +
-            "  WHERE hash != prev_hash OR prev_hash is null " +
-            ") " +
-            "select fd.time, fd.hash, " +
-            "       CAST(EXTRACT(EPOCH FROM(next_time - prev_time_rl)) * 1000 AS BIGINT) as expected_duration, " +
-            "       fd.is_found, fd.lag " +
-            "from filtred_data fd " +
-            "join breakpoints br on br.hash = fd.hash and br.prev_time_rl = ANY (SELECT MAX(prev_time_rl) FROM breakpoints where prev_time_rl <= fd.time) " +
-            "where fd.hash = :hash " +
+            "WITH filtred_data AS (   " +
+            "  select * from (   " +
+            "   SELECT *,   " +
+            "    LAG(hash) OVER(ORDER BY time) as prev_hash " +
+            "   FROM raw_data_light" +
+            "   LIMIT :amount) t   " +
+            "  where hash = :hash or prev_hash = :hash   " +
+            "),   " +
+            " breakpoints AS (   " +
+            "  SELECT hash, time, LEAD(time) OVER(ORDER BY time) as next_time, is_found, lag " +
+            "  FROM filtred_data   " +
+            "  WHERE hash != prev_hash OR prev_hash is null   " +
+            ")   " +
+            "select br.time, br.hash,   " +
+            "     CAST(EXTRACT(EPOCH FROM(next_time - time)) * 1000 AS BIGINT) as expected_duration,   " +
+            "     br.is_found, br.lag   " +
+            "from breakpoints br " +
+            "where br.hash = :hash " +
             "order by time")
     List<AnalyzedData> findLastByHash(String hash, int amount);
 
