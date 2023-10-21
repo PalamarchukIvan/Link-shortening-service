@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="link-shortening@localhost" uuid="96a07b03-4a52-4579-b642-c761f28d2c1c">
+    <data-source source="LOCAL" name="example@localhost" uuid="8f574bc2-cb64-4b22-a16f-13d6cadb94fd">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/link-shortening</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5432/example</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

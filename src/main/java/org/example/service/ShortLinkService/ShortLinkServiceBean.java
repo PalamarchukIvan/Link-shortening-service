@@ -1,12 +1,15 @@
 package org.example.service.ShortLinkService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.Data;
+import org.example.model.DataEntity;
 import org.example.model.ShortLink;
-import org.example.repository.RawDataRepository;
+import org.example.model.User;
+import org.example.repository.DataRepository;
 import org.example.repository.ShortLinkRepository;
 import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,11 +22,14 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class ShortLinkServiceBean implements ShortLinkService {
     private final ShortLinkRepository repository;
-    private final RawDataRepository rawDataRepository;
+    private final DataRepository rawDataRepository;
 
     @Override
     public ShortLink create(ShortLink link) {
         link.setHash(getHashCode());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userDetails = (User) authentication.getPrincipal();
+        link.setUser(userDetails);
         return repository.save(link);
     }
 
@@ -76,20 +82,21 @@ public class ShortLinkServiceBean implements ShortLinkService {
     }
 
     @Override
-    public void updateOnStatistics(Duration duration, String hash, boolean isFound) {
-        Data newRecord = Data.builder()
+    public void updateOnStatistics(Duration duration, String hash, User user, boolean isFound) {
+        DataEntity newRecord = DataEntity.builder()
                 .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
                 .hash(hash)
                 .lag(duration.toMillis())
                 .isFound(isFound)
+                .user(user)
                 .build();
 
-        List<Data> lastTwoRecords = rawDataRepository.findLast(2);
+        List<DataEntity> lastTwoRecords = rawDataRepository.findLast(2);
         int size = lastTwoRecords.size();
 
         if (size > 0) {
-            Data lastRecord = size == 2 ? lastTwoRecords.get(1) : lastTwoRecords.get(0); //из-за сортировки они будут меняться местами
-            Data preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
+            DataEntity lastRecord = size == 2 ? lastTwoRecords.get(1) : lastTwoRecords.get(0); //из-за сортировки они будут меняться местами
+            DataEntity preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
 
             long calculatedDuration;
             if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {

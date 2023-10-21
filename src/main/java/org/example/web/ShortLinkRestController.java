@@ -15,15 +15,6 @@ public class ShortLinkRestController {
     private final ShortLinkService service;
     private final ShortLinkMapper mapper;
 
-    @PostMapping("/create")
-    public ShortLinkResponseDto saveShortLink(@RequestBody ShortLinkRequestDto link) {
-        return
-                mapper.toResponse(
-                        service.create(
-                                mapper.fromRequest(link)
-                        ));
-    }
-
     @DeleteMapping("/{hash}")
     public ShortLinkResponseDto deleteLink(@PathVariable String hash) {
         return

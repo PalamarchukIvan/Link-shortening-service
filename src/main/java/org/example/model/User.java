@@ -32,9 +32,10 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private List<Role> role;
-    @OneToMany
-    @JoinColumn(name = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<ShortLink> links;
+    @OneToMany(mappedBy = "user")
+    private List<DataEntity> data;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

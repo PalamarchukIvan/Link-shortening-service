@@ -1,8 +1,8 @@
 package org.example.service.DataService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.Data;
-import org.example.repository.RawDataRepository;
+import org.example.model.DataEntity;
+import org.example.repository.DataRepository;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +14,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DataServiceBean implements DataService {
-    private final RawDataRepository repository;
+    private final DataRepository repository;
 
     @Override
-    public List<Data> getAll() {
-        List<Data> result = repository.findAll();
+    public List<DataEntity> getAll() {
+        List<DataEntity> result = repository.findAll();
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<Data> getAllWithHash(String hash) {
-        List<Data> result = repository.findAllByHash(hash);
+    public List<DataEntity> getAllWithHash(String hash) {
+        List<DataEntity> result = repository.findAllByHash(hash);
         if (result.isEmpty()) {
             throw new HashNotFoundException();
         }
@@ -33,32 +33,32 @@ public class DataServiceBean implements DataService {
     }
 
     @Override
-    public List<Data> getAll(int amount) {
+    public List<DataEntity> getAll(int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<Data> result = repository.findLast(amount);
+        List<DataEntity> result = repository.findLast(amount);
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<Data> getAllWithHash(String hash, int amount) {
+    public List<DataEntity> getAllWithHash(String hash, int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<Data> resultList = repository.findLastByHash(hash, amount);
+        List<DataEntity> resultList = repository.findLastByHash(hash, amount);
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
         }
         return formatLastRecord(resultList);
     }
 
-    private static List<Data> formatLastRecord(List<Data> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
+    private static List<DataEntity> formatLastRecord(List<DataEntity> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
         int size = result.size();
 
         if(size > 0) {
-            Data lastRecord = result.get(result.size() - 1);
-            Data preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
+            DataEntity lastRecord = result.get(result.size() - 1);
+            DataEntity preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
 
             long calculatedDuration;
             if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
