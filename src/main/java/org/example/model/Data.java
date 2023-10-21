@@ -1,21 +1,18 @@
 package org.example.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "raw_data")
+@Table(name = "data")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RawData {
+public class Data {
     @Id
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant time;

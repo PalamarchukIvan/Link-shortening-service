@@ -1,7 +1,7 @@
 package org.example.service.DataService;
 
 import lombok.RequiredArgsConstructor;
-import org.example.model.RawData;
+import org.example.model.Data;
 import org.example.repository.RawDataRepository;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ public class DataServiceBean implements DataService {
     private final RawDataRepository repository;
 
     @Override
-    public List<RawData> getAll() {
-        List<RawData> result = repository.findAll();
+    public List<Data> getAll() {
+        List<Data> result = repository.findAll();
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<RawData> getAllWithHash(String hash) {
-        List<RawData> result = repository.findAllByHash(hash);
+    public List<Data> getAllWithHash(String hash) {
+        List<Data> result = repository.findAllByHash(hash);
         if (result.isEmpty()) {
             throw new HashNotFoundException();
         }
@@ -33,32 +33,32 @@ public class DataServiceBean implements DataService {
     }
 
     @Override
-    public List<RawData> getAll(int amount) {
+    public List<Data> getAll(int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<RawData> result = repository.findLast(amount);
+        List<Data> result = repository.findLast(amount);
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
     @Override
-    public List<RawData> getAllWithHash(String hash, int amount) {
+    public List<Data> getAllWithHash(String hash, int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<RawData> resultList = repository.findLastByHash(hash, amount);
+        List<Data> resultList = repository.findLastByHash(hash, amount);
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
         }
         return formatLastRecord(resultList);
     }
 
-    private static List<RawData> formatLastRecord(List<RawData> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
+    private static List<Data> formatLastRecord(List<Data> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
         int size = result.size();
 
         if(size > 0) {
-            RawData lastRecord = result.get(result.size() - 1);
-            RawData preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
+            Data lastRecord = result.get(result.size() - 1);
+            Data preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
 
             long calculatedDuration;
             if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {

@@ -21,15 +21,20 @@
 
     <tr th:each="record, recordStats : ${list}">
         <td th:text="${recordStats.count}"></td>
-        <td th:text= "${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
+        <td th:text="${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
         <td th:text="${record.hash}"></td>
-        <th:block th:with="shortenDuration=${record.getExpectedDuration() / 3600000 + ':' + record.getExpectedDuration() / 60000 % 60 + ':' + record.getExpectedDuration() % 60000 / 1000}">
-            <td th:text="${shortenDuration == '0:0:0' ? '&lt; 1 секунды' : shortenDuration}"></td> <!--что бы не выводить 00:00:00, а написать "< 1 second"-->
+        <th:block
+                th:with="shortenDuration=${record.getExpectedDuration() / 3600000 + ':' + record.getExpectedDuration() / 60000 % 60 + ':' + record.getExpectedDuration() % 60000 / 1000}">
+            <td th:text="${shortenDuration == '0:0:0' ? '&lt; 1 секунды' : shortenDuration}"></td>
+            <!--что бы не выводить 00:00:00, а написать "< 1 second"-->
         </th:block>
     </tr>
-
 </table>
-
+<div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</div>
 </body>
 
 </html>

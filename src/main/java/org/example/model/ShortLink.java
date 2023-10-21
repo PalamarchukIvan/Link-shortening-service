@@ -17,4 +17,6 @@ public class ShortLink {
     private String hash;
     private String link;
     private boolean isDeleted;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private User user;
 }
