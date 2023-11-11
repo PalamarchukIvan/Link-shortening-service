@@ -2,7 +2,9 @@ package org.example.web;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.model.User;
 import org.example.service.DataService;
+import org.example.util.CurrentUserUtil;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,20 +22,22 @@ public class DataController {
 
     @GetMapping("/stat/statistic")
     public String getGlobalStats(Model model, @RequestParam(required = false) Integer amount) {
+        User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAll(amount));
+            model.addAttribute("list", dataService.getAll(amount, user));
         } else {
-            model.addAttribute("list", dataService.getAll());
+            model.addAttribute("list", dataService.getAllByUser());
         }
         return  "stats_page";
     }
 
     @GetMapping("/stat/{hash}")
     public String getLocalStats(@PathVariable String hash, Model model, @RequestParam(required = false) Integer amount) {
+        User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAllWithHash(hash, amount));
+            model.addAttribute("list", dataService.getAllWithHash(hash, amount, user));
         } else {
-            model.addAttribute("list", dataService.getAllWithHash(hash));
+            model.addAttribute("list", dataService.getAllWithHash(hash, user));
         }
         return  "stats_page";
     }

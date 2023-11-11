@@ -1,17 +1,12 @@
 package org.example.web;
 
 import lombok.AllArgsConstructor;
-import org.example.model.Role;
 import org.example.model.User;
-import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Collections;
-import java.util.Map;
 
 @Controller
 @AllArgsConstructor
@@ -24,8 +19,8 @@ public class RegLogController {
     }
 
     @GetMapping("/")
-    public String main() {
-        return "main";
+    public String greetings() {
+        return "greetings";
     }
 
     @PostMapping("/login")

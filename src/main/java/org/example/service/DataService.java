@@ -2,7 +2,9 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.DataEntity;
+import org.example.model.User;
 import org.example.repository.DataRepository;
+import org.example.util.CurrentUserUtil;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,12 @@ public class DataService {
         List<DataEntity> result = repository.findAll();
         return result.isEmpty() ? result : formatLastRecord(result);
     }
-
-    public List<DataEntity> getAllWithHash(String hash) {
-        List<DataEntity> result = repository.findAllByHash(hash);
+    public List<DataEntity> getAllByUser() {
+        List<DataEntity> result = repository.findAllByUser(CurrentUserUtil.getCurrentUser().getId());
+        return result.isEmpty() ? result : formatLastRecord(result);
+    }
+    public List<DataEntity> getAllWithHash(String hash, User user) {
+        List<DataEntity> result = repository.findAllByHash(hash, user.getId());
         if (result.isEmpty()) {
             throw new HashNotFoundException();
         }
@@ -30,19 +35,19 @@ public class DataService {
         return formatLastRecord(result);
     }
 
-    public List<DataEntity> getAll(int amount) {
+    public List<DataEntity> getAll(int amount, User user) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<DataEntity> result = repository.findLast(amount);
+        List<DataEntity> result = repository.findLast(amount, user.getId());
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
-    public List<DataEntity> getAllWithHash(String hash, int amount) {
+    public List<DataEntity> getAllWithHash(String hash, int amount, User user) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
-        List<DataEntity> resultList = repository.findLastByHash(hash, amount);
+        List<DataEntity> resultList = repository.findLastByHash(hash, amount, user.getId());
         if (resultList.isEmpty()) {
             throw new HashNotFoundException();
         }
