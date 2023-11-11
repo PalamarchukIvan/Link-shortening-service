@@ -19,13 +19,31 @@ public class DataService {
     private final DataRepository repository;
 
     public List<DataEntity> getAll() {
-        List<DataEntity> result = repository.findAll();
+        return repository.findAll();
+    }
+
+    public List<DataEntity> getAll(int amount) {
+        if (amount < 2) {
+            throw new IllegalArgumentException("Amount must be bigger than 1");
+        }
+        List<DataEntity> result = repository.findLast(amount);
         return result.isEmpty() ? result : formatLastRecord(result);
     }
+
     public List<DataEntity> getAllByUser() {
         List<DataEntity> result = repository.findAllByUser(CurrentUserUtil.getCurrentUser().getId());
         return result.isEmpty() ? result : formatLastRecord(result);
     }
+
+    public List<DataEntity> getAllWithHash(String hash) {
+        List<DataEntity> result = repository.findAllByHash(hash);
+        if (result.isEmpty()) {
+            throw new HashNotFoundException();
+        }
+
+        return formatLastRecord(result);
+    }
+
     public List<DataEntity> getAllWithHash(String hash, User user) {
         List<DataEntity> result = repository.findAllByHash(hash, user.getId());
         if (result.isEmpty()) {
@@ -36,11 +54,22 @@ public class DataService {
     }
 
     public List<DataEntity> getAll(int amount, User user) {
-        if (amount < 2) {
-            throw new IllegalArgumentException("Amount must be bigger than 1");
+        if (amount < 1) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
         }
         List<DataEntity> result = repository.findLast(amount, user.getId());
         return result.isEmpty() ? result : formatLastRecord(result);
+    }
+
+    public List<DataEntity> getAllWithHash(String hash, int amount) {
+        if (amount < 1) {
+            throw new IllegalArgumentException("Amount must be bigger than 0");
+        }
+        List<DataEntity> resultList = repository.findLastByHash(hash, amount);
+        if (resultList.isEmpty()) {
+            throw new HashNotFoundException();
+        }
+        return formatLastRecord(resultList);
     }
 
     public List<DataEntity> getAllWithHash(String hash, int amount, User user) {

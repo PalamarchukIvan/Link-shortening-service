@@ -1,43 +1,40 @@
 package org.example.web;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.model.User;
 import org.example.service.DataService;
-import org.example.util.CurrentUserUtil;
-import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@Slf4j
-public class DataController {
-    private final DataService dataService;
-
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminController {
+    private final DataService service;
+    @GetMapping("/all-stat/statistic")
+    public String seeAllStats(Model model) {
+        model.addAttribute("list", service.getAll());
+        return "full_stats_page";
+    }
     @GetMapping("/stat/statistic")
     public String getGlobalStats(Model model, @RequestParam(required = false) Integer amount) {
-        User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAll(amount, user));
+            model.addAttribute("list", service.getAll(amount));
         } else {
-            model.addAttribute("list", dataService.getAllByUser());
+            model.addAttribute("list", service.getAllByUser());
         }
         return  "stats_page";
     }
 
     @GetMapping("/stat")
     public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount) {
-        User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAllWithHash(hash, amount, user));
+            model.addAttribute("list", service.getAllWithHash(hash, amount));
         } else {
-            model.addAttribute("list", dataService.getAllWithHash(hash, user));
+            model.addAttribute("list", service.getAllWithHash(hash));
         }
         return  "stats_page";
     }

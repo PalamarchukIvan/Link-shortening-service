@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Spring Security Example</title>
 </head>
@@ -9,6 +10,9 @@
 <span>password: </span> <span th:text="${user.password}"></span>
 <span>role: </span> <span th:text="${user.role}"></span>
 <span>data: </span> <span th:text="${user.data}"></span>
+<div sec:authorize="hasRole('ADMIN')">
+    <p>Click <a th:href="@{/all-stat/statistic}">here</a> to see all user statistics.</p>
+</div>
 <p>Click <a th:href="@{/stat/statistic}">here</a> to see statistics.</p>
 </body>
 </html>

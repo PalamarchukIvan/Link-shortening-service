@@ -14,20 +14,26 @@
 <table border="1">
     <tr>
         <th>строка</th>
-        <th>время</th>
+        <th>username</th>
         <th>хеш</th>
         <th>ожидаемая длительность</th>
+        <th>время</th>
     </tr>
 
     <tr th:each="record, recordStats : ${list}">
         <td th:text="${recordStats.count}"></td>
+        <td th:text="${record.user.username}"></td>
         <td th:text="${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
         <td th:text="${record.hash}"></td>
-        <th:block
-                th:with="shortenDuration=${record.getExpectedDuration() / 3600000 + ':' + record.getExpectedDuration() / 60000 % 60 + ':' + record.getExpectedDuration() % 60000 / 1000}">
-            <td th:text="${shortenDuration == '0:0:0' ? '&lt; 1 секунды' : shortenDuration}"></td>
-            <!--что бы не выводить 00:00:00, а написать "< 1 second"-->
-        </th:block>
+
+        <div th:if="${record.getExpectedDuration() == 0}"> <td th:text="current"></td> </div>
+        <div th:if="${record.getExpectedDuration() != 0}">
+            <th:block th:with="shortenDuration=${record.getExpectedDuration() / 3600000 + ':' + record.getExpectedDuration() / 60000 % 60 + ':' + record.getExpectedDuration() % 60000 / 1000}">
+                <td th:text="${shortenDuration == '0:0:0' ? '&lt; 1 секунды' : shortenDuration}"></td>
+                <!--что бы не выводить 00:00:00, а написать "< 1 second"-->
+            </th:block>
+        </div>
+
     </tr>
 </table>
 <div>
