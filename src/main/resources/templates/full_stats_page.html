@@ -22,7 +22,7 @@
 
     <tr th:each="record, recordStats : ${list}">
         <td th:text="${recordStats.count}"></td>
-        <td th:text="${record.user.username}"></td>
+        <td th:text="${record.user.id}"></td>
         <td th:text="${#temporals.format(record.time, 'dd-MM-yyyy HH:mm:ss.SSSSSS')}"></td>
         <td th:text="${record.hash}"></td>
 
@@ -59,6 +59,7 @@
 <form th:action="@{/stat}" method="get">
     <input type="text" name="hash" placeholder="Enter hash here" required/>
     <input type="number" name="amount" placeholder="Enter number of records" />
+    <input type="number" name="userId" placeholder="Enter userId" />
     <input type="submit" value="Filter"/>
 </form>
 

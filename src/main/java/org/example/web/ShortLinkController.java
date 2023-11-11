@@ -1,10 +1,13 @@
 package org.example.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.model.ShortLink;
 import org.example.model.User;
 import org.example.model.dto.ShortLinkRequestDto;
 import org.example.service.ShortLinkService;
+import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.ShortLinkMapper;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.MediaType;
@@ -56,5 +59,10 @@ public class ShortLinkController {
                             mapper.fromRequest(linkDto)
                 )));
         return "create_link";
+    }
+    @PostMapping("/s/delete/")
+    public String deleteByHash(@RequestParam String hash) {
+        service.deleteByHash(hash);
+        return "redirect:../../main";
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -30,7 +29,7 @@ public class AdminController {
     }
 
     @GetMapping("/stat")
-    public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount) {
+    public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount, Integer userId) {
         if(amount != null) {
             model.addAttribute("list", service.getAllWithHash(hash, amount));
         } else {
