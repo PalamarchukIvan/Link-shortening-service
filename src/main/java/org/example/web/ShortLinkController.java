@@ -8,6 +8,7 @@ import org.example.service.ShortLinkService;
 import org.example.util.Mapstruct.ShortLinkMapper;
 import org.example.util.exceptions.ResourceNotFoundException;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.time.Instant;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("isAuthenticated()")
 public class ShortLinkController {
     private final ShortLinkService service;
     private final ShortLinkMapper mapper;

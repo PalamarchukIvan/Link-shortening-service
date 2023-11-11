@@ -6,6 +6,7 @@ import org.example.model.User;
 import org.example.service.DataService;
 import org.example.util.CurrentUserUtil;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 @Slf4j
 public class DataController {
     private final DataService dataService;

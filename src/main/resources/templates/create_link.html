@@ -14,10 +14,13 @@
 <div th:if="${new_link}">
     <a th:href="${new_link.link}" th:text="${new_link.link}" target="_blank"></a>
 </div>
-<div>
-    <form th:action="@{../main}" method="get">
-        <input type="submit" value="Go back to your account"/>
-    </form>
-</div>
+<button onclick="goBack()">Go back</button>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
 </body>
 </html>
