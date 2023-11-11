@@ -1,4 +1,4 @@
-package org.example.service.ShortLinkService;
+package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.DataEntity;
@@ -20,11 +20,10 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class ShortLinkServiceBean implements ShortLinkService {
+public class ShortLinkService {
     private final ShortLinkRepository repository;
     private final DataRepository rawDataRepository;
 
-    @Override
     public ShortLink create(ShortLink link) {
         link.setHash(getHashCode());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -33,7 +32,6 @@ public class ShortLinkServiceBean implements ShortLinkService {
         return repository.save(link);
     }
 
-    @Override
     public ShortLink getByHash(String hash) {
         ShortLink foundLink = repository.findById(hash).orElseThrow(ResourceNotFoundException::new);
         if (foundLink.isDeleted()) {
@@ -42,7 +40,6 @@ public class ShortLinkServiceBean implements ShortLinkService {
         return foundLink;
     }
 
-    @Override
     public ShortLink deleteByHash(String hash) {
         ShortLink toDeleteLink = getByHash(hash);
         toDeleteLink.setDeleted(true);
@@ -50,7 +47,6 @@ public class ShortLinkServiceBean implements ShortLinkService {
         return toDeleteLink;
     }
 
-    @Override
     public String getHashCode() {
         Random random = new Random();
         String result;
@@ -81,7 +77,6 @@ public class ShortLinkServiceBean implements ShortLinkService {
         return result;
     }
 
-    @Override
     public void updateOnStatistics(Duration duration, String hash, User user, boolean isFound) {
         DataEntity newRecord = DataEntity.builder()
                 .time(Instant.now().atOffset(ZoneOffset.UTC).toInstant())
@@ -91,7 +86,7 @@ public class ShortLinkServiceBean implements ShortLinkService {
                 .user(user)
                 .build();
 
-        List<DataEntity> lastTwoRecords = rawDataRepository.findLast(2);
+        List<DataEntity> lastTwoRecords = rawDataRepository.findLast(2, user.getId());
         int size = lastTwoRecords.size();
 
         if (size > 0) {

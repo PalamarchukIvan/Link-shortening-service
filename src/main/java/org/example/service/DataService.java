@@ -1,4 +1,4 @@
-package org.example.service.DataService;
+package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.model.DataEntity;
@@ -13,16 +13,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DataServiceBean implements DataService {
+public class DataService {
     private final DataRepository repository;
 
-    @Override
     public List<DataEntity> getAll() {
         List<DataEntity> result = repository.findAll();
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
-    @Override
     public List<DataEntity> getAllWithHash(String hash) {
         List<DataEntity> result = repository.findAllByHash(hash);
         if (result.isEmpty()) {
@@ -32,7 +30,6 @@ public class DataServiceBean implements DataService {
         return formatLastRecord(result);
     }
 
-    @Override
     public List<DataEntity> getAll(int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
@@ -41,7 +38,6 @@ public class DataServiceBean implements DataService {
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
-    @Override
     public List<DataEntity> getAllWithHash(String hash, int amount) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
@@ -56,7 +52,7 @@ public class DataServiceBean implements DataService {
     private static List<DataEntity> formatLastRecord(List<DataEntity> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
         int size = result.size();
 
-        if(size > 0) {
+        if (size > 0) {
             DataEntity lastRecord = result.get(result.size() - 1);
             DataEntity preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
 

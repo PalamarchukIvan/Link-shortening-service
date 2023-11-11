@@ -1,5 +1,6 @@
-package org.example.util;
+package org.example.util.exceptions;
 
+import org.example.util.exceptions.ErrorDetails;
 import org.example.util.exceptions.HashNotFoundException;
 import org.example.util.exceptions.ResourceDeletedException;
 import org.example.util.exceptions.ResourceNotFoundException;

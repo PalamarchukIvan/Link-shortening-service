@@ -21,4 +21,8 @@ public interface DataRepository extends JpaRepository<DataEntity, Long> {
                                         "   (select * from data order by time desc limit :amount) as tb" +
                                         " order by time")
     List<DataEntity> findLast(int amount);
+    @Query(nativeQuery = true, value =  " select * from " +
+                                        "   (select * from data where user_id = :userId order by time desc limit :amount) as tb" +
+                                        " order by time")
+    List<DataEntity> findLast(int amount, long userId);
 }
