@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @AllArgsConstructor
-@PreAuthorize("isAuthenticated()")
 public class RegLogController {
     private final UserService service;
 

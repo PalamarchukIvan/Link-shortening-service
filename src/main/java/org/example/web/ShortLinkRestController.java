@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/shortening_api", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-@PreAuthorize("authentication.principal.username == 'dev'")
+@PreAuthorize("hasRole('ADMIN')")
 public class ShortLinkRestController {
     private final ShortLinkService service;
     private final ShortLinkMapper mapper;
