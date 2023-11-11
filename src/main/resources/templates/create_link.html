@@ -12,8 +12,12 @@
 </form>
 
 <div th:if="${new_link}">
-    <div th:text="${new_link.link}"></div>
+    <a th:href="${new_link.link}" th:text="${new_link.link}" target="_blank"></a>
 </div>
-
+<div>
+    <form th:action="@{../main}" method="get">
+        <input type="submit" value="Go back to your account"/>
+    </form>
+</div>
 </body>
 </html>
