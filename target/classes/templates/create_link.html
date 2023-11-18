@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Создание короткой ссылки</title>
+</head>
+<body>
+<form th:action="@{../s/create}" method="post">
+    <label for="link">Ссылка:</label>
+    <input type="text" id="link" name="link">
+
+    <input type="submit" value="Создать короткую ссылку">
+</form>
+
+<div th:if="${new_link}">
+    <a th:href="${new_link.link}" th:text="${new_link.link}" target="_blank"></a>
+</div>
+<button onclick="goBack()">Go back</button>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+</body>
+</html>

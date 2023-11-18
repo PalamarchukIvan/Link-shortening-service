@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+<h1>Your account details:</h1>
+<span>Username: </span> <span th:text="${user.username}"></span> <div></div>
+<span>password: </span> <span th:text="${user.password}"></span> <div></div>
+<span>role: </span> <span th:text="${user.role}"></span> <div></div>
+
+<table border="1">
+    <tr>
+        <th>№</th>
+        <th>hash</th>
+        <th>link</th>
+    </tr>
+
+    <tr th:each="record, recordStats : ${user.getLinks()}">
+        <td th:text="${recordStats.count}"></td>
+        <td th:text="${record.hash}"></td>
+        <td th:text="${record.link}"></td>
+        <td>
+            <form th:action="@{/s/delete/(hash=${record.hash})}" method="post" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                <input type="submit" value="Delete" />
+            </form>
+        </td>
+
+    </tr>
+</table>
+
+
+<div sec:authorize="hasRole('ADMIN')">
+    <p>Click <a th:href="@{/all-stat/statistic}">here</a> to see all user statistics.</p>
+</div>
+<p>Click <a th:href="@{/stat/statistic}">here</a> to see statistics.</p>
+</body>
+</html>
