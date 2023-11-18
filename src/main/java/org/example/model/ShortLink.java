@@ -19,5 +19,6 @@ public class ShortLink {
     private String link;
     private boolean isDeleted;
     @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
     private User user;
 }

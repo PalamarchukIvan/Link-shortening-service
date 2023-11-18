@@ -1,12 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import ShortLinkComponent from "./components/ShortLinkComponent";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>HELLO 123123</h1>
-      </header>
+    <div className="UserDataComponent">
+        <ShortLinkComponent/>
     </div>
   );
 }
