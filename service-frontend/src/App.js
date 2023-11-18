@@ -3,22 +3,23 @@ import './App.css';
 import ShortLinkComponent from "./components/ShortLinkComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import FooterComponent from "./components/FooterComponent";
-import {BrowserRouter as router, Route, Switch} from 'react-router-dom'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import RegLogComponent from "./components/RegLogComponent";
 
 function App() {
   return (
       <div>
           <Router>
+              <HeaderComponent/>
               <div className="container">
-                  <HeaderComponent/>
                   <div className="container">
                       <Switch>
-                          <Route path="/" component={ShortLinkComponent}></Route>
-                          <ShortLinkComponent/>
+                          <Route path="/" component={RegLogComponent}></Route>
+                          <RegLogComponent/>
                       </Switch>
                   </div>
-                  <FooterComponent/>
               </div>
+              <FooterComponent/>
           </Router>
       </div>
   );
