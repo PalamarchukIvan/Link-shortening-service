@@ -1,10 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
-import ShortLinkComponent from "./components/ShortLinkComponent";
 import HeaderComponent from "./components/HeaderComponent";
 import FooterComponent from "./components/FooterComponent";
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import RegLogComponent from "./components/RegLogComponent";
+import MainPageComponent from "./components/MainPageComponent";
+import CreateShortLinkComponent from "./components/CreateShortLinkComponent";
 
 function App() {
   return (
@@ -12,12 +12,11 @@ function App() {
           <Router>
               <HeaderComponent/>
               <div className="container">
-                  <div className="container">
-                      <Switch>
-                          <Route path="/" component={RegLogComponent}></Route>
-                          <RegLogComponent/>
-                      </Switch>
-                  </div>
+                  <Switch>
+                      <Route path="/create-short-link"  component={CreateShortLinkComponent}></Route>
+                      <Route path="/main"  component={MainPageComponent}></Route>
+                      <Route path="/" exact component={RegLogComponent}></Route>
+                  </Switch>
               </div>
               <FooterComponent/>
           </Router>

@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import ShortLinkService from "../services/ShortLinkService";
+import {withRouter} from "react-router-dom";
 
-class ShortLinkComponent extends Component {
+class MainPageComponent extends Component {
     constructor(props) {
         super(props);
         
         this.state = {
             shortLinks: []
         }
+        this.addShortLink = this.addShortLink.bind(this)
     }
     componentDidMount() {
         ShortLinkService.getCurrentUserShortLinks().then((res) => {
@@ -16,12 +18,24 @@ class ShortLinkComponent extends Component {
            }) 
         });
     }
-
+    
+    addShortLink() {
+        console.log('Button clicked!');
+        this.props.history.push('/create-short-link')
+    }
+    
     render() {
         return (
-                <div className="row">
-                    <div className="col-md-12">
-                        <h2 className="text-center">User data title</h2>
+            <div>
+                <div className="col-md-12">
+                    <h2 className="text-center">User Profile</h2>
+                    
+                    <div>
+                        <button className="btn btn-primary" onClick={this.addShortLink.bind(this)}>Create new Short Link</button>
+                    </div>
+                    <br/>
+                    <div className="row">
+                        
                         <table className="table table-striped table-bordered">
                             <thead>
                             <tr>
@@ -41,9 +55,9 @@ class ShortLinkComponent extends Component {
                         </table>
                     </div>
                 </div>
-
+            </div>
         );
     }
 }
 
-export default ShortLinkComponent;
+export default MainPageComponent;

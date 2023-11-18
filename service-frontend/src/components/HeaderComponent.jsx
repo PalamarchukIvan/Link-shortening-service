@@ -14,7 +14,7 @@ class HeaderComponent extends Component {
             <div>
                 <header>
                     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-                         <h3 className="text-white  ml-5">Link-shortening service</h3>
+                         <h3 className="text-white ml-5">Link-shortening service</h3>
                     </nav>
                 </header>
             </div>
