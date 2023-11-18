@@ -19,7 +19,6 @@ class ShortLinkComponent extends Component {
 
     render() {
         return (
-            <div className="container">
                 <div className="row">
                     <div className="col-md-12">
                         <h2 className="text-center">User data title</h2>
@@ -42,7 +41,6 @@ class ShortLinkComponent extends Component {
                         </table>
                     </div>
                 </div>
-            </div>
 
         );
     }
