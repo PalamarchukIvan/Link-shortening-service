@@ -9,7 +9,13 @@ class ShortLinkService {
         )
     }
     createShortLink(shortLink) {
-        return axios.post(SHORT_LINK_API + "/create-short-link", shortLink)
+        return axios.post(SHORT_LINK_API + "/create-short-link",
+                   shortLink,
+            {withCredentials: true})
+        // return axios.get(
+        //     SHORT_LINK_API + "/",
+        //     {withCredentials: true}
+        // )
     }
 }
 

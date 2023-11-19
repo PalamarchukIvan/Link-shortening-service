@@ -18,11 +18,16 @@ class CreateShortLinkComponent extends Component {
     createNewShortLink= (event) => {
         event.preventDefault()
         
-        let shortLink = {link: this.link}
-        console.log('new link => ' + shortLink)
+        let shortLink = {link: this.state.link}
         
         ShortLinkService.createShortLink(shortLink).then(res => {
-            this.props.history.push("/main")
+            console.log(res)
+            if (res.config.url !== res.request.responseURL) {
+                console.log('url2 => ' + res.config.url )
+                console.log('url3 => ' + res.request.responseURL)
+            } else {
+                document.location = "/main"
+            }
         })
     }
     cancel() {

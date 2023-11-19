@@ -20,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping(value = "/rest/short-links", produces = MediaType.APPLICATION_JSON_VALUE)
 //@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("isAuthenticated()")
 public class ShortLinkRestController {
     private final UserService userService;
     private final ShortLinkService shortLinkService;
@@ -32,7 +33,7 @@ public class ShortLinkRestController {
         return user.getLinks();
     }
 
-    @GetMapping("/create-short-link")
+    @PostMapping("/create-short-link")
     public ShortLinkResponseDto createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
         return mapper.toResponse(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto)));
     }
