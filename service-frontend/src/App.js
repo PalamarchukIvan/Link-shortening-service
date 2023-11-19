@@ -7,6 +7,7 @@ import CreateShortLinkComponent from "./components/CreateShortLinkComponent";
 import GreetingComponent from "./components/GreetingComponent";
 import LoginComponent from "./components/LoginComponent";
 import ShortLinksComponent from "./components/ShortLinksComponent";
+import StatisticsComponent from "./components/StatisticsComponent";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
                       <Route path="/main"  component={MainPageComponent}></Route>
                       <Route path="/login" exact component={LoginComponent}></Route>
                       <Route path="/short-links" exact component={ShortLinksComponent}></Route>
+                      <Route path="/user-stat/statistic" exact component={StatisticsComponent}></Route>
                       <Route path="/" exact component={GreetingComponent}></Route>
                   </Switch>
               </div>

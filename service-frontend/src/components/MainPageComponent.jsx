@@ -77,7 +77,7 @@ class MainPageComponent extends Component {
                             <input type="text" className="form-control" id="short-links" readOnly value={(this.state.user.links.length)}/>
                         </div>
                         <a className="btn btn-primary" href="/create-short-link" onClick={this.createLink()}>Create Short Link</a>
-                        <a className="btn btn-info" href="/short-links" onClick={this.viewStats()}>View Link Statistics</a>
+                        <a className="btn btn-info" href="/user-stat/statistic" onClick={this.viewStats()}>View Link Statistics</a>
                         <a className="btn btn-secondary" href="/short-links" onClick={this.viewAllLinks()}>View All Links</a>
                     </div>
                 </div>
