@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class DataEntity {
     private Instant time;
     private String hash;
     @ManyToOne
+    @JsonIgnore
     private User user;
     private long expectedDuration;
     private boolean isFound;

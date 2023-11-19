@@ -1,8 +1,11 @@
 ﻿import axios from "axios";
-const SHORT_LINK_API = "http://localhost:8080"
+const USER_API = "http://localhost:8080/rest/reg-log"
 class UserService {
     doLogin(user) {
-        return axios.post(SHORT_LINK_API + "/login", user)
+        return axios.post(USER_API + "/login", user, {withCredentials: true})
+    }    
+    getCurrentUser() {
+        return axios.get(USER_API + "/current", {withCredentials: true})
     }
 }
 

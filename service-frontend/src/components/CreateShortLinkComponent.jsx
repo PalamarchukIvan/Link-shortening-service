@@ -25,6 +25,7 @@ class CreateShortLinkComponent extends Component {
             if (res.config.url !== res.request.responseURL) {
                 console.log('url2 => ' + res.config.url )
                 console.log('url3 => ' + res.request.responseURL)
+                document.location = res.request.responseURL
             } else {
                 document.location = "/main"
             }
