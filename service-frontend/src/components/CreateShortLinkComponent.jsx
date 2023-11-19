@@ -19,7 +19,10 @@ class CreateShortLinkComponent extends Component {
         event.preventDefault()
         
         let shortLink = {link: this.state.link}
-        
+
+        if(this.state.link == null || this.state.link === '') {
+            return
+        }
         ShortLinkService.createShortLink(shortLink).then(res => {
             console.log(res)
             if (res.config.url !== res.request.responseURL) {
