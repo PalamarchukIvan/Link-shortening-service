@@ -11,17 +11,23 @@ class MainPageComponent extends Component {
         }
         this.addShortLink = this.addShortLink.bind(this)
     }
-    componentDidMount() {
-        ShortLinkService.getCurrentUserShortLinks().then((res) => {
-           this.setState({
-               shortLinks: res.data
-           }) 
+    async componentDidMount() {
+        const res = await ShortLinkService.getCurrentUserShortLinks().then((res) => {
+            return res
         });
+        console.log(res)
+        if (res.redirected) {
+            document.location = res.url
+        } else {
+            console.log('data => ' + res.data)
+            this.setState({
+                shortLinks: res.data
+            })
+        }
     }
     
     addShortLink() {
         console.log('Button clicked!');
-        this.props.history.push('/create-short-link')
     }
     
     render() {
@@ -31,7 +37,7 @@ class MainPageComponent extends Component {
                     <h2 className="text-center">User Profile</h2>
                     
                     <div>
-                        <button className="btn btn-primary" onClick={this.addShortLink.bind(this)}>Create new Short Link</button>
+                        <a href="/create-short-link" className="btn btn-primary" onClick={this.addShortLink.bind(this)}>Create new Short Link</a>
                     </div>
                     <br/>
                     <div className="row">

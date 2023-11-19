@@ -1,5 +1,6 @@
 ﻿import React, {Component} from 'react';
 import {withRouter} from "react-router-dom";
+import ShortLinkService from "../services/ShortLinkService";
 
 class CreateShortLinkComponent extends Component {
     constructor(props) {
@@ -20,6 +21,9 @@ class CreateShortLinkComponent extends Component {
         let shortLink = {link: this.link}
         console.log('new link => ' + shortLink)
         
+        ShortLinkService.createShortLink(shortLink).then(res => {
+            this.props.history.push("/main")
+        })
     }
     cancel() {
         this.props.history.push('/main')

@@ -6,10 +6,12 @@ import org.example.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@CrossOrigin("http://localhost:3000")
 @AllArgsConstructor
 public class RegLogController {
     private final UserService service;
