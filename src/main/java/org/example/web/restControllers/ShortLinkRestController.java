@@ -37,4 +37,8 @@ public class ShortLinkRestController {
     public ShortLinkResponseDto createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
         return mapper.toResponse(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto)));
     }
+    @DeleteMapping("/delete/{hash}")
+    public void deleteByHash(@PathVariable String hash) {
+        shortLinkService.deleteByHash(hash);
+    }
 }

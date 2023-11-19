@@ -12,10 +12,10 @@ class ShortLinkService {
         return axios.post(SHORT_LINK_API + "/create-short-link",
                    shortLink,
             {withCredentials: true})
-        // return axios.get(
-        //     SHORT_LINK_API + "/",
-        //     {withCredentials: true}
-        // )
+    }
+    deleteShortLink(hash = "") {
+        return axios.delete(SHORT_LINK_API + "/delete/" + hash,
+            {withCredentials: true})
     }
 }
 
