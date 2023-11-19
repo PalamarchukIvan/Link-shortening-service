@@ -3,10 +3,9 @@ import redirect from "react-router-dom/es/Redirect";
 const SHORT_LINK_API = "http://localhost:8080/rest/short-links"
 class ShortLinkService {
     async getCurrentUserShortLinks() {
-        // return axios.get(SHORT_LINK_API + "/")
-        return await fetch(
+        return axios.get(
             SHORT_LINK_API + "/",
-            {method: 'GET', redirect: 'follow', credentials: 'include'}
+            {withCredentials: true}
         )
     }
     createShortLink(shortLink) {

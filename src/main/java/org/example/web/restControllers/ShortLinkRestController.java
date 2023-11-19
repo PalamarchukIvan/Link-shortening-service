@@ -7,6 +7,7 @@ import org.example.model.dto.ShortLinkRequestDto;
 import org.example.model.dto.ShortLinkResponseDto;
 import org.example.service.ShortLinkService;
 import org.example.service.UserService;
+import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.ShortLinkMapper;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,7 @@ public class ShortLinkRestController {
 
     @GetMapping("/")
     public List<?> getShortLinksByUser() {
-        User user = userService.findByUsername("user").orElseThrow();
+        User user = userService.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
         user.getLinks().removeIf(ShortLink::isDeleted);
         return user.getLinks();
     }

@@ -15,9 +15,12 @@ class MainPageComponent extends Component {
         const res = await ShortLinkService.getCurrentUserShortLinks().then((res) => {
             return res
         });
+        
         console.log(res)
-        if (res.redirected) {
-            document.location = res.url
+        if (res.config.url !== res.request.responseURL) {
+            console.log('url2 => ' + res.config.url)
+            console.log('url3 => ' + res.request.responseURL)
+            document.location = res.request.responseURL
         } else {
             console.log('data => ' + res.data)
             this.setState({
