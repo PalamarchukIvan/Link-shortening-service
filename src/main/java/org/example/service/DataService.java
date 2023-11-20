@@ -66,7 +66,7 @@ public class DataService {
                 })
                 .filter(dataEntity -> {
                     if (endDate != null) {
-                        return dataEntity.getTime().isAfter(endDate.toInstant());
+                        return dataEntity.getTime().isBefore(endDate.toInstant());
                     }
                     return true;
                 }).collect(Collectors.toList());

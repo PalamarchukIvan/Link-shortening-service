@@ -69,13 +69,14 @@ class StatisticsComponent extends Component {
         
         if(this.state.filterHash != null && this.state.filterHash != '') {
             console.log("with hash")
-            console.log(this.state.startDate,
+            console.log(
+                this.state.startDate,
                 this.state.endDate,
                 this.state.filterHash,
                 this.state.filterNumRecords)
             const res = DataService.getFilteredDataWithHash(
-                this.state.startDate,
-                this.state.endDate,
+                (this.state.startDate instanceof Date && !isNaN(this.state.startDate)) ? this.state.startDate.toISOString() : null,
+                (this.state.endDate instanceof Date && !isNaN(this.state.endDate)) ? this.state.endDate.toISOString() : null,
                 this.state.filterHash,
                 this.state.filterNumRecords
             ).then(res => {
@@ -99,8 +100,8 @@ class StatisticsComponent extends Component {
                 this.state.filterHash,
                 this.state.filterNumRecords)
             const res = DataService.getFilteredData(
-                this.state.startDate,
-                this.state.endDate,
+                (this.state.startDate instanceof Date && !isNaN(this.state.startDate)) ? this.state.startDate.toISOString() : null,
+                (this.state.endDate instanceof Date && !isNaN(this.state.endDate)) ? this.state.endDate.toISOString() : null,
                 this.state.filterNumRecords
             ).then(res => {
                 console.log(res)

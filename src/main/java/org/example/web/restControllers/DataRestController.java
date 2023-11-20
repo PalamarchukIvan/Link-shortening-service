@@ -6,6 +6,7 @@ import org.example.service.DataService;
 import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.DataMapper;
 import org.example.util.Mapstruct.UserMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,8 @@ public class DataRestController {
     private final DataService dataService;
     @GetMapping("/")
     public List<?> getGlobalStats(@RequestParam(required = false) Integer amount,
-                                  @RequestParam(required = false) Date startDate,
-                                  @RequestParam(required = false) Date endDate) {
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
             return DataMapper.INSTANCE.toDto(dataService.getAll(amount, user, startDate, endDate));
@@ -33,8 +34,8 @@ public class DataRestController {
     @GetMapping("/hash")
     public List<?> getLocalStats(@RequestParam String hash,
                                  @RequestParam(required = false) Integer amount,
-                                 @RequestParam(required = false) Date startDate,
-                                 @RequestParam(required = false) Date endDate) {
+                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)Date startDate,
+                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
             return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, amount, user, startDate, endDate));
