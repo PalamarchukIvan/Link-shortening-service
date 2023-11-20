@@ -27,8 +27,12 @@ class StatisticsComponent extends Component {
 
     async componentDidMount() {
         await this.getCurrentUnFilteredStats();
-    }
 
+        this.updateLastRowInterval = setInterval(this.updateLastRow, 1000);
+    }
+    componentWillUnmount() {
+        clearInterval(this.updateLastRowInterval);
+    }
     async getCurrentUnFilteredStats() {
         const res = await DataService.getCurrentUserAllStats().then(res => {
             return res
@@ -45,7 +49,34 @@ class StatisticsComponent extends Component {
             console.log(this.state.statistics)
         }
     }
+    updateLastRow = () => {
+        const { statistics } = this.state;
 
+        if (statistics.length > 0) {
+            const lastRow = statistics[statistics.length - 1];
+            const startTime = new Date(lastRow.time);
+            let timeDiff = null
+            const currentTime = new Date();
+            if(statistics.length > 1) {
+                const preLastRow = statistics[statistics.length - 2];
+                timeDiff = currentTime - startTime + preLastRow.expectedDuration
+            } else{
+                timeDiff = currentTime - startTime;
+            }
+
+            this.setState((prevState) => ({
+                statistics: [
+                    ...prevState.statistics.slice(0, -1),
+                    {
+                        ...lastRow,
+                        expectedDuration: timeDiff
+                    }
+                ]
+            }));
+            console.log(lastRow)
+        }
+    };
+    
     convertMillisecondsToDateTime = (millis) => {
         if(millis == null || millis.toString() == '') {
             console.log("out")
