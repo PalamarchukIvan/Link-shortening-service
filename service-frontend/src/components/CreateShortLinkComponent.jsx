@@ -2,10 +2,13 @@
 import {withRouter} from "react-router-dom";
 import ShortLinkService from "../services/ShortLinkService";
 
+const SHORT_LINK_REDIRECT_API = "http://localhost:8080/s/"
 class CreateShortLinkComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isInvisible: true,
+            hash: '',
             link: ''
         }
         this.cancel = this.cancel.bind(this)
@@ -17,7 +20,9 @@ class CreateShortLinkComponent extends Component {
     }
     createNewShortLink= (event) => {
         event.preventDefault()
-        
+
+        console.log(this.state.isInvisible)
+        console.log(this.state.hash)
         let shortLink = {link: this.state.link}
 
         if(this.state.link == null || this.state.link === '') {
@@ -30,7 +35,12 @@ class CreateShortLinkComponent extends Component {
                 console.log('url3 => ' + res.request.responseURL)
                 document.location = res.request.responseURL
             } else {
-                document.location = "/main"
+                this.setState( {
+                    hash: res.data.hash,
+                    isInvisible: false,
+                    link: ''
+                })
+                // document.location = "/main"
             }
         })
     }
@@ -52,7 +62,8 @@ class CreateShortLinkComponent extends Component {
                                             <input placeholder="Link" name="link" className="form-control"
                                                    value={this.state.link} onChange={this.changeLinkHandler}/>
                                         </div>
-
+                                        { !this.state.isInvisible&&<a href={SHORT_LINK_REDIRECT_API + this.state.hash}>{SHORT_LINK_REDIRECT_API + this.state.hash}</a>}
+                                        <br/>
                                         <button className="btn btn-success" onClick={this.createNewShortLink}>Save</button>
                                         <button className="btn btn-danger" onClick={this.cancel} style={{marginLeft: "10px"}}>Cancel</button>
                                     </form>

@@ -1,5 +1,4 @@
 ﻿import axios from "axios";
-import redirect from "react-router-dom/es/Redirect";
 const SHORT_LINK_API = "http://localhost:8080/rest/short-links"
 class ShortLinkService {
     async getCurrentUserShortLinks() {
