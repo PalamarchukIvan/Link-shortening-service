@@ -57,7 +57,7 @@ class StatisticsComponent extends Component {
             const startTime = new Date(lastRow.time);
             let timeDiff = null
             const currentTime = new Date();
-            if(statistics.length > 1) {
+            if(statistics.length > 1 && statistics[statistics.length - 2].hash === lastRow.hash) {
                 const preLastRow = statistics[statistics.length - 2];
                 timeDiff = currentTime - startTime + preLastRow.expectedDuration
             } else{
