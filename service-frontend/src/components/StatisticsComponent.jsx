@@ -1,27 +1,29 @@
-﻿import React, {Component, useState} from 'react';
-import DataService from "../services/DataService";
-import UserService from "../services/UserService";
+﻿import React, { Component } from 'react';
+import DataService from '../services/DataService';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
+import {Bar, Line} from 'react-chartjs-2';
+import {Chart, ChartData, ChartDataset, DefaultDataPoint, registerables } from 'chart.js';
 
 class StatisticsComponent extends Component {
     constructor(props) {
         super(props);
+        Chart.register(...registerables)
         this.state = {
             statistics: [
                 {
-                  columnNumber: '', 
-                  time: '', 
-                  hash: '', 
-                  expectedDuration: '', 
-                  exists: ''
-                }
+                    columnNumber: '',
+                    time: '',
+                    hash: '',
+                    expectedDuration: '',
+                    exists: '',
+                },
             ],
             endDate: null,
             startDate: null,
             filterHash: '',
-            filterNumRecords: null
+            filterNumRecords: null,
+            chartInstance: null, // Added chartInstance to track the Chart.js instance
         };
     }
 
@@ -30,37 +32,45 @@ class StatisticsComponent extends Component {
 
         this.updateLastRowInterval = setInterval(this.updateLastRow, 1000);
     }
+
     componentWillUnmount() {
+        if (this.state.chartInstance) {
+            this.state.chartInstance.destroy();
+        }
         clearInterval(this.updateLastRowInterval);
     }
+
     async getCurrentUnFilteredStats() {
-        const res = await DataService.getCurrentUserAllStats().then(res => {
-            return res
-        })
-        // console.log(res)
-        if (res.config.url !== res.request.responseURL) {
-            // console.log(res)
-            document.location = res.request.responseURL
-        } else {
-            console.log('data => ')
-            this.setState({
-                statistics: res.data
-            })
-            console.log(this.state.statistics)
+        try {
+            const res = await DataService.getCurrentUserAllStats();
+            if (res.config.url !== res.request.responseURL) {
+                document.location = res.request.responseURL;
+            } else {
+                this.setState({
+                    statistics: res.data,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching statistics:', error);
         }
     }
+
     updateLastRow = () => {
         const { statistics } = this.state;
 
         if (statistics.length > 0) {
             const lastRow = statistics[statistics.length - 1];
             const startTime = new Date(lastRow.time);
-            let timeDiff = null
+            let timeDiff = null;
             const currentTime = new Date();
-            if(statistics.length > 1 && statistics[statistics.length - 2].hash === lastRow.hash) {
+            if (
+                statistics.length > 1 &&
+                statistics[statistics.length - 2].hash === lastRow.hash
+            ) {
                 const preLastRow = statistics[statistics.length - 2];
-                timeDiff = currentTime - startTime + preLastRow.expectedDuration
-            } else{
+                timeDiff =
+                    currentTime - startTime + preLastRow.expectedDuration;
+            } else {
                 timeDiff = currentTime - startTime;
             }
 
@@ -69,114 +79,144 @@ class StatisticsComponent extends Component {
                     ...prevState.statistics.slice(0, -1),
                     {
                         ...lastRow,
-                        expectedDuration: timeDiff
-                    }
-                ]
+                        expectedDuration: timeDiff,
+                    },
+                ],
             }));
-            console.log(lastRow)
         }
     };
-    
+
     convertMillisecondsToDateTime = (millis) => {
-        if(millis == null || millis.toString() == '') {
-            console.log("out")
-            return ''
+        if (millis == null || millis.toString() === '') {
+            return '';
         }
-        const formattedDate = (millis.toString() / 3600000).toFixed(0) + ':' + (millis.toString() / 60000 % 60).toFixed(0) + ':' + (millis.toString() % 60000 / 1000).toFixed(0);
+        const formattedDate =
+            (millis.toString() / 3600000).toFixed(0) +
+            ':' +
+            (millis.toString() / 60000 % 60).toFixed(0) +
+            ':' +
+            (millis.toString() % 60000 / 1000).toFixed(0);
         return formattedDate;
     };
 
-    formatTime = (time) => {        
-        return time.replace('T', ' ').replace('Z', ' ').split('.')[0]
+    formatTime = (time) => {
+        return time.replace('T', ' ').replace('Z', ' ').split('.')[0];
     };
-    
-    handleFilterChange = (event)=> {
+
+    handleFilterChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value,
         });
-    }
-    handleFilterSubmit = (event) => {
+    };
+
+    handleFilterSubmit = async (event) => {
         event.preventDefault();
-        
-        if(this.state.filterHash != null && this.state.filterHash != '') {
-            console.log("with hash")
-            console.log(
-                this.state.startDate,
-                this.state.endDate,
-                this.state.filterHash,
-                this.state.filterNumRecords)
-            const res = DataService.getFilteredDataWithHash(
-                (this.state.startDate instanceof Date && !isNaN(this.state.startDate)) ? this.state.startDate.toISOString() : null,
-                (this.state.endDate instanceof Date && !isNaN(this.state.endDate)) ? this.state.endDate.toISOString() : null,
-                this.state.filterHash,
-                this.state.filterNumRecords
-            ).then(res => {
-                console.log(res)
-                if (res.request.responseURL.includes('login')) {
-                    document.location = res.request.responseURL
-                    // console.log(res.request.responseURL)
-                } else {
-                    console.log('data => ')
-                    this.setState({
-                        statistics: res.data
-                    })
-                    console.log(this.state.statistics)
-                }
-            })
-            
-        } else {
-            console.log("without hash")
-            console.log(this.state.startDate,
-                this.state.endDate,
-                this.state.filterHash,
-                this.state.filterNumRecords)
-            const res = DataService.getFilteredData(
-                (this.state.startDate instanceof Date && !isNaN(this.state.startDate)) ? this.state.startDate.toISOString() : null,
-                (this.state.endDate instanceof Date && !isNaN(this.state.endDate)) ? this.state.endDate.toISOString() : null,
-                this.state.filterNumRecords
-            ).then(res => {
-                console.log(res)
-                if (res.request.responseURL.includes('login')) {
-                    document.location = res.request.responseURL
-                    // console.log(res.request.responseURL)
-                } else {
-                    console.log('data => ')
-                    this.setState({
-                        statistics: res.data
-                    })
-                    console.log(this.state.statistics)
-                }
-            })
-            
+
+        try {
+            const res =
+                this.state.filterHash !== ''
+                    ? await DataService.getFilteredDataWithHash(
+                        this.getDateISOString(this.state.startDate),
+                        this.getDateISOString(this.state.endDate),
+                        this.state.filterHash,
+                        this.state.filterNumRecords
+                    )
+                    : await DataService.getFilteredData(
+                        this.getDateISOString(this.state.startDate),
+                        this.getDateISOString(this.state.endDate),
+                        this.state.filterNumRecords
+                    );
+
+            if (res.request.responseURL.includes('login')) {
+                document.location = res.request.responseURL;
+            } else {
+                this.setState({
+                    statistics: res.data,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching filtered data:', error);
         }
-    }
+    };
+
+    getDateISOString = (date) =>
+        date instanceof Date && !isNaN(date) ? date.toISOString() : null;
+
+    renderChart = () => {
+        // Get the last entry for each unique hash
+        const uniqueHashes = [...new Set(this.state.statistics.map((statistic) => statistic.hash))];
+        const filteredData = uniqueHashes.map((hash) => {
+            const lastEntry = this.state.statistics
+                .filter((statistic) => statistic.hash === hash)
+                .pop(); // Get the last entry for each hash
+            return lastEntry;
+        });
+        
+        const lineChartData = {
+            labels: filteredData.map((statistic) => statistic.hash),
+            datasets: [
+                {
+                    label: 'Expected Duration',
+                    data: filteredData
+                    .map((statistic) =>
+                        statistic.expectedDuration / 3600000
+                    ),
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderWidth: 2,
+                },
+            ],
+        };
+
+        return (
+                <Bar
+                    ref={(chart) => {
+                        this.state.chartInstance = chart ? chart.chartInstance : null;
+                    }}
+                    data={lineChartData}
+                    options={{
+                        scales: {
+                            x: {
+                                type: 'category',
+                                labels: filteredData.map((statistic) => statistic.hash),
+                            },
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    }}
+                />
+        );
+    };
+
     render() {
         return (
             <div>
                 <h2 className="mb-4">Statistics Table</h2>
-                <table className="table mt-4">
-                    <thead>
-                    <tr>
-                        <th>Column Number</th>
-                        <th>Visit Time</th>
-                        <th>Visited Site Hash</th>
-                        <th>Expected Duration</th>
-                        <th>Is found</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {this.state.statistics.map((statistic, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{this.formatTime(statistic.time)}</td>
-                            <td>{statistic.hash}</td>
-                            <td>{this.convertMillisecondsToDateTime(statistic.expectedDuration)}</td>
-                            <td>{statistic.exists.toString()}</td>
+                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <table className="table mt-4">
+                        <thead>
+                        <tr>
+                            <th>Column Number</th>
+                            <th>Visit Time</th>
+                            <th>Visited Site Hash</th>
+                            <th>Expected Duration</th>
+                            <th>Is found</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
-                <br/>
+                        </thead>
+                        <tbody>
+                        {this.state.statistics.map((statistic, index) => (
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{this.formatTime(statistic.time)}</td>
+                                <td>{statistic.hash}</td>
+                                <td>{this.convertMillisecondsToDateTime(statistic.expectedDuration)}</td>
+                                <td>{statistic.exists.toString()}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+                <br />
                 <form onSubmit={this.handleFilterSubmit} className="mb-3">
                     <div className="row">
                         <div className="col-md-3">
@@ -192,8 +232,8 @@ class StatisticsComponent extends Component {
                             <DatePicker
                                 selected={this.state.startDate}
                                 onChange={(date) => this.setState( {
-                                        startDate: date
-                                    })
+                                    startDate: date
+                                })
                                 }
                                 className="form-control"
                             />
@@ -203,8 +243,8 @@ class StatisticsComponent extends Component {
                             <DatePicker
                                 selected={this.state.endDate}
                                 onChange={(date) => this.setState({
-                                        endDate: date
-                                    })
+                                    endDate: date
+                                })
                                 }
                                 className="form-control"
                             />
@@ -212,7 +252,17 @@ class StatisticsComponent extends Component {
                     </div>
                     <button type="submit" className="btn btn-primary mt-3">Apply Filters</button>
                 </form>
+
+                <div style={{ maxHeight: '400px', overflowY: 'auto' , overflowX: 'auto'}}>
+                    <div className="mt-4">
+                        <h2>Expected Duration Over Time</h2>
+                        {this.renderChart()}
+                    </div>
+                    <br />
+                    <br />
+                </div>
             </div>
+
         );
     }
 }
