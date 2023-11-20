@@ -2,6 +2,7 @@ package org.example.web;
 
 import lombok.RequiredArgsConstructor;
 import org.example.service.DataService;
+import org.example.util.CurrentUserUtil;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +24,7 @@ public class AdminController {
         if(amount != null) {
             model.addAttribute("list", service.getAll(amount));
         } else {
-            model.addAttribute("list", service.getAllByUser());
+            model.addAttribute("list", service.getAllByUser(CurrentUserUtil.getCurrentUser(), null, null));
         }
         return  "stats_page";
     }

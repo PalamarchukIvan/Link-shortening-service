@@ -24,9 +24,9 @@ public class DataController {
     public String getGlobalStats(Model model, @RequestParam(required = false) Integer amount) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAll(amount, user));
-        } else {
-            model.addAttribute("list", dataService.getAllByUser());
+//            model.addAttribute("list", dataService.getAll(amount, user));
+//        } else {
+//            model.addAttribute("list", dataService.getAllByUser());
         }
         return  "stats_page";
     }
@@ -35,9 +35,9 @@ public class DataController {
     public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            model.addAttribute("list", dataService.getAllWithHash(hash, amount, user));
-        } else {
-            model.addAttribute("list", dataService.getAllWithHash(hash, user));
+//            model.addAttribute("list", dataService.getAllWithHash(hash, amount, user));
+//        } else {
+//            model.addAttribute("list", dataService.getAllWithHash(hash, user));
         }
         return  "stats_page";
     }

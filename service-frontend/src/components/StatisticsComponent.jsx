@@ -18,8 +18,10 @@ class StatisticsComponent extends Component {
                   exists: ''
                 }
             ],
-            endDate: moment.now(),
-            startDate: moment.now()
+            endDate: null,
+            startDate: null,
+            filterHash: '',
+            filterNumRecords: null
         };
     }
 
@@ -53,17 +55,68 @@ class StatisticsComponent extends Component {
         return formattedDate;
     };
 
-    formatTime = (time) => {
-        // const formattedDate = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds()
-        
+    formatTime = (time) => {        
         return time.replace('T', ' ').replace('Z', ' ').split('.')[0]
     };
     
-    handleFilterChange() {
-        
+    handleFilterChange = (event)=> {
+        this.setState({
+            [event.target.name]: event.target.value,
+        });
     }
-    handleFilterSubmit() {
+    handleFilterSubmit = (event) => {
+        event.preventDefault();
         
+        if(this.state.filterHash != null && this.state.filterHash != '') {
+            console.log("with hash")
+            console.log(this.state.startDate,
+                this.state.endDate,
+                this.state.filterHash,
+                this.state.filterNumRecords)
+            const res = DataService.getFilteredDataWithHash(
+                this.state.startDate,
+                this.state.endDate,
+                this.state.filterHash,
+                this.state.filterNumRecords
+            ).then(res => {
+                console.log(res)
+                if (res.request.responseURL.includes('login')) {
+                    document.location = res.request.responseURL
+                    // console.log(res.request.responseURL)
+                } else {
+                    console.log('data => ')
+                    this.setState({
+                        statistics: res.data
+                    })
+                    console.log(this.state.statistics)
+                }
+            })
+            
+        } else {
+            console.log("without hash")
+            console.log(this.state.startDate,
+                this.state.endDate,
+                this.state.filterHash,
+                this.state.filterNumRecords)
+            const res = DataService.getFilteredData(
+                this.state.startDate,
+                this.state.endDate,
+                this.state.filterNumRecords
+            ).then(res => {
+                console.log(res)
+                if (res.request.responseURL.includes('login')) {
+                    document.location = res.request.responseURL
+                    // console.log(res.request.responseURL)
+                } else {
+                    console.log('data => ')
+                    this.setState({
+                        statistics: res.data
+                    })
+                    console.log(this.state.statistics)
+                }
+            })
+            
+        }
     }
     render() {
         return (

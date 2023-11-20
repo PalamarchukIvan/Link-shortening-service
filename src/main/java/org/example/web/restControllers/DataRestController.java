@@ -9,6 +9,7 @@ import org.example.util.Mapstruct.UserMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -18,22 +19,27 @@ import java.util.List;
 public class DataRestController {
     private final DataService dataService;
     @GetMapping("/")
-    public List<?> getGlobalStats(@RequestParam(required = false) Integer amount) {
+    public List<?> getGlobalStats(@RequestParam(required = false) Integer amount,
+                                  @RequestParam(required = false) Date startDate,
+                                  @RequestParam(required = false) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            return DataMapper.INSTANCE.toDto(dataService.getAll(amount, user));
+            return DataMapper.INSTANCE.toDto(dataService.getAll(amount, user, startDate, endDate));
         }
-        return DataMapper.INSTANCE.toDto(dataService.getAllByUser());
+        return DataMapper.INSTANCE.toDto(dataService.getAllByUser(user, startDate, endDate));
 
     }
 
     @GetMapping("/hash")
-    public List<?> getLocalStats(@RequestParam String hash, @RequestParam(required = false) Integer amount) {
+    public List<?> getLocalStats(@RequestParam String hash,
+                                 @RequestParam(required = false) Integer amount,
+                                 @RequestParam(required = false) Date startDate,
+                                 @RequestParam(required = false) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
-            return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, amount, user));
+            return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, amount, user, startDate, endDate));
         }
-        return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, user));
+        return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, user, startDate, endDate));
 
     }
 }

@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.example.model.DataEntity;
 import org.example.model.User;
 import org.example.repository.DataRepository;
-import org.example.util.CurrentUserUtil;
 import org.example.util.exceptions.HashNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +31,10 @@ public class DataService {
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
-    public List<DataEntity> getAllByUser() {
-        List<DataEntity> result = repository.findAllByUser(CurrentUserUtil.getCurrentUser().getId());
-        return result.isEmpty() ? result : formatLastRecord(result);
+    public List<DataEntity> getAllByUser(User user, Date startDate, Date endDate) {
+        List<DataEntity> result = repository.findAllByUser(user.getId());
+        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, result);
+        return toReturn.isEmpty() ? toReturn : formatLastRecord(toReturn);
     }
 
     public List<DataEntity> getAllWithHash(String hash) {
@@ -44,8 +46,9 @@ public class DataService {
         return formatLastRecord(result);
     }
 
-    public List<DataEntity> getAllWithHash(String hash, User user) {
-        List<DataEntity> result = repository.findAllByHash(hash, user.getId());
+    public List<DataEntity> getAllWithHash(String hash, User user, Date startDate, Date endDate) {
+        List<DataEntity> resultFromDb = repository.findAllByHash(hash, user.getId());
+        List<DataEntity> result = filterByTimeConstraints(startDate, endDate, resultFromDb);
         if (result.isEmpty()) {
             throw new HashNotFoundException();
         }
@@ -53,12 +56,30 @@ public class DataService {
         return formatLastRecord(result);
     }
 
-    public List<DataEntity> getAll(int amount, User user) {
+    private static List<DataEntity> filterByTimeConstraints(Date startDate, Date endDate, List<DataEntity> resultFromDb) {
+        return resultFromDb.stream()
+                .filter(dataEntity -> {
+                    if (startDate != null) {
+                        return dataEntity.getTime().isAfter(startDate.toInstant());
+                    }
+                    return true;
+                })
+                .filter(dataEntity -> {
+                    if (endDate != null) {
+                        return dataEntity.getTime().isAfter(endDate.toInstant());
+                    }
+                    return true;
+                }).collect(Collectors.toList());
+    }
+
+    public List<DataEntity> getAll(int amount, User user, Date startDate, Date endDate) {
         if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 0");
         }
         List<DataEntity> result = repository.findLast(amount, user.getId());
-        return result.isEmpty() ? result : formatLastRecord(result);
+        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, result);
+
+        return toReturn.isEmpty() ? toReturn : formatLastRecord(toReturn);
     }
 
     public List<DataEntity> getAllWithHash(String hash, int amount) {
@@ -72,15 +93,16 @@ public class DataService {
         return formatLastRecord(resultList);
     }
 
-    public List<DataEntity> getAllWithHash(String hash, int amount, User user) {
+    public List<DataEntity> getAllWithHash(String hash, int amount, User user, Date startDate, Date endDate) {
         if (amount < 2) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<DataEntity> resultList = repository.findLastByHash(hash, amount, user.getId());
-        if (resultList.isEmpty()) {
+        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, resultList);
+        if (toReturn.isEmpty()) {
             throw new HashNotFoundException();
         }
-        return formatLastRecord(resultList);
+        return formatLastRecord(toReturn);
     }
 
     private static List<DataEntity> formatLastRecord(List<DataEntity> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше

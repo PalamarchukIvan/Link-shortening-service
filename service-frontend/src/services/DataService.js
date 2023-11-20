@@ -1,18 +1,34 @@
-﻿import axios from "axios";
-import redirect from "react-router-dom/es/Redirect";
-const SHORT_LINK_API = "http://localhost:8080/rest/statistics"
+﻿import axios from 'axios';
+
+const SHORT_LINK_API = "http://localhost:8080/rest/statistics";
+
 class DataService {
     async getCurrentUserAllStats() {
         return axios.get(
             SHORT_LINK_API + "/",
-            {withCredentials: true}
-        )
+            { withCredentials: true }
+        );
     }
-    // createShortLink(shortLink) {
-    //     return axios.post(SHORT_LINK_API + "/create-short-link",
-    //         shortLink,
-    //         {withCredentials: true})
-    // }
+
+    async getFilteredDataWithHash(startDate, endDate, hash, amount) {
+        return axios.get(
+            SHORT_LINK_API + "/hash",
+            {
+                withCredentials: true,
+                params: { startDate, endDate, hash, amount }
+            }
+        );
+    }
+
+    async getFilteredData(startDate, endDate, amount) {
+        return axios.get(
+            SHORT_LINK_API + "/",
+            {
+                withCredentials: true,
+                params: { startDate, endDate, amount }
+            }
+        );
+    }
 }
 
-export default new DataService()
+export default new DataService();
