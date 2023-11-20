@@ -1,6 +1,9 @@
-﻿import React, {Component} from 'react';
+﻿import React, {Component, useState} from 'react';
 import DataService from "../services/DataService";
 import UserService from "../services/UserService";
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 class StatisticsComponent extends Component {
     constructor(props) {
@@ -15,6 +18,8 @@ class StatisticsComponent extends Component {
                   exists: ''
                 }
             ],
+            endDate: moment.now(),
+            startDate: moment.now()
         };
     }
 
@@ -54,11 +59,17 @@ class StatisticsComponent extends Component {
         return time.replace('T', ' ').replace('Z', ' ').split('.')[0]
     };
     
+    handleFilterChange() {
+        
+    }
+    handleFilterSubmit() {
+        
+    }
     render() {
         return (
             <div>
-                <h2>Statistics Table</h2>
-                <table className="table">
+                <h2 className="mb-4">Statistics Table</h2>
+                <table className="table mt-4">
                     <thead>
                     <tr>
                         <th>Column Number</th>
@@ -71,16 +82,51 @@ class StatisticsComponent extends Component {
                     <tbody>
                     {this.state.statistics.map((statistic, index) => (
                         <tr key={index}>
-                            <td>{index + 1 }</td>
+                            <td>{index + 1}</td>
                             <td>{this.formatTime(statistic.time)}</td>
                             <td>{statistic.hash}</td>
-                            {/*<td>{statistic.expectedDuration}</td>*/}
                             <td>{this.convertMillisecondsToDateTime(statistic.expectedDuration)}</td>
                             <td>{statistic.exists.toString()}</td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
+                <br/>
+                <form onSubmit={this.handleFilterSubmit} className="mb-3">
+                    <div className="row">
+                        <div className="col-md-3">
+                            <label htmlFor="filterHash" className="form-label">Filter by Hash:</label>
+                            <input type="text" className="form-control" id="filterHash" name="filterHash" value={this.state.filterHash} onChange={this.handleFilterChange} />
+                        </div>
+                        <div className="col-md-3">
+                            <label htmlFor="filterNumRecords" className="form-label">Filter by Number of Records:</label>
+                            <input type="number" className="form-control" id="filterNumRecords" name="filterNumRecords" value={this.state.filterNumRecords} onChange={this.handleFilterChange} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label">Filter by Start Date:</label>
+                            <DatePicker
+                                selected={this.state.startDate}
+                                onChange={(date) => this.setState( {
+                                        startDate: date
+                                    })
+                                }
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label">Filter by End Date:</label>
+                            <DatePicker
+                                selected={this.state.endDate}
+                                onChange={(date) => this.setState({
+                                        endDate: date
+                                    })
+                                }
+                                className="form-control"
+                            />
+                        </div>
+                    </div>
+                    <button type="submit" className="btn btn-primary mt-3">Apply Filters</button>
+                </form>
             </div>
         );
     }
