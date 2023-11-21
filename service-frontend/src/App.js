@@ -15,18 +15,20 @@ function App() {
   return (
       <div>
           <Router>
-              <HeaderComponent/>
-              <div className="container">
-                  <Switch>
-                      <Route path="/create-short-link"  component={CreateShortLinkComponent}></Route>
-                      <Route path="/main"  component={MainPageComponent}></Route>
-                      <Route path="/login" exact component={LoginComponent}></Route>
-                      <Route path="/short-links" exact component={ShortLinksComponent}></Route>
-                      <Route path="/user-stat/statistic" exact component={StatisticsComponent}></Route>
-                      <Route path="/" exact component={GreetingComponent}></Route>
-                  </Switch>
+              <div style={{ overflowY: 'auto', overflowX: 'auto', minHeight: '100vh', position: 'relative' }}>
+                  <HeaderComponent />
+                  <div className="container">
+                      <Switch>
+                          <Route path="/create-short-link" component={CreateShortLinkComponent}></Route>
+                          <Route path="/main" component={MainPageComponent}></Route>
+                          <Route path="/login" exact component={LoginComponent}></Route>
+                          <Route path="/short-links" exact component={ShortLinksComponent}></Route>
+                          <Route path="/user-stat/statistic" exact component={StatisticsComponent}></Route>
+                          <Route path="/" exact component={GreetingComponent}></Route>
+                      </Switch>
+                  </div>
+                  <FooterComponent />
               </div>
-              <FooterComponent/>
           </Router>
       </div>
   );

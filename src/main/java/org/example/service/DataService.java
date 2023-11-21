@@ -100,7 +100,7 @@ public class DataService {
         List<DataEntity> resultList = repository.findLastByHash(hash, amount, user.getId());
         List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, resultList);
         if (toReturn.isEmpty()) {
-            throw new HashNotFoundException();
+            return toReturn;
         }
         return formatLastRecord(toReturn);
     }

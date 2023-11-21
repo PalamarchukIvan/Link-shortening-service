@@ -114,7 +114,7 @@ class StatisticsComponent extends Component {
 
         try {
             const res =
-                this.state.filterHash !== ''
+                this.state.filterHash !== '' && this.state.filterHash != null
                     ? await DataService.getFilteredDataWithHash(
                         this.getDateISOString(this.state.startDate),
                         this.getDateISOString(this.state.endDate),
@@ -253,7 +253,7 @@ class StatisticsComponent extends Component {
                     <button type="submit" className="btn btn-primary mt-3">Apply Filters</button>
                 </form>
 
-                <div style={{ maxHeight: '400px', overflowY: 'auto' , overflowX: 'auto'}}>
+                <div >
                     <div className="mt-4">
                         <h2>Expected Duration Over Time</h2>
                         {this.renderChart()}
