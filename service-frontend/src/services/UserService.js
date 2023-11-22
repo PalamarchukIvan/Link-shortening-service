@@ -7,6 +7,9 @@ class UserService {
     getCurrentUser() {
         return axios.get(USER_API + "/current", {withCredentials: true})
     }
+    getUser(login) {
+        return axios.get(USER_API + "/user", {withCredentials: true, params: {login}})
+    }
     updateCurrentUser(user) {
         return axios.patch(USER_API + "/update", user, {withCredentials: true})
     }

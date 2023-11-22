@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import ShortLinkService from '../services/ShortLinkService';
-import { withRouter } from 'react-router-dom';
+import React, {Component} from 'react';
 import UserService from '../services/UserService';
 
 class MainPageComponent extends Component {
     constructor(props) {
         super(props);
 
+        const urlParams = new URLSearchParams(window.location.search);
+        this.login = urlParams.get('login');
+        
         this.createLink = this.createLink.bind(this);
         this.viewStats = this.viewStats.bind(this);
         this.viewAllLinks = this.viewAllLinks.bind(this);
@@ -36,19 +37,31 @@ class MainPageComponent extends Component {
     }
 
     async getUserData() {
-        const res = await UserService.getCurrentUser().then((res) => {
-            return res;
+        console.log(this.login)
+        this.login == null ? await UserService.getCurrentUser().then((res) => {
+            if (res.config !== null && res.request != null && res.config.url !== res.request.responseURL && res.request.responseURL.includes('/login')) {
+                console.log(res);
+                document.location = res.request.responseURL;
+            } else {
+                console.log(res);
+                console.log('data => ' + res.data);
+                this.setState({
+                    user: res.data,
+                });
+            }
+        }) : UserService.getUser(this.login).then((res) => {
+            if (res.config !== null && res.request != null && res.config.url !== res.request.responseURL && res.request.responseURL.includes('/login')) {
+                console.log(res);
+                document.location = res.request.responseURL;
+            } else {
+                console.log(res);
+                console.log('data => ' + res.data);
+                this.setState({
+                    user: res.data,
+                });
+            }
         });
-        console.log(res);
-        if (res.config.url !== res.request.responseURL) {
-            console.log(res);
-            document.location = res.request.responseURL;
-        } else {
-            console.log('data => ' + res.data);
-            this.setState({
-                user: res.data,
-            });
-        }
+        
     }
 
     createLink() {
@@ -146,35 +159,38 @@ class MainPageComponent extends Component {
                                 value={this.state.user.links.length}
                             />
                         </div>
-                        <a
-                            className="btn btn-primary"
-                            href="/create-short-link"
-                            onClick={this.createLink}>
-                            Create Short Link
-                        </a>
-                        <a
-                            className="btn btn-info"
-                            href="/user-stat/statistic"
-                            onClick={this.viewStats}>
-                            View Link Statistics
-                        </a>
-                        <a
-                            className="btn btn-secondary"
-                            href="/short-links"
-                            onClick={this.viewAllLinks}>
-                            View All Links
-                        </a>
-                        <div className="d-flex justify-content-end mb-3">
-                            {isAdmin && (
-                                <a
-                                    className="btn btn-primary"
-                                    href="/all-users-statistic"
-                                    onClick={this.viewAllLinks}
-                                >
-                                    View All Users Statistic
-                                </a>
-                            )}
-                        </div>
+                        {this.login == null && <div>
+                            <a
+                                className="btn btn-primary"
+                                href="/create-short-link"
+                                onClick={this.createLink}>
+                                Create Short Link
+                            </a>
+                            <a
+                                className="btn btn-info"
+                                href="/user-stat/statistic"
+                                onClick={this.viewStats}>
+                                View Link Statistics
+                            </a>
+                            <a
+                                className="btn btn-secondary"
+                                href="/short-links"
+                                onClick={this.viewAllLinks}>
+                                View All Links
+                            </a>
+                            <div className="d-flex justify-content-end mb-3">
+                                {isAdmin && (
+                                    <a
+                                        className="btn btn-primary"
+                                        href="/all-users-statistic"
+                                        onClick={this.viewAllLinks}
+                                    >
+                                        View All Users Statistic
+                                    </a>
+                                )}
+                            </div>
+                        </div>}
+                        
                     </div>
                 </div>
             </div>

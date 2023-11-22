@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {Bar, Line} from 'react-chartjs-2';
 import {Chart, ChartData, ChartDataset, DefaultDataPoint, registerables } from 'chart.js';
+import {useParams} from "react-router-dom";
 
 class AdminStatisticsComponent extends Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class AdminStatisticsComponent extends Component {
                     user: {
                          id: '',
                          name: '',
-                         loginName: '',
+                         username: '',
                          role: '',
                          password: '',
                          isActive: ''
@@ -34,19 +35,6 @@ class AdminStatisticsComponent extends Component {
             filterUsername: '',
             chartInstance: null, 
         };
-    }
-
-    async componentDidMount() {
-        await this.getCurrentUnFilteredStats();
-
-        this.updateLastRowInterval = setInterval(this.updateLastRow, 1000);
-    }
-
-    componentWillUnmount() {
-        if (this.state.chartInstance) {
-            this.state.chartInstance.destroy();
-        }
-        clearInterval(this.updateLastRowInterval);
     }
 
     async getCurrentUnFilteredStats() {
@@ -63,37 +51,12 @@ class AdminStatisticsComponent extends Component {
             console.error('Error fetching statistics:', error);
         }
     }
+    
 
-    updateLastRow = () => {
-        const { statistics } = this.state;
+    async componentDidMount() {
+        await this.getCurrentUnFilteredStats();
+    }
 
-        if (statistics.length > 0) {
-            const lastRow = statistics[statistics.length - 1];
-            const startTime = new Date(lastRow.time);
-            let timeDiff = null;
-            const currentTime = new Date();
-            if (
-                statistics.length > 1 &&
-                statistics[statistics.length - 2].hash === lastRow.hash
-            ) {
-                const preLastRow = statistics[statistics.length - 2];
-                timeDiff =
-                    currentTime - startTime + preLastRow.expectedDuration;
-            } else {
-                timeDiff = currentTime - startTime;
-            }
-
-            this.setState((prevState) => ({
-                statistics: [
-                    ...prevState.statistics.slice(0, -1),
-                    {
-                        ...lastRow,
-                        expectedDuration: timeDiff,
-                    },
-                ],
-            }));
-        }
-    };
 
     convertMillisecondsToDateTime = (millis) => {
         if (millis == null || millis.toString() === '') {
@@ -122,21 +85,15 @@ class AdminStatisticsComponent extends Component {
         event.preventDefault();
 
         try {
-            const res =
-                this.state.filterHash !== '' && this.state.filterHash != null
-                    ? await DataService.getFilteredDataWithHash(
-                        this.getDateISOString(this.state.startDate),
-                        this.getDateISOString(this.state.endDate),
-                        this.state.filterHash,
-                        this.state.filterNumRecords
+            const res = await DataService.getAllUsersFilteredStatData(
+                            this.state.filterHash,
+                            this.state.filterNumRecords,
+                            this.state.filterUsername,
+                            this.getDateISOString(this.state.startDate),
+                            this.getDateISOString(this.state.endDate)
                     )
-                    : await DataService.getFilteredData(
-                        this.getDateISOString(this.state.startDate),
-                        this.getDateISOString(this.state.endDate),
-                        this.state.filterNumRecords
-                    );
 
-            if (res.request.responseURL.includes('login')) {
+            if (res.request.responseURL.includes('/login')) {
                 document.location = res.request.responseURL;
             } else {
                 console.log(res.data)
@@ -198,6 +155,8 @@ class AdminStatisticsComponent extends Component {
     };
 
     render() {
+
+        console.log(this.state.statistics)
         return (
             <div>
                 <h2 className="mb-4">Statistics Table</h2>
@@ -206,7 +165,7 @@ class AdminStatisticsComponent extends Component {
                         <thead>
                         <tr>
                             <th>Column Number</th>
-                            <th>Username</th>
+                            <th>Login</th>
                             <th>Visit Time</th>
                             <th>Visited Site Hash</th>
                             <th>Expected Duration</th>
@@ -217,10 +176,10 @@ class AdminStatisticsComponent extends Component {
                         {this.state.statistics.map((statistic, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td>{statistic.user.name}</td>
+                                <td> <a href={"/user-stat/profile?login=" + statistic.user.username } className={"text-black"} style={{ textDecoration: 'none' }}>{statistic.user.username}</a> </td>
                                 <td>{this.formatTime(statistic.time)}</td>
                                 <td>{statistic.hash}</td>
-                                <td>{this.convertMillisecondsToDateTime(statistic.expectedDuration)}</td>
+                                <td>{statistic.expectedDuration != 0 ? this.convertMillisecondsToDateTime(statistic.expectedDuration) : 'is not finished'}</td>
                                 <td>{statistic.exists.toString()}</td>
                             </tr>
                         ))}

@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,8 +24,31 @@ public class DataService {
         return repository.findAll();
     }
 
+    public List<DataEntity> getAllWithFilter(Integer amount, User user, Date startDate, Date endDate, String hash) {
+
+        List<DataEntity> result = filterByTimeConstraints(startDate, endDate, repository.findAll().stream()
+                .filter(entry -> {
+                    if (user.getUsername() == null || user.getUsername().equals("")) {
+                        return true;
+                    }
+                    return Objects.equals(entry.getUser().getUsername(), user.getUsername());
+                })
+                .filter(entry -> {
+                    if(hash == null || hash.equals("")) {
+                        return true;
+                    }
+                    return Objects.equals(entry.getHash(), hash);
+                })
+                .collect(Collectors.toList())
+        );
+        if (amount != null && result.size() > amount) {
+            return result.subList(result.size() - 1 - amount, result.size() - 1);
+        }
+        return result;
+    }
+
     public List<DataEntity> getAll(int amount) {
-        if (amount <  1) {
+        if (amount < 1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<DataEntity> result = repository.findLast(amount);

@@ -32,7 +32,7 @@ class DataService {
     }
     
     
-    async getAllUsersUnfilteredStatData() {
+        async getAllUsersUnfilteredStatData() {
         return axios.get(
             ADMIN_STAT_LINK_API + "/",
             {
@@ -40,19 +40,12 @@ class DataService {
             }
         );
     }
-    async getAllUsersFilteredStatData() {
+    async getAllUsersFilteredStatData(hash, amount, login, startDate, endDate) {
         return axios.get(
-            ADMIN_STAT_LINK_API + "/",
+            ADMIN_STAT_LINK_API + "/filtered",
             {
-                withCredentials: true
-            }
-        );
-    }
-    async getAllUsersFilteredStatDataWithHash() {
-        return axios.get(
-            ADMIN_STAT_LINK_API + "/",
-            {
-                withCredentials: true
+                withCredentials: true,
+                params: { hash, amount, login, startDate, endDate }
             }
         );
     }

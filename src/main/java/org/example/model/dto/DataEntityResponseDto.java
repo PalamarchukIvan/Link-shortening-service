@@ -1,6 +1,7 @@
 package org.example.model.dto;
 
 import lombok.*;
+import org.example.model.User;
 
 import java.time.Instant;
 @Builder

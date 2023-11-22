@@ -25,6 +25,7 @@ function App() {
                           <Route path="/login" exact component={LoginComponent}></Route>
                           <Route path="/short-links" exact component={ShortLinksComponent}></Route>
                           <Route path="/user-stat/statistic" exact component={StatisticsComponent}></Route>
+                          <Route path="/user-stat/profile" exact component={MainPageComponent}></Route>
                           <Route path="/all-users-statistic" exact component={AdminStatisticsComponent}></Route>
                           <Route path="/" exact component={GreetingComponent}></Route>
                       </Switch>
