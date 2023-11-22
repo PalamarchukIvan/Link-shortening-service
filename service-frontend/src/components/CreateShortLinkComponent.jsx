@@ -65,7 +65,7 @@ class CreateShortLinkComponent extends Component {
                                         { !this.state.isInvisible&&<a href={SHORT_LINK_REDIRECT_API + this.state.hash}>{SHORT_LINK_REDIRECT_API + this.state.hash}</a>}
                                         <br/>
                                         <button className="btn btn-success" onClick={this.createNewShortLink}>Save</button>
-                                        <button className="btn btn-danger" onClick={this.cancel} style={{marginLeft: "10px"}}>Cancel</button>
+                                        <button className="btn btn-danger mr-auto" onClick={this.cancel} style={{marginLeft: "10px"}}>Go back</button>
                                     </form>
                                 </div>
                             </div>

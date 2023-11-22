@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.repository.UserRepository;
+import org.example.util.CurrentUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,11 @@ public class UserService {
         user.setIsActive(Boolean.TRUE);
         user.setPassword(encoder.encode(user.getPassword()));
         return repository.save(user);
+    }
+    public User updateUser(User newUser) {
+        User oldUser = repository.findUserByUsername(CurrentUserUtil.getCurrentUser().getUsername()).get();
+        oldUser.setName(newUser.getName());
+        oldUser.setRole(newUser.getRole());
+        return repository.save(oldUser);
     }
 }
