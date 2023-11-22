@@ -24,7 +24,7 @@ public class DataService {
     }
 
     public List<DataEntity> getAll(int amount) {
-        if (amount < 2) {
+        if (amount <  1) {
             throw new IllegalArgumentException("Amount must be bigger than 1");
         }
         List<DataEntity> result = repository.findLast(amount);
@@ -105,7 +105,7 @@ public class DataService {
         return formatLastRecord(toReturn);
     }
 
-    private static List<DataEntity> formatLastRecord(List<DataEntity> result) { //Более оптимизированая версия, не использует циклы. Интересно у Вас узнать, какая лучше
+    private static List<DataEntity> formatLastRecord(List<DataEntity> result) {
         int size = result.size();
 
         if (size > 0) {

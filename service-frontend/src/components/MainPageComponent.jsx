@@ -89,11 +89,13 @@ class MainPageComponent extends Component {
     }
 
     render() {
+        const isAdmin = this.state.user.role.includes('ADMIN');
         return (
             <div className="container mt-5">
                 <div className="card">
                     <div className="card-header">
                         <h2>User Profile</h2>
+                        {isAdmin && <span className="badge badge-info">Admin</span>}
                     </div>
                     <div className="card-body">
                         <div className="form-group">
@@ -147,24 +149,32 @@ class MainPageComponent extends Component {
                         <a
                             className="btn btn-primary"
                             href="/create-short-link"
-                            onClick={this.createLink}
-                        >
+                            onClick={this.createLink}>
                             Create Short Link
                         </a>
                         <a
                             className="btn btn-info"
                             href="/user-stat/statistic"
-                            onClick={this.viewStats}
-                        >
+                            onClick={this.viewStats}>
                             View Link Statistics
                         </a>
                         <a
                             className="btn btn-secondary"
                             href="/short-links"
-                            onClick={this.viewAllLinks}
-                        >
+                            onClick={this.viewAllLinks}>
                             View All Links
                         </a>
+                        <div className="d-flex justify-content-end mb-3">
+                            {isAdmin && (
+                                <a
+                                    className="btn btn-primary"
+                                    href="/all-users-statistic"
+                                    onClick={this.viewAllLinks}
+                                >
+                                    View All Users Statistic
+                                </a>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
