@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Link-shortening-service/static/css/main.b5022cf6.css",
+    "main.js": "/Link-shortening-service/static/js/main.aaf100e1.js",
+    "static/js/787.5a86cfe1.chunk.js": "/Link-shortening-service/static/js/787.5a86cfe1.chunk.js",
+    "index.html": "/Link-shortening-service/index.html",
+    "main.b5022cf6.css.map": "/Link-shortening-service/static/css/main.b5022cf6.css.map",
+    "main.aaf100e1.js.map": "/Link-shortening-service/static/js/main.aaf100e1.js.map",
+    "787.5a86cfe1.chunk.js.map": "/Link-shortening-service/static/js/787.5a86cfe1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b5022cf6.css",
+    "static/js/main.aaf100e1.js"
+  ]
+}
