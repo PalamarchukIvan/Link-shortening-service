@@ -29,15 +29,10 @@ public class DataRestController {
     }
 
     @GetMapping("/hash")
-    public List<?> getLocalStats(@RequestParam String hash,
-                                 @RequestParam(required = false) Integer amount,
-                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)Date startDate,
-                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+    public List<?> getLocalStats(@ModelAttribute DataFilterRequestDto filterRequestDto) {
         User user = CurrentUserUtil.getCurrentUser();
-        if(amount != null) {
-            return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, amount, user, startDate, endDate));
-        }
-        return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, user, startDate, endDate));
+        filterRequestDto.setUserId(user.getId());
+        return DataMapper.INSTANCE.toDto(dataService.getAllByUser(filterRequestDto));
 
     }
 }

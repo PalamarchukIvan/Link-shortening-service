@@ -17,7 +17,7 @@ public class DataRepositorySpecificationBuilder {
 
             List<Predicate> predicates = new ArrayList<>();
 
-            query.orderBy(cb.desc(root.get("time")));
+            query.orderBy(cb.asc(root.get("time")));
 
             if (filter.getUserId() != null) {
                 Join<DataEntity, User> userJoin = root.join("user");

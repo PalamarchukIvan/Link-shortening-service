@@ -13,11 +13,6 @@ import java.util.List;
 
 @Repository
 public interface DataRepository extends JpaRepository<DataEntity, Long>, JpaSpecificationExecutor<DataEntity> {
-    @Query(nativeQuery = true, value =  "select * from data rd where rd.user_id = :userId")
-    List<DataEntity> findAllByUser(Long userId);
-
-
-
     @Query(nativeQuery = true, value =  "select * from data rd where rd.hash = :hash")
     List<DataEntity> findAllByHash(String hash);
     @Query(nativeQuery = true, value =  "select * from data rd where rd.hash = :hash and user_id = :userId")

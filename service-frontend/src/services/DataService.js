@@ -13,7 +13,7 @@ class DataService {
 
     async getFilteredDataWithHash(startDate, endDate, hash, amount) {
         return axios.get(
-            STAT_LINK_API + "/hash",
+            STAT_LINK_API + "/",
             {
                 withCredentials: true,
                 params: { startDate, endDate, hash, amount }
