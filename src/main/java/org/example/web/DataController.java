@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class DataController {
     private final DataService dataService;
 
+    @Deprecated
     @GetMapping("/stat/statistic")
     public String getGlobalStats(Model model, @RequestParam(required = false) Integer amount) {
         User user = CurrentUserUtil.getCurrentUser();
@@ -31,6 +32,7 @@ public class DataController {
         return  "stats_page";
     }
 
+    @Deprecated
     @GetMapping("/stat")
     public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount) {
         User user = CurrentUserUtil.getCurrentUser();

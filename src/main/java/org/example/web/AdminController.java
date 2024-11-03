@@ -14,21 +14,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private final DataService service;
+    @Deprecated
     @GetMapping("/all-stat/statistic")
     public String seeAllStats(Model model) {
         model.addAttribute("list", service.getAll());
         return "full_stats_page";
     }
+    @Deprecated
     @GetMapping("/stat/statistic")
     public String getGlobalStats(Model model, @RequestParam(required = false) Integer amount) {
         if(amount != null) {
             model.addAttribute("list", service.getAll(amount));
         } else {
-            model.addAttribute("list", service.getAllByUser(CurrentUserUtil.getCurrentUser(), null, null));
+//            model.addAttribute("list", service.getAllByUser(CurrentUserUtil.getCurrentUser(), null, null));
         }
         return  "stats_page";
     }
 
+    @Deprecated
     @GetMapping("/stat")
     public String getLocalStats(@RequestParam String hash, Model model, @RequestParam(required = false) Integer amount, Integer userId) {
         if(amount != null) {

@@ -3,8 +3,12 @@ package org.example.service;
 import lombok.RequiredArgsConstructor;
 import org.example.model.DataEntity;
 import org.example.model.User;
+import org.example.model.dto.DataFilterRequestDto;
 import org.example.repository.DataRepository;
+import org.example.specification.DataRepositorySpecificationBuilder;
 import org.example.util.exceptions.HashNotFoundException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -55,10 +59,9 @@ public class DataService {
         return result.isEmpty() ? result : formatLastRecord(result);
     }
 
-    public List<DataEntity> getAllByUser(User user, Date startDate, Date endDate) {
-        List<DataEntity> result = repository.findAllByUser(user.getId());
-        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, result);
-        return toReturn.isEmpty() ? toReturn : formatLastRecord(toReturn);
+    public List<DataEntity> getAllByUser(DataFilterRequestDto filterRequestDto) {
+        Pageable limit = PageRequest.of(0, filterRequestDto.getAmount() == null ? Integer.MAX_VALUE : filterRequestDto.getAmount());
+        return repository.findAll(DataRepositorySpecificationBuilder.prepareSpecification(filterRequestDto), limit).getContent();
     }
 
     public List<DataEntity> getAllWithHash(String hash) {

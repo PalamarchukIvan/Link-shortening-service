@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @PreAuthorize("isAuthenticated()")
 public class UserPageController {
     private final UserService userService;
+
+    @Deprecated
     @GetMapping("/main")
     public String main(Model model) {
         User user = userService.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();

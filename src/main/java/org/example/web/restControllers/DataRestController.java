@@ -2,6 +2,7 @@ package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
 import org.example.model.User;
+import org.example.model.dto.DataFilterRequestDto;
 import org.example.service.DataService;
 import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.DataMapper;
@@ -20,14 +21,10 @@ import java.util.List;
 public class DataRestController {
     private final DataService dataService;
     @GetMapping("/")
-    public List<?> getGlobalStats(@RequestParam(required = false) Integer amount,
-                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+    public List<?> getGlobalStats(@ModelAttribute DataFilterRequestDto filterRequestDto) {
         User user = CurrentUserUtil.getCurrentUser();
-        if(amount != null) {
-            return DataMapper.INSTANCE.toDto(dataService.getAll(amount, user, startDate, endDate));
-        }
-        return DataMapper.INSTANCE.toDto(dataService.getAllByUser(user, startDate, endDate));
+        filterRequestDto.setUserId(user.getId());
+        return DataMapper.INSTANCE.toDto(dataService.getAllByUser(filterRequestDto));
 
     }
 

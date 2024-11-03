@@ -46,11 +46,13 @@ public class ShortLinkController {
         return "redirect:" + link;
     }
 
+    @Deprecated
     @GetMapping("/s/create")
     public String createLinkEndpoint() {
         return "create_link";
     }
 
+    @Deprecated
     @PostMapping("/s/create")
     public String saveShortLink(@ModelAttribute ShortLinkRequestDto linkDto, Model model) {
         model.addAttribute("new_link",
@@ -60,6 +62,7 @@ public class ShortLinkController {
                 )));
         return "create_link";
     }
+    @Deprecated
     @PostMapping("/s/delete/")
     public String deleteByHash(@RequestParam String hash) {
         service.deleteByHash(hash);
