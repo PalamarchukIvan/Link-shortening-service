@@ -21,10 +21,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
+@SequenceGenerator(name = "users_seq", sequenceName = "users_seq", allocationSize = 1)
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
     private Long id;
     private String username;
     private String name;

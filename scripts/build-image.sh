@@ -7,9 +7,6 @@ usage() {
   echo "If no tag is provided, 'latest' will be used as the default."
 }
 
-# Debug: Display received arguments
-echo "Arguments received: $@"
-
 # Check for help flag
 if [[ $1 == "-h" || $1 == "--help" ]]; then
   usage
@@ -19,12 +16,17 @@ fi
 # Set the tag to the provided argument or default to 'latest'
 TAG=${1:-latest}
 
-# Debug: Display the tag that will be used
-echo "Using tag: $TAG"
+# Navigate to the project root directory
+cd "$(dirname "$0")/.." || exit 1
 
 # Step 1: Build the JAR without running tests
 echo "Building the JAR without running tests..."
 mvn clean package -DskipTests
+
+if [ $? -ne 0 ]; then
+  echo "Maven build failed. Exiting."
+  exit 1
+fi
 
 # Step 2: Rename the JAR if necessary
 echo "Renaming the JAR to Link-shortening-service.jar..."
@@ -33,6 +35,11 @@ mv target/*.jar target/Link-shortening-service.jar
 # Step 3: Build the Docker image with the specified tag
 echo "Building Docker image with tag: $TAG"
 docker build -t link-shortening-service:"$TAG" -f "Dockerfile" .
+
+if [ $? -ne 0 ]; then
+  echo "Failed to build Docker image. Exiting."
+  exit 1
+fi
 
 # Print success message
 echo "Docker image 'link-shortening-service:$TAG' built successfully."

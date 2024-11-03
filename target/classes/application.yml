@@ -4,7 +4,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     #    For local usage
-#    url: jdbc:postgresql://localhost:5432/c
+#    url: jdbc:postgresql://localhost:5432/example
     #    For docker
     url: jdbc:postgresql://postgres/postgres
     username: postgres
@@ -12,10 +12,14 @@ spring:
   # JPA properties
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 # Server configuration
 server:
   port: 8080

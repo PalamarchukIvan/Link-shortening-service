@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ShortLinkRepository extends JpaRepository<ShortLink, String> {
-    @Query(nativeQuery = true, value = "select count(*) from short_links where hash = :hash")
+    @Query(nativeQuery = true, value = "select count(*) from short_link where hash = :hash")
     short checkIfUniqueHash(String hash);
 }

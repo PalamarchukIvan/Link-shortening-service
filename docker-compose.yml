@@ -5,7 +5,7 @@ volumes:
 
 services:
   postgreSQL:
-    image: "postgres:15"
+    image: "timescale/timescaledb:2.11.1-pg14"  # Use TimescaleDB with PostgreSQL 14
     container_name: "Link-shortening-db"
     volumes:
       - postgres_volume:/var/lib/postgresql/data

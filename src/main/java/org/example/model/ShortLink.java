@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ShortLinks", indexes = @Index(name = "idx_hashcode", columnList = "hash"))
+@Table(name = "short_link", indexes = @Index(name = "idx_hashcode", columnList = "hash"))
 public class ShortLink {
     @Id
     private String hash;
