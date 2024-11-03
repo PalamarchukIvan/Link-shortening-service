@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UserServiceTest {
+class UserServiceTest extends FunctionalTest {
 
     @Mock
     private UserRepository userRepository;
@@ -36,50 +36,48 @@ class UserServiceTest {
 
     @Test
     void testFindByUsername() {
-        // Mock data
         String username = "testUser";
-        User user = new User(/* provide necessary data for User */);
 
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(currentUser));
 
         Optional<User> foundUser = userService.findByUsername(username);
 
-        // Assert the result
         assertTrue(foundUser.isPresent());
-        assertEquals(user, foundUser.get());
-        // Add more assertions based on your specific requirements
+        assertEquals(currentUser, foundUser.get());
     }
 
 
     @Test
     void testCreateUser() {
-        // Mock data
-        User user = new User(/* provide necessary data for User */);
-        when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.save(any())).thenReturn(user);
+        when(passwordEncoder.encode(currentUser.getPassword())).thenReturn("encodedPassword");
+        when(userRepository.save(any())).thenReturn(currentUser);
 
-        User createdUser = userService.createUser(user);
+        User createdUser = userService.createUser(currentUser);
 
-        // Assert the result
         assertNotNull(createdUser);
         assertEquals(Collections.singletonList(Role.USER), createdUser.getRole());
         assertTrue(createdUser.getIsActive());
         assertEquals("encodedPassword", createdUser.getPassword());
-        // Add more assertions based on your specific requirements
     }
 
     @Test
     void testUpdateUser() {
-        // Mock data
-        User newUser = new User(/* provide necessary data for User */);
-        User oldUser = new User(/* provide necessary data for User */);
+        User newUser = User.builder()
+                .username("new-name")
+                .password("new-pass")
+                .isActive(false)
+                .build();
+        User oldUser = User.builder()
+                .username("name")
+                .password("pass")
+                .isActive(true)
+                .build();
 
         when(userRepository.findUserByUsername(oldUser.getUsername())).thenReturn(Optional.of(oldUser));
         when(userRepository.save(any())).thenReturn(oldUser);
 
         User updatedUser = userService.updateUser(newUser);
 
-        // Assert the result
         assertNotNull(updatedUser);
         assertEquals(newUser.getName(), updatedUser.getName());
     }

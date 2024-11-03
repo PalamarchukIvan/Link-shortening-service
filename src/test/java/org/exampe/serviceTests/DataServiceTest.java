@@ -1,7 +1,6 @@
 package org.exampe.serviceTests;
 
 import org.example.model.DataEntity;
-import org.example.model.User;
 import org.example.repository.DataRepository;
 import org.example.service.DataService;
 import org.example.util.exceptions.HashNotFoundException;
@@ -10,18 +9,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
-class DataServiceTest {
+class DataServiceTest extends FunctionalTest {
 
     @Mock
     private DataRepository dataRepository;
@@ -35,49 +36,237 @@ class DataServiceTest {
     }
 
     @Test
-    void testGetAll() {
-        // Mock data from repository
-        when(dataRepository.findAll()).thenReturn(Arrays.asList(
-                DataEntity.builder().build(),
-                DataEntity.builder().build()
+    void getAllTest() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
         ));
 
-        List<DataEntity> result = dataService.getAll();
+        // when
+        List<DataEntity> actual = dataService.getAll();
 
-        // Assert the result
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        // Add more assertions based on your specific requirements
+        //then
+        assertEquals(actual.size(), 4);
     }
-
-    // Add more test cases for other methods in DataService class...
 
     @Test
     void testGetAllWithHashShouldThrowHashNotFoundException() {
-        // Mock data from repository
         when(dataRepository.findAllByHash(anyString())).thenReturn(Arrays.asList());
-
-        // Assert that HashNotFoundException is thrown
         assertThrows(HashNotFoundException.class, () -> dataService.getAllWithHash("someHash"));
     }
 
     @Test
-    void testGetAllWithFilter() {
-        User user = User.builder().username("test").build();
-        // Mock data from repository
-        when(dataRepository.findAll()).thenReturn(Arrays.asList(
-                DataEntity.builder().user(user).hash("someHash").build(),
-                DataEntity.builder().user(user).build()
+    void getAllWithFilterAmountTest() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
         ));
 
-        String hash = "someHash";
+        // when
+        List<DataEntity> actual = dataService.getAllWithFilter(5, currentUser, null, null,null);
 
-        List<DataEntity> result = dataService.getAllWithFilter(2, user, null, null, hash);
+        //then
+        assertEquals(actual.size(), 4);
+    }
+    @Test
+    void getAllWithFilterUserTest() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
+        ));
 
-        // Assert the result
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        // Add more assertions based on your specific requirements
+        // when
+        List<DataEntity> actual = dataService.getAllWithFilter(null, currentUser, null, null,null);
+
+        //then
+        assertEquals(actual.size(), 4);
+    }
+    @Test
+    void getAllWithFilterDateTestNoResult() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
+        ));
+
+        // when
+        List<DataEntity> actual = dataService.getAllWithFilter(null, currentUser, new Date(), new Date(),null);
+
+        //then
+        assertEquals(actual.size(), 0);
+    }
+    @Test
+    void getAllWithFilterDateTest() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
+        ));
+
+        // when
+        List<DataEntity> actual = dataService.getAllWithFilter(null, currentUser, new Date(0), new Date(Instant.now().toEpochMilli() + 1000L),null);
+
+        //then
+        assertEquals(actual.size(), 4);
+    }
+    @Test
+    void getAllWithFilterHashTest() {
+        // given
+        when(dataRepository.findAll()).thenReturn(List.of(
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build(),
+                DataEntity.builder()
+                        .hash("123")
+                        .time(Instant.now())
+                        .isFound(true)
+                        .user(currentUser)
+                        .build()
+        ));
+
+        // when
+        List<DataEntity> actual = dataService.getAllWithFilter(null, currentUser, null,null, "123");
+
+        //then
+        assertEquals(actual.size(), 4);
+    }
+
+    @Test
+    void getAllWithLimitTest() {
+
+    }
+
+    @Test
+    void getAllByUserTest() {
+
     }
 
 }
