@@ -1,0 +1,4 @@
+org\exampe\serviceTests\DataServiceTest.class
+org\exampe\serviceTests\UserServiceTest.class
+org\exampe\serviceTests\FunctionalTest.class
+org\exampe\serviceTests\ShortLinkServiceTest.class

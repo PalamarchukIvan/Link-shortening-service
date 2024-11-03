@@ -4,9 +4,9 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     #    For local usage
-    url: jdbc:postgresql://localhost:5432/example
+#    url: jdbc:postgresql://localhost:5432/example
     #    For docker
-#    url: jdbc:postgresql://postgres/link-shortening
+    url: jdbc:postgresql://postgres/postgres
     username: postgres
     password: postgres
   # JPA properties
