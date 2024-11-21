@@ -52,7 +52,7 @@ public class ShortLinkService {
         int length = 3;
         do {
             hashBuilder = new StringBuilder();
-            for (int i = 0; i < length; i++) { //записываем буквы
+            for (int i = 0; i < length; i++) {
                 int symbol = random.nextInt(62);
                 if (symbol < 26) {
                     hashBuilder.append((char) ('a' + symbol));
@@ -64,7 +64,7 @@ public class ShortLinkService {
             }
             result = hashBuilder.toString();
             counter++;
-            if (counter % 10 == 0) { //Каждые 10 раз увеличиваем длину
+            if (counter % 10 == 0) {
                 length++;
             }
             if (counter == 30) {

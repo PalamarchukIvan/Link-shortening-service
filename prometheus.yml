@@ -1,0 +1,14 @@
+# For local usage of metrics
+global:
+  scrape_interval: 5s
+
+  external_labels:
+    monitor: 'link-shortening-monitor'
+
+
+scrape_configs:
+  - job_name: 'link-shortening-job'
+    scrape_interval: 5s
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['host.docker.internal:8080']
