@@ -20,7 +20,7 @@ echo "Docker image for ${SERVICE_NAME}:${TAG} built successfully."
 
 # Step 2: Start the Docker Compose environment
 echo "Starting Docker Compose services..."
-docker-compose -f "${DOCKER_COMPOSE_FILE}" up -d
+docker-compose -f "${DOCKER_COMPOSE_FILE}" up -d --build
 
 if [ $? -ne 0 ]; then
   echo "Failed to start Docker Compose. Exiting."

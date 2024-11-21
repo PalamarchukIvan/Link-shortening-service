@@ -3,14 +3,11 @@ package org.example.util.config;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.example.repository.UserRepository;
-import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,13 +24,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -44,6 +38,7 @@ import java.util.Collections;
 public class WebSecurityConfig {
 
     private final UserRepository repository;
+
     @Value("${front-end-url}")
     private String frontEndUrl;
 
@@ -52,11 +47,10 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> {
-                   httpSecurityCorsConfigurer.configurationSource(corsConfiguration());
+                    httpSecurityCorsConfigurer.configurationSource(corsConfiguration());
                 })
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration"/*, "/rest/**"*/).permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/rest/**").permitAll()
+                        .requestMatchers("/", "/registration", "/actuator/**", "/actuator/prometheus").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -75,12 +69,22 @@ public class WebSecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowBackSlash(true);
-        firewall.setAllowUrlEncodedSlash(true); // Add this line
-        return (web) -> web.httpFirewall(firewall);
+        firewall.setAllowSemicolon(true); // Allow `;` in URLs
+        return web -> web.httpFirewall(firewall);
+    }
+
+    @Bean
+    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/actuator/**")
+                .authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
+                .csrf(AbstractHttpConfigurer::disable);
+
+        return http.build();
     }
 
     @Bean
@@ -94,10 +98,12 @@ public class WebSecurityConfig {
         corsConfigurationSource.registerCorsConfiguration("/**", configuration);
         return corsConfigurationSource;
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

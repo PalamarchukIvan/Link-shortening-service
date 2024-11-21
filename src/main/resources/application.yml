@@ -20,8 +20,26 @@ spring:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
+  security:
+    permit-all-management-endpoints: true
 # Server configuration
 server:
   port: 8080
 
 front-end-url: http://localhost:3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+      base-path: /actuator
+  endpoint:
+    prometheus:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.boot.actuate: DEBUG
+    io.micrometer: DEBUG
+

@@ -1,35 +1,35 @@
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\exceptions\HashNotFoundException.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\restControllers\AdminRestController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\ShortLinkController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\User.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\dto\UserDataResponseDto.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\service\DataService.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\Mapstruct\UserMapper.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\repository\UserRepository.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\config\WebSecurityConfig.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\exceptions\ResourceNotFoundException.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\dto\DataEntityResponseDto.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\UserPageController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\repository\DataRepository.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\ShortLink.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\Mapstruct\DataMapper.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\exceptions\ErrorDetails.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\AdminController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\dto\ShortLinkResponseDto.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\service\UserService.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\Mapstruct\ShortLinkMapper.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\ErrorResponseDTO.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\service\ShortLinkService.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\Main.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\repository\ShortLinkRepository.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\Role.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\exceptions\ResourceDeletedException.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\RegLogController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\CurrentUserUtil.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\restControllers\UserRestController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\DataController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\restControllers\ShortLinkRestController.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\DataEntity.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\model\dto\ShortLinkRequestDto.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\util\exceptions\GlobalExceptionHandler.java
-C:\Users\Иван\Desktop\Универ\Програмирование\Java\Fun\Link shortening service\src\main\java\org\example\web\restControllers\DataRestController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\service\ShortLinkService.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\User.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\exceptions\GlobalExceptionHandler.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\restControllers\ShortLinkRestController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\restControllers\UserRestController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\exceptions\HashNotFoundException.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\Mapstruct\ShortLinkMapper.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\Mapstruct\UserMapper.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\restControllers\AdminRestController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\exceptions\ResourceNotFoundException.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\restControllers\DataRestController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\exceptions\ResourceDeletedException.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\ShortLinkController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\Mapstruct\DataMapper.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\config\WebSecurityConfig.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\CurrentUserUtil.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\DataController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\util\exceptions\ErrorDetails.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\dto\UserDataResponseDto.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\repository\DataRepository.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\Main.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\Role.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\ErrorResponseDTO.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\service\UserService.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\ShortLink.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\dto\ShortLinkRequestDto.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\AdminController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\RegLogController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\repository\UserRepository.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\DataEntity.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\repository\ShortLinkRepository.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\dto\ShortLinkResponseDto.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\service\DataService.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\web\UserPageController.java
+C:\Projects\Link-shortening-service\src\main\java\org\example\model\dto\DataEntityResponseDto.java
