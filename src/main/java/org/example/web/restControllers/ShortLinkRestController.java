@@ -3,6 +3,7 @@ package org.example.web.restControllers;
 import lombok.AllArgsConstructor;
 import org.example.model.ShortLink;
 import org.example.model.User;
+import org.example.model.dto.ShortLinkDto;
 import org.example.model.dto.ShortLinkRequestDto;
 import org.example.model.dto.ShortLinkResponseDto;
 import org.example.service.ShortLinkService;
@@ -27,15 +28,15 @@ public class ShortLinkRestController {
     private final ShortLinkMapper mapper;
 
     @GetMapping("/")
-    public List<?> getShortLinksByUser() {
+    public List<ShortLinkDto> getShortLinksByUser() {
         User user = userService.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
         user.getLinks().removeIf(ShortLink::isDeleted);
-        return user.getLinks();
+        return mapper.toDto(user.getLinks());
     }
 
     @PostMapping("/create-short-link")
-    public ShortLink createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
-        return shortLinkService.create(mapper.fromRequest(shortLinkRequestDto));
+    public ShortLinkDto createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
+        return mapper.toDto(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto)));
     }
     @DeleteMapping("/delete/{hash}")
     public void deleteByHash(@PathVariable String hash) {

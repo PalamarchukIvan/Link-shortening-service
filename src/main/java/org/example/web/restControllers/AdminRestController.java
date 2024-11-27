@@ -2,10 +2,13 @@ package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
 import org.example.model.User;
+import org.example.model.dto.DataEntityResponseDto;
+import org.example.model.dto.UserFullDto;
 import org.example.service.DataService;
 import org.example.service.UserService;
 import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.DataMapper;
+import org.example.util.Mapstruct.UserMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,13 +25,14 @@ import java.util.List;
 public class AdminRestController {
     private final DataService dataService;
     private final UserService userService;
+    private final UserMapper userMapper;
     @GetMapping("/admin-statistics/")
-    public List<?> getAllUserStats() {
+    public List<DataEntityResponseDto> getAllUserStats() {
         return DataMapper.INSTANCE.toDto(dataService.getAll());
 
     }
     @GetMapping("/admin-statistics/filtered")
-    public List<?> getAllUserFilteredStats(
+    public List<DataEntityResponseDto> getAllUserFilteredStats(
                                    @RequestParam(required = false) String hash,
                                    @RequestParam(required = false) Integer amount,
                                    @RequestParam(required = false) String login,
@@ -41,8 +45,8 @@ public class AdminRestController {
         return DataMapper.INSTANCE.toDto(dataService.getAllWithFilter(amount, user, startDate, endDate, hash));
     }
     @GetMapping("/reg-log/user")
-    public User getCurrentUser(@RequestParam String login) {
-        return userService.findByUsername(login)
-                .orElseThrow(() -> new RuntimeException("no current user"));
+    public UserFullDto getCurrentUser(@RequestParam String login) {
+        return userMapper.toFullDto(userService.findByUsername(login)
+                .orElseThrow(() -> new RuntimeException("no current user")));
     }
 }

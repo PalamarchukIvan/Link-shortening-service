@@ -1,7 +1,9 @@
 package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
+import org.example.model.DataEntity;
 import org.example.model.User;
+import org.example.model.dto.DataEntityResponseDto;
 import org.example.service.DataService;
 import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.DataMapper;
@@ -20,7 +22,7 @@ import java.util.List;
 public class DataRestController {
     private final DataService dataService;
     @GetMapping("/")
-    public List<?> getGlobalStats(@RequestParam(required = false) Integer amount,
+    public List<DataEntityResponseDto> getGlobalStats(@RequestParam(required = false) Integer amount,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
                                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
@@ -32,10 +34,10 @@ public class DataRestController {
     }
 
     @GetMapping("/hash")
-    public List<?> getLocalStats(@RequestParam String hash,
-                                 @RequestParam(required = false) Integer amount,
-                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)Date startDate,
-                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
+    public List<DataEntityResponseDto> getLocalStats(@RequestParam String hash,
+                                                     @RequestParam(required = false) Integer amount,
+                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)Date startDate,
+                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate) {
         User user = CurrentUserUtil.getCurrentUser();
         if(amount != null) {
             return DataMapper.INSTANCE.toDto(dataService.getAllWithHash(hash, amount, user, startDate, endDate));

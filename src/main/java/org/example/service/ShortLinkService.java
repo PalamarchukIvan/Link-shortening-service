@@ -51,6 +51,9 @@ public class ShortLinkService {
         int counter = 0;
         int length = 3;
         do {
+            if (counter == 30) {
+                throw new RuntimeException("hash was not able not be formed");
+            }
             hashBuilder = new StringBuilder();
             for (int i = 0; i < length; i++) {
                 int symbol = random.nextInt(62);
@@ -66,9 +69,6 @@ public class ShortLinkService {
             counter++;
             if (counter % 10 == 0) {
                 length++;
-            }
-            if (counter == 30) {
-                throw new RuntimeException("hash was not able not be formed");
             }
         } while (repository.checkIfUniqueHash(result) != 0);
         return result;

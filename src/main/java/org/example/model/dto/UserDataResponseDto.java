@@ -15,6 +15,5 @@ public class UserDataResponseDto {
     private String name;
     private String username;
     private List<Role> role;
-    private String password;
     private Boolean isActive;
 }
