@@ -7,7 +7,7 @@ import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-@Mapper(componentModel = "UserMapperDelegate", uses = {ShortLinkMapper.class})
+@Mapper(componentModel = "spring", uses = {ShortLinkMapper.class})
 @DecoratedWith(UserMapperDelegate.class)
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);

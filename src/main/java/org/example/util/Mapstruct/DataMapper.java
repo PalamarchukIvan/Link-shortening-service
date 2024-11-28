@@ -47,7 +47,6 @@ public interface DataMapper {
             userDataResponseDto.role( new ArrayList<Role>( list ) );
         }
         userDataResponseDto.username( user.getUsername() );
-        userDataResponseDto.password( user.getPassword() );
         userDataResponseDto.isActive( user.getIsActive() );
 
         return userDataResponseDto.build();
