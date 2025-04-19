@@ -3,16 +3,16 @@ package org.example.util.Mapstruct;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
-import org.example.model.ShortLink;
 import org.example.dto.ShortLinkDto;
 import org.example.dto.ShortLinkRequestDto;
 import org.example.dto.ShortLinkResponseDto;
+import org.example.model.ShortLink;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-27T19:50:34+0200",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
+    date = "2025-04-19T10:26:52+0300",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.14 (Amazon.com Inc.)"
 )
 @Component
 public class ShortLinkMapperImpl implements ShortLinkMapper {

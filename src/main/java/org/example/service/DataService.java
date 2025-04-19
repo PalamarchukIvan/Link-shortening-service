@@ -1,150 +1,90 @@
 package org.example.service;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.example.dto.GetStatisticsDto;
 import org.example.model.DataEntity;
 import org.example.model.User;
 import org.example.repository.DataRepository;
+import org.example.repository.util.DataSpecifications;
 import org.example.util.exceptions.HashNotFoundException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class DataService {
     private final DataRepository repository;
 
-    public List<DataEntity> getAll() {
-        return repository.findAll();
-    }
+    public List<DataEntity> getFiltered(GetStatisticsDto request) {
+        User user = request.getUser();
+        String hash = request.getHash();
+        Date startDate = request.getStartDate();
+        Date endDate = request.getEndDate();
+        Integer amount = request.getAmount();
 
-    public List<DataEntity> getAllWithFilter(Integer amount, User user, Date startDate, Date endDate, String hash) {
-
-        List<DataEntity> result = filterByTimeConstraints(startDate, endDate, repository.findAll().stream()
-                .filter(entry -> {
-                    if (user.getUsername() == null || user.getUsername().equals("")) {
-                        return true;
-                    }
-                    return Objects.equals(entry.getUser().getUsername(), user.getUsername());
-                })
-                .filter(entry -> {
-                    if(hash == null || hash.equals("")) {
-                        return true;
-                    }
-                    return Objects.equals(entry.getHash(), hash);
-                })
-                .collect(Collectors.toList())
+        // build spec
+        Specification<DataEntity> spec = DataSpecifications.build(
+                user != null ? user.getId() : null,
+                hash,
+                startDate != null ? startDate.toInstant() : null,
+                endDate   != null ? endDate.toInstant()   : null
         );
-        if (amount != null && result.size() > amount) {
-            return result.subList(result.size() - 1 - amount, result.size() - 1);
+
+        // choose paging or simple sort
+        List<DataEntity> list;
+        if (amount != null && amount > 0) {
+            // fetch the *latest* 'amount' records by time DESC, then reverse them
+            PageRequest page = PageRequest.of(
+                    0,
+                    amount,
+                    Sort.by(Sort.Direction.DESC, "time")
+            );
+            list = new ArrayList<>(repository.findAll(spec, page).getContent());
+            Collections.reverse(list);
+        } else {
+            list = repository.findAll(spec, Sort.by("time"));
         }
-        return result;
-    }
 
-    public List<DataEntity> getAll(int amount) {
-        if (amount < 1) {
-            throw new IllegalArgumentException("Amount must be bigger than 1");
-        }
-        List<DataEntity> result = repository.findLast(amount);
-        return result.isEmpty() ? result : formatLastRecord(result);
-    }
-
-    public List<DataEntity> getAllByUser(User user, Date startDate, Date endDate) {
-        List<DataEntity> result = repository.findAllByUser(user.getId());
-        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, result);
-        return toReturn.isEmpty() ? toReturn : formatLastRecord(toReturn);
-    }
-
-    public List<DataEntity> getAllWithHash(String hash) {
-        List<DataEntity> result = repository.findAllByHash(hash);
-        if (result.isEmpty()) {
+        // if you need to throw on no‑hash, you can do that before or after—
+        // e.g. if (list.isEmpty() && hash!=null) throw new HashNotFoundException();
+        if (list.isEmpty() && StringUtils.hasText(hash)) {
             throw new HashNotFoundException();
         }
 
-        return formatLastRecord(result);
-    }
-
-    public List<DataEntity> getAllWithHash(String hash, User user, Date startDate, Date endDate) {
-        List<DataEntity> resultFromDb = repository.findAllByHash(hash, user.getId());
-        List<DataEntity> result = filterByTimeConstraints(startDate, endDate, resultFromDb);
-        if (result.isEmpty()) {
-            throw new HashNotFoundException();
-        }
-
-        return formatLastRecord(result);
-    }
-
-    private static List<DataEntity> filterByTimeConstraints(Date startDate, Date endDate, List<DataEntity> resultFromDb) {
-        return resultFromDb.stream()
-                .filter(dataEntity -> {
-                    if (startDate != null) {
-                        return dataEntity.getTime().isAfter(startDate.toInstant());
-                    }
-                    return true;
-                })
-                .filter(dataEntity -> {
-                    if (endDate != null) {
-                        return dataEntity.getTime().isBefore(endDate.toInstant());
-                    }
-                    return true;
-                }).collect(Collectors.toList());
-    }
-
-    public List<DataEntity> getAll(int amount, User user, Date startDate, Date endDate) {
-        if (amount < 1) {
-            throw new IllegalArgumentException("Amount must be bigger than 0");
-        }
-        List<DataEntity> result = repository.findLast(amount, user.getId());
-        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, result);
-
-        return toReturn.isEmpty() ? toReturn : formatLastRecord(toReturn);
-    }
-
-    public List<DataEntity> getAllWithHash(String hash, int amount) {
-        if (amount < 1) {
-            throw new IllegalArgumentException("Amount must be bigger than 0");
-        }
-        List<DataEntity> resultList = repository.findLastByHash(hash, amount);
-        if (resultList.isEmpty()) {
-            throw new HashNotFoundException();
-        }
-        return formatLastRecord(resultList);
-    }
-
-    public List<DataEntity> getAllWithHash(String hash, int amount, User user, Date startDate, Date endDate) {
-        if (amount < 2) {
-            throw new IllegalArgumentException("Amount must be bigger than 1");
-        }
-        List<DataEntity> resultList = repository.findLastByHash(hash, amount, user.getId());
-        List<DataEntity> toReturn = filterByTimeConstraints(startDate, endDate, resultList);
-        if (toReturn.isEmpty()) {
-            return toReturn;
-        }
-        return formatLastRecord(toReturn);
+        // post‑processing of durations
+        return formatLastRecord(list);
     }
 
     private static List<DataEntity> formatLastRecord(List<DataEntity> result) {
         int size = result.size();
-
-        if (size > 0) {
-            DataEntity lastRecord = result.get(result.size() - 1);
-            DataEntity preLastRecord = size > 2 ? result.get(result.size() - 2) : null;
-
-            long calculatedDuration;
-            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
-            } else {
-                calculatedDuration = Duration.between(lastRecord.getTime(), Instant.now().atOffset(ZoneOffset.UTC)).toMillis();
-            }
-            lastRecord.setExpectedDuration(calculatedDuration);
+        if (size == 0) {
+            return result;
         }
 
+        DataEntity last  = result.get(size - 1);
+        DataEntity prev  = size > 1 ? result.get(size - 2) : null;
+
+        long calculatedDuration;
+        Instant now = Instant.now();
+        if (prev != null && Objects.equals(last.getHash(), prev.getHash())) {
+            Instant adjustedStart = last.getTime()
+                    .minusMillis(prev.getExpectedDuration());
+            calculatedDuration = Duration.between(adjustedStart, now)
+                    .toMillis();
+        } else {
+            calculatedDuration = Duration.between(last.getTime(), now)
+                    .toMillis();
+        }
+        last.setExpectedDuration(calculatedDuration);
         return result;
     }
 }
