@@ -3,10 +3,9 @@ package org.example.util.Mapstruct;
 import org.example.model.DataEntity;
 import org.example.model.Role;
 import org.example.model.User;
-import org.example.model.dto.DataEntityResponseDto;
-import org.example.model.dto.UserDataResponseDto;
+import org.example.dto.DataEntityResponseDto;
+import org.example.dto.UserDataResponseDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;

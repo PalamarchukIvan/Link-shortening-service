@@ -1,8 +1,8 @@
 package org.example.util.Mapstruct;
 
 import org.example.model.User;
-import org.example.model.dto.UserDataResponseDto;
-import org.example.model.dto.UserFullDto;
+import org.example.dto.UserDataResponseDto;
+import org.example.dto.UserFullDto;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

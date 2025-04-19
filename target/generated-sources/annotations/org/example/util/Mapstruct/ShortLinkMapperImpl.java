@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
 import org.example.model.ShortLink;
-import org.example.model.dto.ShortLinkDto;
-import org.example.model.dto.ShortLinkRequestDto;
-import org.example.model.dto.ShortLinkResponseDto;
+import org.example.dto.ShortLinkDto;
+import org.example.dto.ShortLinkRequestDto;
+import org.example.dto.ShortLinkResponseDto;
 import org.springframework.stereotype.Component;
 
 @Generated(

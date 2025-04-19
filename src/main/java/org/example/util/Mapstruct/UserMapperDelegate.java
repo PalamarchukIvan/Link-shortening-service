@@ -1,7 +1,7 @@
 package org.example.util.Mapstruct;
 
 import org.example.model.User;
-import org.example.model.dto.UserFullDto;
+import org.example.dto.UserFullDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

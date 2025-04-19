@@ -1,9 +1,9 @@
 package org.example.util.Mapstruct;
 
 import org.example.model.ShortLink;
-import org.example.model.dto.ShortLinkDto;
-import org.example.model.dto.ShortLinkRequestDto;
-import org.example.model.dto.ShortLinkResponseDto;
+import org.example.dto.ShortLinkDto;
+import org.example.dto.ShortLinkRequestDto;
+import org.example.dto.ShortLinkResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

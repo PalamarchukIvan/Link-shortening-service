@@ -1,13 +1,11 @@
 package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
-import org.example.model.DataEntity;
 import org.example.model.User;
-import org.example.model.dto.DataEntityResponseDto;
+import org.example.dto.DataEntityResponseDto;
 import org.example.service.DataService;
 import org.example.util.CurrentUserUtil;
 import org.example.util.Mapstruct.DataMapper;
-import org.example.util.Mapstruct.UserMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
