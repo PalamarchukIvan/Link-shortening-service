@@ -9,6 +9,7 @@ import org.example.service.DataService;
 import org.example.service.UserService;
 import org.example.util.Mapstruct.DataMapper;
 import org.example.util.Mapstruct.UserMapper;
+import org.example.web.ResultWithStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,14 +34,16 @@ public class AdminRestController {
 
     @GetMapping("/admin-statistics/filtered")
     public List<DataEntityResponseDto> getAllUserFilteredStats(
-            @RequestParam(required = false) @ModelAttribute GetStatisticsDto request, @RequestParam(required = false) String login) {
+            @ModelAttribute GetStatisticsDto request,
+            @RequestParam(required = false) String login
+    ) {
         User user = userService.findActiveByUsername(login).orElseThrow();
         request.setUser(user);
         return DataMapper.INSTANCE.toDto(dataService.getFiltered(request));
     }
 
     @GetMapping("/reg-log/user")
-    public UserFullDto getCurrentUser(@RequestParam String login) {
+    public UserFullDto getUser(@RequestParam String login) {
         return userMapper.toFullDto(userService.findActiveByUsername(login)
                 .orElseThrow(() -> new RuntimeException("no current user")));
     }

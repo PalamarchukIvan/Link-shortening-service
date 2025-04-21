@@ -1,13 +1,16 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.model.Role;
 import org.example.model.User;
 import org.example.model.VerificationToken;
 import org.example.repository.TokenVerificationRepository;
 import org.example.repository.UserRepository;
 import org.example.util.CurrentUserUtil;
+import org.example.web.ResultWithStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +23,7 @@ import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -31,6 +35,20 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final JavaMailSender mailSender;
     private final TokenVerificationRepository tokenVerificationRepository;
+
+    public ResultWithStatus<User> doLogin(String username, String password) {
+        Optional<User> user = repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username);
+        if (!user.isPresent()) {
+            log.debug("user not found with name {}", username);
+            return ResultWithStatus.error(HttpStatus.BAD_REQUEST, "Bad password or login");
+        }
+        if (!encoder.matches(password, user.get().getPassword())) {
+            log.debug("user pwd is not right with name {}", username);
+            return ResultWithStatus.error(HttpStatus.BAD_REQUEST, "Bad password or login");
+        }
+
+        return ResultWithStatus.ok(user.get());
+    }
 
     public Optional<User> findActiveByUsername(String username) {
         return repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username);
@@ -73,10 +91,16 @@ public class UserService {
         mailSender.send(msg);
     }
 
-    public User updateUser(User newUser) {
-        User oldUser = repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(CurrentUserUtil.getCurrentUser().getUsername()).get();
+    public User updateCurrentUser(User newUser) {
+        User oldUser = repository.findUserByUsername(CurrentUserUtil.getCurrentUser().getUsername()).get();
         oldUser.setName(newUser.getName());
         oldUser.setRole(newUser.getRole());
+        return repository.save(oldUser);
+    }
+
+    public User setUserVerified(String login) {
+        User oldUser = repository.findUserByUsername(login).get();
+        oldUser.setIsVerified(Boolean.TRUE);
         return repository.save(oldUser);
     }
 }

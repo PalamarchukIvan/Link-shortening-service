@@ -22,7 +22,7 @@ public class DataRestController {
     private final DataService dataService;
 
     @GetMapping("/")
-    public List<DataEntityResponseDto> getGlobalStats(@RequestParam @ModelAttribute GetStatisticsDto request) {
+    public List<DataEntityResponseDto> getGlobalStats(@ModelAttribute GetStatisticsDto request) {
         User user = CurrentUserUtil.getCurrentUser();
         request.setUser(user);
         return DataMapper.INSTANCE.toDto(dataService.getFiltered(request));

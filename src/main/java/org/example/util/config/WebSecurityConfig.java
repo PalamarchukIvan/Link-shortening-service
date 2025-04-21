@@ -1,10 +1,9 @@
 package org.example.util.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.repository.UserRepository;
+import org.example.util.security.JwtAuthenticationFilter;
+import org.example.util.security.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,22 +13,19 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
 import java.util.Collections;
 
 @Configuration
@@ -38,87 +34,75 @@ import java.util.Collections;
 public class WebSecurityConfig {
 
     private final UserRepository repository;
-
-    @Value("${front-end-url}")
-    private String frontEndUrl;
+    private final JwtService jwtService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   UserDetailsService uds,
+                                                   AuthenticationProvider authProvider) throws Exception {
         http
+                // no CSRF (we use stateless JWT)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(httpSecurityCorsConfigurer -> {
-                    httpSecurityCorsConfigurer.configurationSource(corsConfiguration());
-                })
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration", "/actuator/**", "/actuator/prometheus").permitAll()
+                // CORS from React
+                .cors(c -> c.configurationSource(corsConfiguration()))
+                // never create an HttpSession
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // which endpoints are public
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/rest/reg-log/**", "/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .successHandler(new SavedRequestAwareAuthenticationSuccessHandler() {
-                            @Override
-                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-                                this.setAlwaysUseDefaultTargetUrl(true);
-                                this.setDefaultTargetUrl(frontEndUrl + "/main");
-                                super.onAuthenticationSuccess(request, response, authentication);
-                            }
-                        })
-                        .permitAll()
-                )
+                // our JWT filter BEFORE Spring’s auth logic
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, uds),
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                // exception/no form‑login
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        StrictHttpFirewall firewall = new StrictHttpFirewall();
-        firewall.setAllowSemicolon(true); // Allow `;` in URLs
-        return web -> web.httpFirewall(firewall);
-    }
-
-    @Bean
-    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/actuator/**")
-                .authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable);
-
-        return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfiguration() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        corsConfigurationSource.registerCorsConfiguration("/**", configuration);
-        return corsConfigurationSource;
-    }
-
-    @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> repository
+                .findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public AuthenticationProvider authenticationProvider(UserDetailsService uds) {
+        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
+        p.setUserDetailsService(uds);
+        p.setPasswordEncoder(passwordEncoder());
+        return p;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration cfg = new CorsConfiguration();
+        cfg.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        cfg.setAllowedMethods(Collections.singletonList("*"));
+        cfg.setAllowedHeaders(Collections.singletonList("*"));
+        cfg.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
+        src.registerCorsConfiguration("/**", cfg);
+        return src;
+    }
+
+    @Bean
+    public StrictHttpFirewall strictHttpFirewall() {
+        StrictHttpFirewall fw = new StrictHttpFirewall();
+        fw.setAllowSemicolon(true);
+        return fw;
     }
 }

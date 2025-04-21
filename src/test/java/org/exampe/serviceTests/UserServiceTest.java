@@ -81,7 +81,7 @@ class UserServiceTest extends FunctionalTest {
         when(userRepository.findUserByUsername(oldUser.getUsername())).thenReturn(Optional.of(oldUser));
         when(userRepository.save(any())).thenReturn(oldUser);
 
-        User updatedUser = userService.updateUser(newUser);
+        User updatedUser = userService.updateCurrentUser(newUser);
 
         assertNotNull(updatedUser);
         assertEquals(newUser.getName(), updatedUser.getName());

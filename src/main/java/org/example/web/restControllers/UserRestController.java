@@ -26,6 +26,6 @@ public class UserRestController {
 
     @PatchMapping("/update")
     public User editProfile(@RequestBody User user) {
-        return service.updateUser(user);
+        return service.updateCurrentUser(user);
     }
 }
