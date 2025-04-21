@@ -101,7 +101,7 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> repository.findUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean

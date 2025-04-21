@@ -13,14 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/rest/reg-log", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserRestController {
     private final UserService service;
+
     @PostMapping("/login")
     public boolean doLogin(@RequestBody User user) {
-        return service.findByUsername((user.getUsername())).isEmpty();
+        return service.findActiveByUsername((user.getUsername())).isEmpty();
     }
+
     @GetMapping("/current")
     public User getCurrentUser() {
-        return service.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow(() -> new RuntimeException("no current user"));
+        return service.findActiveByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow(() -> new RuntimeException("no current user"));
     }
+
     @PatchMapping("/update")
     public User editProfile(@RequestBody User user) {
         return service.updateUser(user);

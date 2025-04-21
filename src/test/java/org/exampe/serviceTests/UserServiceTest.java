@@ -2,9 +2,10 @@ package org.exampe.serviceTests;
 
 import org.example.model.Role;
 import org.example.model.User;
+import org.example.model.VerificationToken;
+import org.example.repository.TokenVerificationRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
-import org.example.util.CurrentUserUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,6 +27,9 @@ class UserServiceTest extends FunctionalTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private TokenVerificationRepository tokenVerificationRepository;
+
     @InjectMocks
     private UserService userService;
 
@@ -40,7 +44,7 @@ class UserServiceTest extends FunctionalTest {
 
         when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(currentUser));
 
-        Optional<User> foundUser = userService.findByUsername(username);
+        Optional<User> foundUser = userService.findActiveByUsername(username);
 
         assertTrue(foundUser.isPresent());
         assertEquals(currentUser, foundUser.get());
@@ -51,6 +55,7 @@ class UserServiceTest extends FunctionalTest {
     void testCreateUser() {
         when(passwordEncoder.encode(currentUser.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(any())).thenReturn(currentUser);
+        when(tokenVerificationRepository.save(any())).thenReturn(new VerificationToken());
 
         User createdUser = userService.createUser(currentUser);
 

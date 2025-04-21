@@ -17,7 +17,7 @@ public class UserPageController {
     private final UserService userService;
     @GetMapping("/main")
     public String main(Model model) {
-        User user = userService.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
+        User user = userService.findActiveByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
         user.getLinks().removeIf(ShortLink::isDeleted);
         model.addAttribute("user", user);
         return "main";

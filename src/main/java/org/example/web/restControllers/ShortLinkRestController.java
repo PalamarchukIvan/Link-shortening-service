@@ -28,7 +28,7 @@ public class ShortLinkRestController {
 
     @GetMapping("/")
     public List<ShortLinkDto> getShortLinksByUser() {
-        User user = userService.findByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
+        User user = userService.findActiveByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
         user.getLinks().removeIf(ShortLink::isDeleted);
         return mapper.toDto(user.getLinks());
     }

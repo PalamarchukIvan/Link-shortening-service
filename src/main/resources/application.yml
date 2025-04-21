@@ -1,12 +1,20 @@
 # Spring Boot configuration
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: vanavana978@gmail.com
+    password: 'ceza qgzh xpim xkyt'
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
   # Database
   datasource:
     driver-class-name: org.postgresql.Driver
     #    For local usage
-#    url: jdbc:postgresql://localhost:5432/example
+    url: jdbc:postgresql://localhost:5432/link-shortening
     #    For docker
-    url: jdbc:postgresql://postgres/postgres
+#    url: jdbc:postgresql://postgres/postgres
     username: postgres
     password: postgres
   # JPA properties

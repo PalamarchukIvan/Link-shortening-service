@@ -3,7 +3,6 @@ package org.example.web;
 import lombok.AllArgsConstructor;
 import org.example.model.User;
 import org.example.service.UserService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,7 +27,7 @@ public class RegLogController {
 
     @PostMapping("/login")
     public String doLogin(User user, Model model) {
-        if(service.findByUsername((user.getUsername())).isEmpty()){
+        if (service.findActiveByUsername((user.getUsername())).isEmpty()) {
             model.addAttribute("error", new ErrorResponseDTO("User with such username does not exists"));
             return "login";
         }
@@ -42,7 +41,7 @@ public class RegLogController {
 
     @PostMapping("/registration")
     public String doRegistration(User user, Model model) {
-        if(service.findByUsername((user.getUsername())).isPresent()){
+        if (service.findActiveByUsername((user.getUsername())).isPresent()) {
             model.addAttribute("error", new ErrorResponseDTO("Such user already exists"));
             return "registration";
         }

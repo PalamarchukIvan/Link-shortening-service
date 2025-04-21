@@ -27,16 +27,25 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
     private Long id;
+
     private String username;
+
     private String name;
+
     private String password;
+
     private Boolean isActive;
+
+    private Boolean isVerified;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private List<Role> role;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<ShortLink> links;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<DataEntity> data;
 
