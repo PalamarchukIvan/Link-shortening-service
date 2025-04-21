@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.dto.ShortLinkUpdateRequestDto;
 import org.example.model.DataEntity;
 import org.example.model.ShortLink;
 import org.example.model.User;
@@ -27,6 +28,12 @@ public class ShortLinkService {
         link.setHash(getHashCode());
         link.setUser(CurrentUserUtil.getCurrentUser());
         return repository.save(link);
+    }
+
+    public ShortLink update(ShortLinkUpdateRequestDto link) {
+        ShortLink actualInDb = getByHash(link.getOldHash());
+        actualInDb.setHash(link.getNewHash());
+        return repository.save(actualInDb);
     }
 
     public ShortLink getByHash(String hash) {

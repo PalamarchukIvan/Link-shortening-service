@@ -1,14 +1,11 @@
 package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
-import org.example.model.ShortLink;
-import org.example.model.User;
+import org.example.dto.ShortLinkUpdateRequestDto;
+import org.example.facade.ShortLinkControllerFacade;
 import org.example.dto.ShortLinkDto;
 import org.example.dto.ShortLinkRequestDto;
-import org.example.service.ShortLinkService;
-import org.example.service.UserService;
-import org.example.util.CurrentUserUtil;
-import org.example.util.Mapstruct.ShortLinkMapper;
+import org.example.web.ResultWithStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,25 +18,28 @@ import java.util.List;
 @RequestMapping(value = "/rest/short-links", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("isAuthenticated()")
 public class ShortLinkRestController {
-    private final UserService userService;
-    private final ShortLinkService shortLinkService;
-    private final ShortLinkMapper mapper;
+
+    private final ShortLinkControllerFacade shortLinkServiceFacade;
 
     @GetMapping("/")
-    public List<ShortLinkDto> getShortLinksByUser() {
-        User user = userService.findActiveByUsername(CurrentUserUtil.getCurrentUser().getUsername()).orElseThrow();
-        user.getLinks().removeIf(ShortLink::isDeleted);
-        return mapper.toDto(user.getLinks());
+    public ResultWithStatus<List<ShortLinkDto>> getShortLinksByUser() {
+        return shortLinkServiceFacade.getShortLinksByUser();
     }
 
-    @PostMapping("/create-short-link")
-    public ShortLinkDto createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
-        return mapper.toDto(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto)));
+    @PostMapping("/create")
+    public ResultWithStatus<ShortLinkDto> createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
+        return shortLinkServiceFacade.createShortLink(shortLinkRequestDto);
+    }
+
+
+    @PutMapping("/update")
+    public ResultWithStatus<ShortLinkDto> updateShortLink(@RequestBody ShortLinkUpdateRequestDto shortLinkRequestDto) {
+        return shortLinkServiceFacade.updateShortLink(shortLinkRequestDto);
     }
 
     @DeleteMapping("/delete/{hash}")
-    public void deleteByHash(@PathVariable String hash) {
-        shortLinkService.deleteByHash(hash);
+    public ResultWithStatus<?> deleteByHash(@PathVariable String hash) {
+        return shortLinkServiceFacade.deleteByHash(hash);
     }
 
 }

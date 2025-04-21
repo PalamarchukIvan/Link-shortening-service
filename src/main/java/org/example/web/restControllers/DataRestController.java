@@ -2,16 +2,12 @@ package org.example.web.restControllers;
 
 import lombok.AllArgsConstructor;
 import org.example.dto.GetStatisticsDto;
-import org.example.model.User;
+import org.example.facade.DataControllerFacade;
 import org.example.dto.DataEntityResponseDto;
-import org.example.service.DataService;
-import org.example.util.CurrentUserUtil;
-import org.example.util.Mapstruct.DataMapper;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.example.web.ResultWithStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -19,13 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping(value = "/rest/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DataRestController {
-    private final DataService dataService;
+    private final DataControllerFacade dataControllerFacade;
 
     @GetMapping("/")
-    public List<DataEntityResponseDto> getGlobalStats(@ModelAttribute GetStatisticsDto request) {
-        User user = CurrentUserUtil.getCurrentUser();
-        request.setUser(user);
-        return DataMapper.INSTANCE.toDto(dataService.getFiltered(request));
+    public ResultWithStatus<List<DataEntityResponseDto>> getGlobalStats(@ModelAttribute GetStatisticsDto request) {
+        return dataControllerFacade.getStats(request);
     }
 
 }
