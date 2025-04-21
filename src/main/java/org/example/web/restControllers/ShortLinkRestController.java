@@ -19,7 +19,6 @@ import java.util.List;
 @CrossOrigin("http://localhost:3000")
 @AllArgsConstructor
 @RequestMapping(value = "/rest/short-links", produces = MediaType.APPLICATION_JSON_VALUE)
-//@PreAuthorize("hasRole('ADMIN')")
 @PreAuthorize("isAuthenticated()")
 public class ShortLinkRestController {
     private final UserService userService;
@@ -37,8 +36,10 @@ public class ShortLinkRestController {
     public ShortLinkDto createShortLink(@RequestBody ShortLinkRequestDto shortLinkRequestDto) {
         return mapper.toDto(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto)));
     }
+
     @DeleteMapping("/delete/{hash}")
     public void deleteByHash(@PathVariable String hash) {
         shortLinkService.deleteByHash(hash);
     }
+
 }
