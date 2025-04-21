@@ -16,7 +16,7 @@ import java.time.Instant;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/rest/reg-log")
+@RequestMapping("/rest/user")
 public class UserRestController {
 
     private final UserControllerFacade userControllerFacade;
