@@ -4,12 +4,16 @@ import { Link } from "react-router-dom";
 class GreetingComponent extends Component {
     constructor(props) {
         super(props);
-        this.goToMainPage = this.goToMainPage.bind(this);
+        this.goToRegister = this.goToRegister.bind(this);
+        this.goToLogin = this.goToLogin.bind(this);
     }
 
-    goToMainPage() {
-        console.log("clicked");
-        this.props.history.push("/main");
+    goToRegister() {
+        window.location.href = "/register";
+    }
+
+    goToLogin() {
+        window.location.href = "/login";
     }
 
     render() {
@@ -23,13 +27,13 @@ class GreetingComponent extends Component {
                     <hr className="my-4" />
                     <p>Just sign in or register to start using the service!</p>
                     <p className="lead">
-                        <Link className="btn btn-primary btn-lg" to="/login">
+                        <button className="btn btn-primary btn-lg" onClick={this.goToLogin}>
                             Sign In
-                        </Link>
+                        </button>
                         &nbsp;
-                        <Link className="btn btn-secondary btn-lg" to="/register" role="button">
+                        <button className="btn btn-secondary btn-lg" role="button" onClick={this.goToRegister}>
                             Register
-                        </Link>
+                        </button>
                     </p>
                 </div>
 

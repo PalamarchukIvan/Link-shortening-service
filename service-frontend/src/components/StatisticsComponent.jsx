@@ -43,13 +43,9 @@ class StatisticsComponent extends Component {
     async getCurrentUnFilteredStats() {
         try {
             const res = await DataService.getCurrentUserAllStats();
-            if (res.config.url !== res.request.responseURL) {
-                document.location = res.request.responseURL;
-            } else {
-                this.setState({
-                    statistics: res.data.body,
-                });
-            }
+            this.setState({
+                statistics: res.data.body,
+            });
         } catch (error) {
             console.error('Error fetching statistics:', error);
         }
@@ -127,13 +123,10 @@ class StatisticsComponent extends Component {
                         this.state.filterNumRecords
                     );
 
-            if (res.request.responseURL.includes('login')) {
-                document.location = res.request.responseURL;
-            } else {
-                this.setState({
-                    statistics: res.data.body,
-                });
-            }
+            this.setState({
+                statistics: res.data.body,
+            });
+            
         } catch (error) {
             console.error('Error fetching filtered data:', error);
         }

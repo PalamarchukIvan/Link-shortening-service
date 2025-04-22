@@ -93,7 +93,7 @@ class MainPageComponent extends Component {
             .then((updatedUser) => {
                 this.setState((prevState) => ({
                     editing: false,
-                    user: updatedUser.data,
+                    user: updatedUser.data.body,
                 }));
             })
             .catch((error) => {

@@ -1,70 +1,102 @@
-﻿import React, {Component} from 'react';
-import {withRouter} from "react-router-dom";
-import ShortLinkService from "../services/ShortLinkService";
+﻿import React, { Component } from 'react';
+import ShortLinkService from '../services/ShortLinkService';
 
-const SHORT_LINK_REDIRECT_API = "http://localhost:8080/s/"
+const SHORT_LINK_REDIRECT_API = 'http://localhost:8080/s/';
+
 class CreateShortLinkComponent extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isInvisible: true,
-            hash: '',
-            link: ''
-        }
-        this.cancel = this.cancel.bind(this)
-        this.changeLinkHandler = this.changeLinkHandler.bind(this);
-        this.createNewShortLink = this.createNewShortLink.bind(this);
-    }
-    changeLinkHandler= (event) => {
-        this.setState({link: event.target.value});
-    }
-    createNewShortLink= (event) => {
-        event.preventDefault()
+    state = {
+        link: '',
+        createdHash: '',
+        loading: false,
+        error: null
+    };
 
-        console.log(this.state.isInvisible)
-        console.log(this.state.hash)
-        let shortLink = {link: this.state.link}
+    handleChange = (e) => {
+        this.setState({ link: e.target.value, error: null });
+    };
 
-        if(this.state.link == null || this.state.link === '') {
-            return
+    createShortLink = async (e) => {
+        e.preventDefault();
+        const { link } = this.state;
+        if (!link.trim()) {
+            this.setState({ error: 'Please enter a valid URL.' });
+            return;
         }
-        ShortLinkService.createShortLink(shortLink).then(res => {
-            console.log(res)
-            this.setState( {
-                hash: res.data.body.hash,
-                isInvisible: false,
-                link: ''
-            })
-            // document.location = "/main"
-        })
-    }
-    cancel() {
-        this.props.history.push('/main')
-    }
+
+        this.setState({ loading: true, error: null });
+        try {
+            const res = await ShortLinkService.createShortLink({ link });
+            const hash = res.data.body.hash;
+            this.setState({ createdHash: hash, link: '', loading: false });
+        } catch (err) {
+            this.setState({ error: 'Failed to create short link.', loading: false });
+        }
+    };
+
+    goBack = () => {
+        window.location.href = '/main';
+    };
+
+    goToLink = () => {
+        const { createdHash } = this.state;
+        window.location.href = `${SHORT_LINK_REDIRECT_API}${createdHash}`;
+    };
+
     render() {
-        return (
-            <div>
-                <div>
-                    <br></br>
-                    <div className = "container">
-                        <div className = "row">
-                            <div className = "card col-md-6 offset-md-3 offset-md-3">   
-                                <div className = "card-body">
-                                    <form>
-                                        <div className = "form-group">
-                                            <label> Link: </label>
-                                            <input placeholder="Link" name="link" className="form-control"
-                                                   value={this.state.link} onChange={this.changeLinkHandler}/>
-                                        </div>
-                                        { !this.state.isInvisible&&<a href={SHORT_LINK_REDIRECT_API + this.state.hash}>{SHORT_LINK_REDIRECT_API + this.state.hash}</a>}
-                                        <br/>
-                                        <button className="btn btn-success" onClick={this.createNewShortLink}>Save</button>
-                                        <button className="btn btn-danger mr-auto" onClick={this.cancel} style={{marginLeft: "10px"}}>Go back</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+        const { link, createdHash, loading, error } = this.state;
 
+        return (
+            <div className="container mt-5">
+                <div className="card mx-auto" style={{ maxWidth: '500px' }}>
+                    <div className="card-body">
+                        <h4 className="card-title mb-4 text-center">Create New Short Link</h4>
+
+                        {error && <div className="alert alert-danger">{error}</div>}
+
+                        <form onSubmit={this.createShortLink}>
+                            <div className="form-group mb-3">
+                                <label htmlFor="linkInput">Original URL</label>
+                                <input
+                                    id="linkInput"
+                                    type="url"
+                                    className="form-control"
+                                    placeholder="Enter URL to shorten"
+                                    value={link}
+                                    onChange={this.handleChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="d-flex justify-content-between">
+                                <button
+                                    type="submit"
+                                    className="btn btn-success"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Creating...' : 'Save'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={this.goBack}
+                                >
+                                    Go Back
+                                </button>
+                            </div>
+                        </form>
+
+                        {!createdHash ? null : (
+                            <div className="alert alert-info mt-4 text-center">
+                                <p>Your shortened link:</p>
+                                <a
+                                    href={`${SHORT_LINK_REDIRECT_API}${createdHash}`}
+                                    onClick={(e) => { e.preventDefault(); this.goToLink(); }}
+                                    className="font-weight-bold"
+                                >
+                                    {SHORT_LINK_REDIRECT_API + createdHash}
+                                </a>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

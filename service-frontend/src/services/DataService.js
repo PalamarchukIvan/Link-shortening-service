@@ -32,7 +32,7 @@ class DataService {
     }
     
     
-        async getAllUsersUnfilteredStatData() {
+    async getAllUsersUnfilteredStatData() {
         return axios.get(
             ADMIN_STAT_LINK_API + "/",
             {
