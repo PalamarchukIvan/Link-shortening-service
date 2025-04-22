@@ -29,6 +29,14 @@ public class UserControllerFacade {
         return ResultWithStatus.ok(user.get());
     }
 
+    public ResultWithStatus<User> getUser(String login) {
+        Optional<User> user = userService.findActiveByUsername(login);
+        if (!user.isPresent()) {
+            return ResultWithStatus.error(HttpStatus.BAD_REQUEST, "User is not found");
+        }
+        return ResultWithStatus.ok(user.get());
+    }
+
     public ResultWithStatus<User> editProfile(User user) {
         return ResultWithStatus.ok(userService.updateCurrentUser(user));
     }

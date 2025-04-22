@@ -30,18 +30,12 @@ class CreateShortLinkComponent extends Component {
         }
         ShortLinkService.createShortLink(shortLink).then(res => {
             console.log(res)
-            if (res.config.url !== res.request.responseURL) {
-                console.log('url2 => ' + res.config.url )
-                console.log('url3 => ' + res.request.responseURL)
-                document.location = res.request.responseURL
-            } else {
-                this.setState( {
-                    hash: res.data.hash,
-                    isInvisible: false,
-                    link: ''
-                })
-                // document.location = "/main"
-            }
+            this.setState( {
+                hash: res.data.body.hash,
+                isInvisible: false,
+                link: ''
+            })
+            // document.location = "/main"
         })
     }
     cancel() {

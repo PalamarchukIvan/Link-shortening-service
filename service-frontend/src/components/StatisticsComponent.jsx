@@ -47,7 +47,7 @@ class StatisticsComponent extends Component {
                 document.location = res.request.responseURL;
             } else {
                 this.setState({
-                    statistics: res.data,
+                    statistics: res.data.body,
                 });
             }
         } catch (error) {
@@ -131,7 +131,7 @@ class StatisticsComponent extends Component {
                 document.location = res.request.responseURL;
             } else {
                 this.setState({
-                    statistics: res.data,
+                    statistics: res.data.body,
                 });
             }
         } catch (error) {

@@ -46,7 +46,7 @@ class MainPageComponent extends Component {
                 console.log(res);
                 console.log('data => ' + res.data);
                 this.setState({
-                    user: res.data,
+                    user: res.data.body,
                 });
             }
         }) : UserService.getUser(this.login).then((res) => {
@@ -57,7 +57,7 @@ class MainPageComponent extends Component {
                 console.log(res);
                 console.log('data => ' + res.data);
                 this.setState({
-                    user: res.data,
+                    user: res.data.body,
                 });
             }
         });

@@ -11,6 +11,7 @@ import org.example.service.DataService;
 import org.example.service.UserService;
 import org.example.util.Mapstruct.DataMapper;
 import org.example.util.Mapstruct.UserMapper;
+import org.example.util.web.ResponseStatusFromResult;
 import org.example.web.ResultWithStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,11 +29,13 @@ public class AdminRestController {
     private final DataControllerFacade dataControllerFacade;
 
     @GetMapping("/admin-statistics/")
+    @ResponseStatusFromResult
     public ResultWithStatus<List<DataEntityResponseDto>> getAllUserStats() {
         return dataControllerFacade.getStats();
     }
 
     @GetMapping("/admin-statistics/filtered")
+    @ResponseStatusFromResult
     public ResultWithStatus< List<DataEntityResponseDto>> getAllUserFilteredStats(
             @ModelAttribute GetStatisticsDto request,
             @RequestParam(required = false) String login
@@ -41,6 +44,7 @@ public class AdminRestController {
     }
 
     @GetMapping("/reg-log/user")
+    @ResponseStatusFromResult
     public ResultWithStatus<UserFullDto> getUser(@RequestParam String login) {
         return adminControllerFacade.getUser(login);
     }

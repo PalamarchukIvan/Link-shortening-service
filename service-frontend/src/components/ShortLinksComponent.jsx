@@ -26,7 +26,7 @@ class ShortLinksComponent extends Component {
             document.location = res.request.responseURL;
         } else {
             this.setState({
-                shortLinks: res.data,
+                shortLinks: res.data.body,
             });
         }
     }

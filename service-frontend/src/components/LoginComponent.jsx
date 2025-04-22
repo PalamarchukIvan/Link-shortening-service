@@ -1,51 +1,91 @@
-﻿import React, {Component} from 'react';
+﻿// src/components/LoginComponent.jsx
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import UserService from "../services/UserService";
 
 class LoginComponent extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: ''
+    state = {
+        username: "",
+        password: "",
+        error: ""
+    };
+
+    handleChange = e =>
+        this.setState({ [e.target.name]: e.target.value, error: "" });
+
+    handleSubmit = async e => {
+        e.preventDefault();
+        try {
+            await UserService.doLogin({
+                username: this.state.username,
+                password: this.state.password
+            });
+            window.location.href = "/main";
+            
+        } catch (err) {
+            this.setState({
+                error:
+                    err.response?.data?.message ||
+                    "Login failed—please check your credentials"
+            });
         }
-        this.changeUsernameHandler = this.changeUsernameHandler.bind(this)
-        this.changePasswordHandler = this.changePasswordHandler.bind(this)
-    }
-    changeUsernameHandler= (event) => {
-        this.setState({username: event.target.value});
-    }
-    changePasswordHandler= (event) => {
-        this.setState({password: event.target.value});
-    }
-    signIn = (event) => {
-        let user = {username: this.state.username, password: this.state.password}
-        console.log("user => " + user.username + " " + user.password)
-        let logined = UserService.doLogin(user)
-        console.log("if logined " + logined)
-    }
-    registration = (event) => {
-        console.log("clicked on reg")
-    }
+    };
+
+    goToRegister = () => {
+        window.location.href = "/register";
+    };
+
     render() {
         return (
-            <div>
-                <form>
-                    <br/>
-                    <div><label> UserName </label> 
-                        <input placeholder="username" type="text" name="username" 
-                               value={this.state.username} onChange={this.changeUsernameHandler}/>
+            <div className="login-container" style={{ maxWidth: 360, margin: "2rem auto" }}>
+                <h2 className="mb-4">Sign In</h2>
+
+                {this.state.error && (
+                    <div className="alert alert-danger">{this.state.error}</div>
+                )}
+
+                <form onSubmit={this.handleSubmit}>
+                    <div className="form-group mb-3">
+                        <label>Username</label>
+                        <input
+                            name="username"
+                            value={this.state.username}
+                            onChange={this.handleChange}
+                            className="form-control"
+                            placeholder="Enter username"
+                            required
+                        />
                     </div>
-                    <div><label> Password:</label>
-                        <input placeholder="password" type="password" name="password"
-                               value={this.state.password} onChange={this.changePasswordHandler}/>
+
+                    <div className="form-group mb-4">
+                        <label>Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={this.state.password}
+                            onChange={this.handleChange}
+                            className="form-control"
+                            placeholder="Enter password"
+                            required
+                        />
                     </div>
-                    <br/>
-                    <button className="btn btn-success" onClick={this.signIn}>Sign in</button>
-                    <button className="btn btn-primary" onClick={this.registration}>I don't have an account</button>
+
+                    <div className="d-flex justify-content-between">
+                        <button type="submit" className="btn btn-primary">
+                            Sign In
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={this.goToRegister}
+                        >
+                            Register
+                        </button>
+                    </div>
                 </form>
             </div>
         );
     }
 }
 
-export default LoginComponent;
+export default withRouter(LoginComponent);

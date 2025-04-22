@@ -1,18 +1,15 @@
 ﻿import axios from "axios";
-const USER_API = "http://localhost:8080/rest/reg-log"
-class UserService {
-    doLogin(user) {
-        return axios.post(USER_API + "/login", user, {withCredentials: true})
-    }    
-    getCurrentUser() {
-        return axios.get(USER_API + "/current", {withCredentials: true})
-    }
-    getUser(login) {
-        return axios.get(USER_API + "/user", {withCredentials: true, params: {login}})
-    }
-    updateCurrentUser(user) {
-        return axios.patch(USER_API + "/update", user, {withCredentials: true})
-    }
-}
 
-export default new UserService()
+const api = axios.create({
+    baseURL: "http://localhost:8080/rest/user",
+    withCredentials: true,       // all calls carry cookies
+});
+
+export default {
+    doLogin: creds => api.post("/login", creds),
+    doRegistration: creds => api.post("/registration", creds),
+    getCurrentUser: () => api.get("/current"),
+    updateCurrentUser: user => api.patch("/update", user),
+    verify: token => api.post("/verify", null, { params: { token } }),
+    getUser: login => api.get("/profile", {login: login})
+}

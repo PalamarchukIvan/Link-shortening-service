@@ -44,7 +44,7 @@ class AdminStatisticsComponent extends Component {
                 document.location = res.request.responseURL;
             } else {
                 this.setState({
-                    statistics: res.data,
+                    statistics: res.data.body,
                 });
             }
         } catch (error) {
@@ -98,7 +98,7 @@ class AdminStatisticsComponent extends Component {
             } else {
                 console.log(res.data)
                 this.setState({
-                    statistics: res.data,
+                    statistics: res.data.body,
                 });
             }
         } catch (error) {

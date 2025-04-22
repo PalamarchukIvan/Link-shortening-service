@@ -1,0 +1,9 @@
+package org.example.util.web;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ResponseStatusFromResult {
+}

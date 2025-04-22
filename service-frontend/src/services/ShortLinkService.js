@@ -1,21 +1,12 @@
 ﻿import axios from "axios";
-const SHORT_LINK_API = "http://localhost:8080/rest/short-links"
-class ShortLinkService {
-    async getCurrentUserShortLinks() {
-        return axios.get(
-            SHORT_LINK_API + "/",
-            {withCredentials: true}
-        )
-    }
-    createShortLink(shortLink) {
-        return axios.post(SHORT_LINK_API + "/create-short-link",
-                   shortLink,
-            {withCredentials: true})
-    }
-    deleteShortLink(hash = "") {
-        return axios.delete(SHORT_LINK_API + "/delete/" + hash,
-            {withCredentials: true})
-    }
-}
 
-export default new ShortLinkService()
+const api = axios.create({
+    baseURL: "http://localhost:8080/rest/short-links",
+    withCredentials: true,       // all calls carry cookies
+});
+
+export default {
+    getCurrentUserShortLinks: () => api.get("/"),
+    createShortLink: shortLink => api.post("/create", shortLink),
+    deleteShortLink: (hash) => api.delete("/delete/" + hash)
+}
