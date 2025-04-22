@@ -24,16 +24,14 @@ public class ShortLinkService {
     private final ShortLinkRepository repository;
     private final DataRepository rawDataRepository;
 
-    public ShortLink create(ShortLink link) {
-        link.setHash(getHashCode());
+    public ShortLink create(ShortLink link) throws IllegalArgumentException{
+        if (link.getHash() == null) {
+            link.setHash(getHashCode());
+        } else if (repository.findById(link.getHash()).isPresent()) {
+            throw new IllegalArgumentException("Hash already exists");
+        }
         link.setUser(CurrentUserUtil.getCurrentUser());
         return repository.save(link);
-    }
-
-    public ShortLink update(ShortLinkUpdateRequestDto link) {
-        ShortLink actualInDb = getByHash(link.getOldHash());
-        actualInDb.setHash(link.getNewHash());
-        return repository.save(actualInDb);
     }
 
     public ShortLink getByHash(String hash) {

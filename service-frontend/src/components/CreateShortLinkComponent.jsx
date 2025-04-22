@@ -6,30 +6,38 @@ const SHORT_LINK_REDIRECT_API = 'http://localhost:8080/s/';
 class CreateShortLinkComponent extends Component {
     state = {
         link: '',
+        customHash: '',
         createdHash: '',
         loading: false,
         error: null
     };
 
     handleChange = (e) => {
-        this.setState({ link: e.target.value, error: null });
+        this.setState({ [e.target.name]: e.target.value, error: null });
     };
 
     createShortLink = async (e) => {
         e.preventDefault();
-        const { link } = this.state;
+        const { link, customHash } = this.state;
         if (!link.trim()) {
             this.setState({ error: 'Please enter a valid URL.' });
+            return;
+        }
+        if (customHash && !/^[a-zA-Z0-9_-]+$/.test(customHash)) {
+            this.setState({ error: 'Custom hash may only contain letters, numbers, _ or -.' });
             return;
         }
 
         this.setState({ loading: true, error: null });
         try {
-            const res = await ShortLinkService.createShortLink({ link });
-            const hash = res.data.body.hash;
-            this.setState({ createdHash: hash, link: '', loading: false });
+            const payload = customHash
+                ? { link, hash: customHash }
+                : { link };
+            const res = await ShortLinkService.createShortLink(payload);
+            const hashResult = res.data.body.hash;
+            this.setState({ createdHash: hashResult, link: '', customHash: '', loading: false });
         } catch (err) {
-            this.setState({ error: 'Failed to create short link.', loading: false });
+            this.setState({ error: 'Failed to create short link. Error: ' + err.response.data.errors[0], loading: false });
         }
     };
 
@@ -43,7 +51,7 @@ class CreateShortLinkComponent extends Component {
     };
 
     render() {
-        const { link, createdHash, loading, error } = this.state;
+        const { link, customHash, createdHash, loading, error } = this.state;
 
         return (
             <div className="container mt-5">
@@ -58,12 +66,26 @@ class CreateShortLinkComponent extends Component {
                                 <label htmlFor="linkInput">Original URL</label>
                                 <input
                                     id="linkInput"
+                                    name="link"
                                     type="url"
                                     className="form-control"
                                     placeholder="Enter URL to shorten"
                                     value={link}
                                     onChange={this.handleChange}
                                     required
+                                />
+                            </div>
+
+                            <div className="form-group mb-4">
+                                <label htmlFor="hashInput">Custom Alias (optional)</label>
+                                <input
+                                    id="hashInput"
+                                    name="customHash"
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Enter custom hash (e.g., my-link)"
+                                    value={customHash}
+                                    onChange={this.handleChange}
                                 />
                             </div>
 
@@ -85,7 +107,7 @@ class CreateShortLinkComponent extends Component {
                             </div>
                         </form>
 
-                        {!createdHash ? null : (
+                        {createdHash && (
                             <div className="alert alert-info mt-4 text-center">
                                 <p>Your shortened link:</p>
                                 <a

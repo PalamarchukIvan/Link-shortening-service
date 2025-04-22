@@ -34,13 +34,6 @@ public class ShortLinkRestController {
         return shortLinkServiceFacade.createShortLink(shortLinkRequestDto);
     }
 
-
-    @PutMapping("/update")
-    @ResponseStatusFromResult
-    public ResultWithStatus<ShortLinkDto> updateShortLink(@RequestBody ShortLinkUpdateRequestDto shortLinkRequestDto) {
-        return shortLinkServiceFacade.updateShortLink(shortLinkRequestDto);
-    }
-
     @DeleteMapping("/delete/{hash}")
     @ResponseStatusFromResult
     public ResultWithStatus<?> deleteByHash(@PathVariable String hash) {

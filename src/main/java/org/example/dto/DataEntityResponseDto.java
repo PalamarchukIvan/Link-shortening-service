@@ -16,4 +16,3 @@ public class DataEntityResponseDto {
     private boolean exists;
     private long lag;
 }
-

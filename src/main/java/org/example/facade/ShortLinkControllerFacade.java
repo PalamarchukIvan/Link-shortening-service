@@ -36,12 +36,12 @@ public class ShortLinkControllerFacade {
     }
 
     public ResultWithStatus<ShortLinkDto> createShortLink(ShortLinkRequestDto shortLinkRequestDto) {
-        return ResultWithStatus.ok(mapper.toDto(shortLinkService.create(mapper.fromRequest(shortLinkRequestDto))));
-    }
-
-
-    public ResultWithStatus<ShortLinkDto> updateShortLink(ShortLinkUpdateRequestDto shortLinkRequestDto) {
-        return ResultWithStatus.ok(mapper.toDto(shortLinkService.update(shortLinkRequestDto)));
+        try {
+            ShortLink created = shortLinkService.create(mapper.fromRequest(shortLinkRequestDto));
+            return ResultWithStatus.ok(mapper.toDto(created));
+        } catch (Exception e) {
+            return ResultWithStatus.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     public ResultWithStatus deleteByHash(String hash) {

@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ShortLinkMapper {
+    @Mapping(target = "hash", expression = "java( requestDto.getHash() )")
     ShortLink fromRequest(ShortLinkRequestDto requestDto);
     @Mapping(target = "link", expression = "java( \"http://localhost:8080/s/\".concat(shortLink.getHash()) )")
     ShortLinkResponseDto toResponse(ShortLink shortLink);
