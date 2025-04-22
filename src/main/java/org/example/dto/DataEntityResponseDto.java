@@ -9,10 +9,8 @@ import java.time.Instant;
 @Getter
 @AllArgsConstructor
 public class DataEntityResponseDto {
-    private Instant time;
+    private Instant visitTime;
     private String hash;
     private UserDataResponseDto user;
-    private long expectedDuration;
-    private boolean exists;
-    private long lag;
+    private boolean isFound;
 }

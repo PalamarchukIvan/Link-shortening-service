@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,16 +28,16 @@ public class DataService {
     public List<DataEntity> getFiltered(GetStatisticsDto request) {
         User user = request.getUser();
         String hash = request.getHash();
-        Date startDate = request.getStartDate();
-        Date endDate = request.getEndDate();
+        LocalDateTime startDate = request.getStartDate();
+        LocalDateTime endDate = request.getEndDate();
         Integer amount = request.getAmount();
 
         // build spec
         Specification<DataEntity> spec = DataSpecifications.build(
                 user != null ? user.getId() : null,
                 hash,
-                startDate != null ? startDate.toInstant() : null,
-                endDate   != null ? endDate.toInstant()   : null
+                startDate != null ? startDate.toInstant(ZoneOffset.UTC) : null,
+                endDate   != null ? endDate.toInstant(ZoneOffset.UTC)   : null
         );
 
         // choose paging or simple sort
@@ -54,13 +55,6 @@ public class DataService {
             list = repository.findAll(spec, Sort.by("time"));
         }
 
-        // if you need to throw on no‑hash, you can do that before or after—
-        // e.g. if (list.isEmpty() && hash!=null) throw new HashNotFoundException();
-        if (list.isEmpty() && StringUtils.hasText(hash)) {
-            throw new HashNotFoundException();
-        }
-
-        // post‑processing of durations
         return formatLastRecord(list);
     }
 

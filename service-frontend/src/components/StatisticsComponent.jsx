@@ -2,262 +2,196 @@
 import DataService from '../services/DataService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import {Bar, Line} from 'react-chartjs-2';
-import {Chart, ChartData, ChartDataset, DefaultDataPoint, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
-class StatisticsComponent extends Component {
-    constructor(props) {
-        super(props);
-        Chart.register(...registerables)
-        this.state = {
-            statistics: [
-                {
-                    columnNumber: '',
-                    time: '',
-                    hash: '',
-                    expectedDuration: '',
-                    exists: '',
-                },
-            ],
-            endDate: null,
-            startDate: null,
-            filterHash: '',
-            filterNumRecords: null,
-            chartInstance: null, // Added chartInstance to track the Chart.js instance
-        };
+Chart.register(...registerables);
+
+export default class StatisticsComponent extends Component {
+    state = {
+        statistics: [],
+        startDate: null,
+        endDate: null,
+        filterHash: '',
+        filterNumRecords: '',
+        filterUsername: '',
+        chartData: null,
+        showModal: false,
+        modalDate: null,
+        modalHash: null,
+        modalEntries: []
+    };
+
+    componentDidMount() {
+        this.loadStatistics();
     }
 
-    async componentDidMount() {
-        await this.getCurrentUnFilteredStats();
-
-        this.updateLastRowInterval = setInterval(this.updateLastRow, 1000);
-    }
-
-    componentWillUnmount() {
-        if (this.state.chartInstance) {
-            this.state.chartInstance.destroy();
-        }
-        clearInterval(this.updateLastRowInterval);
-    }
-
-    async getCurrentUnFilteredStats() {
+    // Load unfiltered or filtered based on state
+    loadStatistics = async () => {
+        const { filterHash, filterNumRecords, filterUsername, startDate, endDate } = this.state;
         try {
-            const res = await DataService.getCurrentUserAllStats();
-            this.setState({
-                statistics: res.data.body,
+            const res = await DataService.getStatistics({
+                hash: filterHash || null,
+                amount: filterNumRecords || null,
+                startDate: startDate ? startDate.toISOString() : null,
+                endDate: endDate ? endDate.toISOString() : null
             });
-        } catch (error) {
-            console.error('Error fetching statistics:', error);
+            this.setState({ statistics: res.data.body }, this.prepareChart);
+        } catch (err) {
+            console.error('Error fetching statistics:', err);
         }
-    }
+    };
 
-    updateLastRow = () => {
+    prepareChart = () => {
         const { statistics } = this.state;
-
-        if (statistics.length > 0) {
-            const lastRow = statistics[statistics.length - 1];
-            const startTime = new Date(lastRow.time);
-            let timeDiff = null;
-            const currentTime = new Date();
-            if (
-                statistics.length > 1 &&
-                statistics[statistics.length - 2].hash === lastRow.hash
-            ) {
-                const preLastRow = statistics[statistics.length - 2];
-                timeDiff =
-                    currentTime - startTime + preLastRow.expectedDuration;
-            } else {
-                timeDiff = currentTime - startTime;
-            }
-
-            this.setState((prevState) => ({
-                statistics: [
-                    ...prevState.statistics.slice(0, -1),
-                    {
-                        ...lastRow,
-                        expectedDuration: timeDiff,
-                    },
-                ],
-            }));
-        }
-    };
-
-    convertMillisecondsToDateTime = (millis) => {
-        if (millis == null || millis.toString() === '') {
-            return '';
-        }
-        const formattedDate =
-            (millis.toString() / 3600000).toFixed(0) +
-            ':' +
-            (millis.toString() / 60000 % 60).toFixed(0) +
-            ':' +
-            (millis.toString() % 60000 / 1000).toFixed(0);
-        return formattedDate;
-    };
-
-    formatTime = (time) => {
-        return time.replace('T', ' ').replace('Z', ' ').split('.')[0];
-    };
-
-    handleFilterChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value,
+        const buckets = {};
+        statistics.forEach(s => {
+            const raw = s.visitTime;
+            const fixedIso = raw.replace(/\.(\d{3})\d*Z$/, '.$1Z');
+            const d = new Date(fixedIso);
+            if (isNaN(d.getTime())) return;
+            const dateKey = d.toISOString().slice(0, 10);
+            buckets[dateKey] = buckets[dateKey] || {};
+            buckets[dateKey][s.hash] = (buckets[dateKey][s.hash] || 0) + 1;
         });
+        const dates = Object.keys(buckets).sort();
+        const hashes = [...new Set(statistics.map(s => s.hash))];
+        const datasets = hashes.map((hash, idx) => ({
+            label: hash,
+            data: dates.map(d => buckets[d][hash] || 0),
+            backgroundColor: `hsl(${(idx * 60) % 360},70%,60%)`
+        }));
+        this.setState({ chartData: { labels: dates, datasets } });
     };
 
-    handleFilterSubmit = async (event) => {
-        event.preventDefault();
+    handleFilterChange = e => this.setState({ [e.target.name]: e.target.value });
 
-        try {
-            const res =
-                this.state.filterHash !== '' && this.state.filterHash != null
-                    ? await DataService.getFilteredDataWithHash(
-                        this.getDateISOString(this.state.startDate),
-                        this.getDateISOString(this.state.endDate),
-                        this.state.filterHash,
-                        this.state.filterNumRecords
-                    )
-                    : await DataService.getFilteredData(
-                        this.getDateISOString(this.state.startDate),
-                        this.getDateISOString(this.state.endDate),
-                        this.state.filterNumRecords
-                    );
-
-            this.setState({
-                statistics: res.data.body,
-            });
-            
-        } catch (error) {
-            console.error('Error fetching filtered data:', error);
-        }
+    handleFilterSubmit = e => {
+        e.preventDefault();
+        console.log('Applying filters');
+        this.loadStatistics();
     };
 
-    getDateISOString = (date) =>
-        date instanceof Date && !isNaN(date) ? date.toISOString() : null;
+    onChartClick = (evt, elements) => {
+        if (!elements.length) return;
+        const { chartData, statistics } = this.state;
+        const el = elements[0];
+        const date = chartData.labels[el.index];
+        const hash = chartData.datasets[el.datasetIndex].label;
+        const entries = statistics.filter(
+            s => s.hash === hash && s.visitTime.slice(0, 10) === date
+        );
+        this.setState({ showModal: true, modalDate: date, modalHash: hash, modalEntries: entries });
+    };
 
-    renderChart = () => {
-        // Get the last entry for each unique hash
-        const uniqueHashes = [...new Set(this.state.statistics.map((statistic) => statistic.hash))];
-        const filteredData = uniqueHashes.map((hash) => {
-            const lastEntry = this.state.statistics
-                .filter((statistic) => statistic.hash === hash)
-                .pop(); // Get the last entry for each hash
-            return lastEntry;
-        });
-        
-        const lineChartData = {
-            labels: filteredData.map((statistic) => statistic.hash),
-            datasets: [
-                {
-                    label: 'Expected Duration',
-                    data: filteredData
-                    .map((statistic) =>
-                        statistic.expectedDuration / 3600000
-                    ),
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderWidth: 2,
-                },
-            ],
-        };
+    closeModal = () => this.setState({ showModal: false });
+
+    renderModal = () => {
+        const { showModal, modalDate, modalHash, modalEntries } = this.state;
+        if (!showModal) return null;
 
         return (
-                <Bar
-                    ref={(chart) => {
-                        this.state.chartInstance = chart ? chart.chartInstance : null;
-                    }}
-                    data={lineChartData}
-                    options={{
-                        scales: {
-                            x: {
-                                type: 'category',
-                                labels: filteredData.map((statistic) => statistic.hash),
-                            },
-                            y: {
-                                beginAtZero: true,
-                            },
-                        },
-                    }}
-                />
+            <div
+                className="modal-backdrop"
+                style={{ backdropFilter: 'blur(5px)', backgroundColor: 'rgba(255,255,255,0.6)' }}
+            >
+                <div className="modal-dialog">
+                    <div className="modal-content" style={{ color: '#000' }}>
+                        <div className="modal-header">
+                            <h5 className="modal-title">
+                                Visits for {modalHash} on {modalDate}
+                            </h5>
+                            <button type="button" className="btn-close" onClick={this.closeModal} />
+                        </div>
+                        <div className="modal-body">
+                            <table className="table">
+                                <thead>
+                                <tr><th>#</th><th>Time</th><th>Found</th></tr>
+                                </thead>
+                                <tbody>
+                                {modalEntries.map((e, i) => (
+                                    <tr key={i}>
+                                        <td>{i + 1}</td>
+                                        <td>{new Date(e.visitTime.slice(0, 23) + 'Z').toLocaleTimeString()}</td>
+                                        <td>{e.isFound ? 'Yes' : 'No'}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" onClick={this.closeModal}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         );
     };
 
     render() {
+        const { chartData, startDate, endDate, filterHash, filterUsername, filterNumRecords } = this.state;
         return (
-            <div>
-                <h2 className="mb-4">Statistics Table</h2>
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                    <table className="table mt-4">
-                        <thead>
-                        <tr>
-                            <th>Column Number</th>
-                            <th>Visit Time</th>
-                            <th>Visited Site Hash</th>
-                            <th>Expected Duration</th>
-                            <th>Is found</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.state.statistics.map((statistic, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{this.formatTime(statistic.time)}</td>
-                                <td>{statistic.hash}</td>
-                                <td>{this.convertMillisecondsToDateTime(statistic.expectedDuration)}</td>
-                                <td>{statistic.exists.toString()}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-                <form onSubmit={this.handleFilterSubmit} className="mb-3">
-                    <div className="row">
-                        <div className="col-md-3">
-                            <label htmlFor="filterHash" className="form-label">Filter by Hash:</label>
-                            <input type="text" className="form-control" id="filterHash" name="filterHash" value={this.state.filterHash} onChange={this.handleFilterChange} />
-                        </div>
-                        <div className="col-md-3">
-                            <label htmlFor="filterNumRecords" className="form-label">Filter by Number of Records:</label>
-                            <input type="number" className="form-control" id="filterNumRecords" name="filterNumRecords" value={this.state.filterNumRecords} onChange={this.handleFilterChange} />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Filter by Start Date:</label>
-                            <DatePicker
-                                selected={this.state.startDate}
-                                onChange={(date) => this.setState( {
-                                    startDate: date
-                                })
-                                }
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="col-md-3">
-                            <label className="form-label">Filter by End Date:</label>
-                            <DatePicker
-                                selected={this.state.endDate}
-                                onChange={(date) => this.setState({
-                                    endDate: date
-                                })
-                                }
-                                className="form-control"
-                            />
-                        </div>
+            <div className="container mt-4">
+                <h2 className="mb-4">Usage Histogram</h2>
+
+                <form onSubmit={this.handleFilterSubmit} className="row g-3 mb-4">
+                    <div className="col-md-3">
+                        <label htmlFor="filterHash" className="form-label">Filter by Hash</label>
+                        <input
+                            type="text"
+                            id="filterHash"
+                            name="filterHash"
+                            value={filterHash}
+                            className="form-control"
+                            onChange={this.handleFilterChange}
+                        />
                     </div>
-                    <button type="submit" className="btn btn-primary mt-3">Apply Filters</button>
+                    <div className="col-md-3">
+                        <label htmlFor="filterUsername" className="form-label">Filter by Username</label>
+                        <input
+                            type="text"
+                            id="filterUsername"
+                            name="filterUsername"
+                            value={filterUsername}
+                            className="form-control"
+                            onChange={this.handleFilterChange}
+                        />
+                    </div>
+                    <div className="col-md-2">
+                        <label htmlFor="filterNumRecords" className="form-label"># Records</label>
+                        <input
+                            type="number"
+                            id="filterNumRecords"
+                            name="filterNumRecords"
+                            value={filterNumRecords}
+                            className="form-control"
+                            onChange={this.handleFilterChange}
+                        />
+                    </div>
+                    <div className="col-md-2">
+                        <label className="form-label">Start Date</label>
+                        <DatePicker selected={startDate} onChange={date => this.setState({ startDate: date })} className="form-control" />
+                    </div>
+                    <div className="col-md-2">
+                        <label className="form-label">End Date</label>
+                        <DatePicker selected={endDate} onChange={date => this.setState({ endDate: date })} className="form-control" />
+                    </div>
+                    <div className="col-md-12 text-end">
+                        <button type="submit" className="btn btn-primary">Apply Filters</button>
+                    </div>
                 </form>
 
-                <div >
-                    <div className="mt-4">
-                        <h2>Expected Duration Over Time</h2>
-                        {this.renderChart()}
-                    </div>
-                    <br />
-                    <br />
-                </div>
-            </div>
+                {chartData && (
+                    <Bar
+                        data={chartData}
+                        options={{ responsive: true, onClick: this.onChartClick, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }}
+                    />
+                )}
 
+                {this.renderModal()}
+            </div>
         );
     }
 }
-
-export default StatisticsComponent;

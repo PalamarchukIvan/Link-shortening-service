@@ -39,7 +39,7 @@ class AdminStatisticsComponent extends Component {
 
     async getCurrentUnFilteredStats() {
         try {
-            const res = await DataService.getAllUsersUnfilteredStatData();
+            const res = await DataService.getStatistics();
             if (res.config.url !== res.request.responseURL) {
                 document.location = res.request.responseURL;
             } else {
@@ -85,7 +85,7 @@ class AdminStatisticsComponent extends Component {
         event.preventDefault();
 
         try {
-            const res = await DataService.getAllUsersFilteredStatData(
+            const res = await DataService.getStatistics(
                             this.state.filterHash,
                             this.state.filterNumRecords,
                             this.state.filterUsername,

@@ -23,12 +23,10 @@ public interface DataMapper {
 
         DataEntityResponseDto.DataEntityResponseDtoBuilder dataEntityResponseDto = DataEntityResponseDto.builder();
 
-        dataEntityResponseDto.exists( dataEntity.isFound() );
-        dataEntityResponseDto.time( dataEntity.getTime() );
+        dataEntityResponseDto.isFound( dataEntity.isFound() );
+        dataEntityResponseDto.visitTime( dataEntity.getTime() );
         dataEntityResponseDto.hash( dataEntity.getHash() );
         dataEntityResponseDto.user( userToUserDataResponseDto( dataEntity.getUser() ) );
-        dataEntityResponseDto.expectedDuration( dataEntity.getExpectedDuration() );
-        dataEntityResponseDto.lag( dataEntity.getLag() );
 
         return dataEntityResponseDto.build();
     }
