@@ -10,6 +10,6 @@ export default {
     doRegistration: creds => api.post("/registration", creds),
     getCurrentUser: () => api.get("/current"),
     updateCurrentUser: user => api.patch("/update", user),
-    verify: token => api.post("/verify", null, { params: { token } }),
-    getUser: login => api.get("/profile", {login: login})
+    verify: token => api.post("/verify", null, {params: {token}}),
+    getUser: login => api.get("/profile", {params: {login}})
 }

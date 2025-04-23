@@ -31,9 +31,4 @@ public class AdminRestController {
         return adminControllerFacade.getAllUserFilteredStats(request, login);
     }
 
-    @GetMapping("/reg-log/user")
-    @ResponseStatusFromResult
-    public ResultWithStatus<UserFullDto> getUser(@RequestParam String login) {
-        return adminControllerFacade.getUser(login);
-    }
 }

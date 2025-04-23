@@ -13,6 +13,7 @@ import RegistrationComponent from "./components/RegistrationComponent";
 import PrivateRoute from "./components/util/PrivateRoute";
 import HeaderComponent from "./components/util/HeaderComponent";
 import FooterComponent from "./components/util/FooterComponent";
+import AdminUserProfileComponent from "./components/AdminUserProfileComponent";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
                           <PrivateRoute path="/user-stat/statistic" exact component={StatisticsComponent} />
                           <PrivateRoute path="/user-stat/profile"   exact component={MainPageComponent} />
                           <PrivateRoute path="/all-users-statistic" exact component={AdminStatisticsComponent} />
+                          <PrivateRoute path="/admin/user-profile" component={AdminUserProfileComponent}/>
 
                           {/* Fallback */}
                           <Route render={() => <Redirect to="/" />} />

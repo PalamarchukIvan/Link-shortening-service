@@ -30,7 +30,8 @@ class AdminStatisticsComponent extends Component {
     componentDidMount() {
         const params = new URLSearchParams(this.props.location.search);
         const login = params.get('login');
-        this.setState({ login }, this.loadStats);
+        const filterHash = params.get('hash');
+        this.setState({ filterUsername: login, filterHash: filterHash }, this.loadStats);
     }
 
     loadStats = async () => {
@@ -97,9 +98,8 @@ class AdminStatisticsComponent extends Component {
     closeModal = () => this.setState({ showModal: false });
 
     renderModal() {
-        const { showModal, modalDate, modalHash, modalEntries, filterUsername, login } = this.state;
+        const { showModal, modalDate, modalHash, modalEntries } = this.state;
         if (!showModal) return null;
-        const userLabel = filterUsername || login || 'unknown';
 
         return (
             <div className="modal-backdrop" style={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(255,255,255,0.5)' }}>
@@ -116,11 +116,11 @@ class AdminStatisticsComponent extends Component {
                                 </thead>
                                 <tbody>
                                 {modalEntries.map((e,i) => (
-                                    <tr key={i} className={!e.isFound ? 'table-danger' : ''}>
+                                    <tr key={i} className={!e.found ? 'table-danger' : ''}>
                                         <td>{i+1}</td>
-                                        <td>{filterUsername || login}</td>
+                                        <td>{e.user.username}</td>
                                         <td>{new Date(e.visitTime.replace(/\.(\d{3})\d*Z$/, '.$1Z')).toLocaleTimeString()}</td>
-                                        <td>{e.isFound ? 'Yes' : 'No'}</td>
+                                        <td>{e.found ? 'Yes' : 'No'}</td>
                                     </tr>
                                 ))}
                                 </tbody>
