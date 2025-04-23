@@ -28,10 +28,10 @@ public class AdminControllerFacade {
 
     public ResultWithStatus<List<DataEntityResponseDto>> getAllUserFilteredStats(GetStatisticsDto request, String login) {
         Optional<User> user = userService.findActiveByUsername(login);
-        if (!user.isPresent()) {
-            return ResultWithStatus.error(HttpStatus.BAD_REQUEST, "User not found");
+        if (login != null && !login.isEmpty() && user.isEmpty()) {
+            return ResultWithStatus.ok(List.of());
         }
-        request.setUser(user.get());
+        user.ifPresent(request::setUser);
         return ResultWithStatus.ok(DataMapper.INSTANCE.toDto(dataService.getFiltered(request)));
     }
 

@@ -21,15 +21,8 @@ import java.util.List;
 @RequestMapping(value = "/rest/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestController {
     private final AdminControllerFacade adminControllerFacade;
-    private final DataControllerFacade dataControllerFacade;
 
     @GetMapping("/admin-statistics/")
-    @ResponseStatusFromResult
-    public ResultWithStatus<List<DataEntityResponseDto>> getAllUserStats() {
-        return dataControllerFacade.getStats();
-    }
-
-    @GetMapping("/admin-statistics/filtered")
     @ResponseStatusFromResult
     public ResultWithStatus< List<DataEntityResponseDto>> getAllUserFilteredStats(
             @ModelAttribute GetStatisticsDto request,

@@ -14,7 +14,6 @@ export default class StatisticsComponent extends Component {
         endDate: null,
         filterHash: '',
         filterNumRecords: '',
-        filterUsername: '',
         chartData: null,
         showModal: false,
         modalDate: null,
@@ -28,7 +27,7 @@ export default class StatisticsComponent extends Component {
 
     // Load unfiltered or filtered based on state
     loadStatistics = async () => {
-        const { filterHash, filterNumRecords, filterUsername, startDate, endDate } = this.state;
+        const { filterHash, filterNumRecords, startDate, endDate } = this.state;
         try {
             const res = await DataService.getStatistics({
                 hash: filterHash || null,
@@ -131,7 +130,7 @@ export default class StatisticsComponent extends Component {
     };
 
     render() {
-        const { chartData, startDate, endDate, filterHash, filterUsername, filterNumRecords } = this.state;
+        const { chartData, startDate, endDate, filterHash, filterNumRecords } = this.state;
         return (
             <div className="container mt-4">
                 <h2 className="mb-4">Usage Histogram</h2>
@@ -144,17 +143,6 @@ export default class StatisticsComponent extends Component {
                             id="filterHash"
                             name="filterHash"
                             value={filterHash}
-                            className="form-control"
-                            onChange={this.handleFilterChange}
-                        />
-                    </div>
-                    <div className="col-md-3">
-                        <label htmlFor="filterUsername" className="form-label">Filter by Username</label>
-                        <input
-                            type="text"
-                            id="filterUsername"
-                            name="filterUsername"
-                            value={filterUsername}
                             className="form-control"
                             onChange={this.handleFilterChange}
                         />
