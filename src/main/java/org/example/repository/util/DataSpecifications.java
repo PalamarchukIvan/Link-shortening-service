@@ -29,12 +29,6 @@ public class DataSpecifications {
                 cb.lessThanOrEqualTo(root.get("time"), end);
     }
 
-    /**
-     * Build a single spec out of any combination of
-     * (userId, hash, start, end) filters.
-     * If none are provided, this spec is just `cb.conjunction()`
-     * and matches every row.
-     */
     public static Specification<DataEntity> build(
             @Nullable Long    userId,
             @Nullable String  hash,

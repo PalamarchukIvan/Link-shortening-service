@@ -112,7 +112,7 @@ export default class StatisticsComponent extends Component {
                                     <tr key={i}>
                                         <td>{i + 1}</td>
                                         <td>{new Date(e.visitTime.slice(0, 23) + 'Z').toLocaleTimeString()}</td>
-                                        <td>{e.isFound ? 'Yes' : 'No'}</td>
+                                        <td>{e.found ? 'Yes' : 'No'}</td>
                                     </tr>
                                 ))}
                                 </tbody>

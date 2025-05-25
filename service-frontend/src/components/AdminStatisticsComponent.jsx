@@ -179,10 +179,27 @@ class AdminStatisticsComponent extends Component {
                 </form>
 
                 {chartData && (
-                    <Bar data={chartData} options={{ onClick: this.onChartClick, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }} />
+                  <div
+                    className="chart-wrapper mb-4"
+                    style={{
+                      maxHeight: 1800,
+                      overflowY: 'auto'
+                    }}
+                  >
+                    <Bar
+                      data={chartData}
+                      height={620}
+                      options={{
+                        onClick: this.onChartClick,
+                        maintainAspectRatio: false,
+                        scales: {
+                          x: { stacked: true },
+                          y: { stacked: true, beginAtZero: true }
+                        }
+                      }}
+                    />
+                  </div>
                 )}
-
-                {this.renderModal()}
             </div>
         );
     }

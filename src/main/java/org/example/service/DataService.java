@@ -55,30 +55,6 @@ public class DataService {
             list = repository.findAll(spec, Sort.by("time"));
         }
 
-        return formatLastRecord(list);
-    }
-
-    private static List<DataEntity> formatLastRecord(List<DataEntity> result) {
-        int size = result.size();
-        if (size == 0) {
-            return result;
-        }
-
-        DataEntity last  = result.get(size - 1);
-        DataEntity prev  = size > 1 ? result.get(size - 2) : null;
-
-        long calculatedDuration;
-        Instant now = Instant.now();
-        if (prev != null && Objects.equals(last.getHash(), prev.getHash())) {
-            Instant adjustedStart = last.getTime()
-                    .minusMillis(prev.getExpectedDuration());
-            calculatedDuration = Duration.between(adjustedStart, now)
-                    .toMillis();
-        } else {
-            calculatedDuration = Duration.between(last.getTime(), now)
-                    .toMillis();
-        }
-        last.setExpectedDuration(calculatedDuration);
-        return result;
+        return list;
     }
 }

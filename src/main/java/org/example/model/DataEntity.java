@@ -15,13 +15,13 @@ import java.time.Instant;
 @NoArgsConstructor
 public class DataEntity {
     @Id
-    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "data_seq")
+    private long id;
     private Instant time;
     private String hash;
     @ManyToOne
     @JsonIgnore
     private User user;
-    private long expectedDuration;
     private boolean isFound;
     private long lag;
 }

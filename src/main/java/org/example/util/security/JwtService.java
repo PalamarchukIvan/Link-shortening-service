@@ -26,8 +26,6 @@ public class JwtService {
 
     @PostConstruct
     public void init() {
-        // If your secret is Base64‑encoded, use Decoders.BASE64.decode(secret);
-        // Otherwise just do secret.getBytes(...)
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         signingKey = Keys.hmacShaKeyFor(keyBytes);
 
@@ -50,7 +48,6 @@ public class JwtService {
     }
 
     public Jws<Claims> parseToken(String token) {
-        // jwtParser is built via parserBuilder().build()
         return jwtParser.parseClaimsJws(token);
     }
 

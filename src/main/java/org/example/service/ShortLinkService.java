@@ -87,23 +87,6 @@ public class ShortLinkService {
                 .isFound(isFound)
                 .user(user)
                 .build();
-
-        List<DataEntity> lastTwoRecords = rawDataRepository.findLast(2, user.getId());
-        int size = lastTwoRecords.size();
-
-        if (size > 0) {
-            DataEntity lastRecord = size == 2 ? lastTwoRecords.get(1) : lastTwoRecords.get(0); //из-за сортировки они будут меняться местами
-            DataEntity preLastRecord = size == 2 ? lastTwoRecords.get(0) : null;
-
-            long calculatedDuration;
-            if (preLastRecord != null && lastRecord.getHash().equals(preLastRecord.getHash())) {
-                calculatedDuration = Duration.between(lastRecord.getTime().minusMillis(preLastRecord.getExpectedDuration()), newRecord.getTime()).toMillis();
-            } else {
-                calculatedDuration = Duration.between(lastRecord.getTime(), newRecord.getTime()).toMillis();
-            }
-            lastRecord.setExpectedDuration(calculatedDuration);
-            rawDataRepository.save(lastRecord);
-        }
         rawDataRepository.save(newRecord);
     }
 }

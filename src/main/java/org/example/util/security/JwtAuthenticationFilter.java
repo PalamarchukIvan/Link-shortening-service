@@ -29,7 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
 
-        // 1) Grab the AUTH_TOKEN cookie
         Optional<String> jwtOpt = Optional.ofNullable(req.getCookies())
                 .flatMap(cookies ->
                         Arrays.stream(cookies)
@@ -38,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 .findFirst()
                 );
 
-        // 2) Validate & parse
         if (jwtOpt.isPresent()) {
             try {
                 Jws<Claims> claims = jwtService.parseToken(jwtOpt.get());
@@ -50,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception ex) {
-                // token invalid or expired → clear context
                 SecurityContextHolder.clearContext();
             }
         }

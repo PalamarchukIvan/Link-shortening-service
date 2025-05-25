@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.model.Role;
 import org.example.model.User;
-import org.example.model.VerificationToken;
-import org.example.repository.TokenVerificationRepository;
 import org.example.repository.UserRepository;
 import org.example.util.CurrentUserUtil;
 import org.example.web.ResultWithStatus;
@@ -16,12 +14,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
-
-import static java.time.temporal.ChronoUnit.HOURS;
 
 @Slf4j
 @Service
@@ -34,7 +29,7 @@ public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
     private final JavaMailSender mailSender;
-    private final TokenVerificationRepository tokenVerificationRepository;
+    private final TokenVerificationService tokenVerificationService;
 
     public ResultWithStatus<User> doLogin(String username, String password) {
         Optional<User> user = repository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username);
@@ -67,19 +62,10 @@ public class UserService {
         user = repository.save(user);
 
         String token = UUID.randomUUID().toString();
-        Instant expiry = Instant.now().plus(24, HOURS);
-        tokenVerificationRepository.save(
-                VerificationToken
-                .builder()
-                        .token(token)
-                        .expiry(expiry)
-                        .user(user)
-                .build()
-        );
+        tokenVerificationService.createToken(token, user);
 
         String link = domain + "/verify?token=" + token;
         sendVerificationEmail(user.getUsername(), link);
-
         return user;
     }
 

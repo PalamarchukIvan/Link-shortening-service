@@ -1,9 +1,8 @@
-package org.example.web;
+package org.example.web.deprecated;
 
 import lombok.AllArgsConstructor;
 import org.example.model.User;
 import org.example.service.UserService;
-import org.example.web.deprecated.ErrorResponseDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
