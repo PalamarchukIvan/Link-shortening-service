@@ -66,6 +66,7 @@ public class UserControllerFacade {
         }
         return result;
     }
+
     public ResultWithStatus<User> doRegistration(
             User user,
             HttpServletResponse response

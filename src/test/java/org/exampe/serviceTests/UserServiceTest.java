@@ -5,12 +5,14 @@ import org.example.model.User;
 import org.example.model.VerificationToken;
 import org.example.repository.TokenVerificationRepository;
 import org.example.repository.UserRepository;
+import org.example.service.TokenVerificationService;
 import org.example.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -30,6 +32,12 @@ class UserServiceTest extends FunctionalTest {
     @Mock
     private TokenVerificationRepository tokenVerificationRepository;
 
+    @Mock
+    private TokenVerificationService tokenVerificationService;
+
+    @Mock
+    private JavaMailSender javaMailSender;
+
     @InjectMocks
     private UserService userService;
 
@@ -42,7 +50,7 @@ class UserServiceTest extends FunctionalTest {
     void testFindByUsername() {
         String username = "testUser";
 
-        when(userRepository.findUserByUsername(username)).thenReturn(Optional.of(currentUser));
+        when(userRepository.findUserByUsernameAndIsActiveIsTrueAndIsVerifiedIsTrue(username)).thenReturn(Optional.of(currentUser));
 
         Optional<User> foundUser = userService.findActiveByUsername(username);
 

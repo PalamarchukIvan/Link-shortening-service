@@ -30,10 +30,10 @@ public class DataSpecifications {
     }
 
     public static Specification<DataEntity> build(
-            @Nullable Long    userId,
-            @Nullable String  hash,
-            @Nullable Instant start,
-            @Nullable Instant end
+            Long userId,
+            String hash,
+            Instant start,
+            Instant end
     ) {
         // start with "always TRUE"
         Specification<DataEntity> spec = (root, query, cb) -> cb.conjunction();

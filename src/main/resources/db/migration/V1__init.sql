@@ -29,16 +29,9 @@ CREATE TABLE short_link
 );
 CREATE INDEX idx_short_link_hashcode ON short_link (hash);
 
-CREATE SEQUENCE data_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE CACHE 1;
-
 CREATE TABLE data
 (
-    id                BIGINT PRIMARY KEY DEFAULT nextval('data_seq'),
-    time              TIMESTAMP WITHOUT TIME ZONE,
+    time              TIMESTAMP WITHOUT TIME ZONE PRIMARY KEY DEFAULT now(),
     hash              VARCHAR(255),
     user_id           BIGINT REFERENCES users (id) ON DELETE SET NULL,
     is_found          BOOLEAN,

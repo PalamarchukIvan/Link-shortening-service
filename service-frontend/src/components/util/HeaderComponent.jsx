@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import UserService from "../../services/UserService";
 
-const LOGOUT_LINK = 'http://localhost:8080/logout';
+const LOGOUT_LINK = 'http://localhost:8080/rest/user/logout';
 
 class HeaderComponent extends Component {
     state = {
@@ -9,7 +9,6 @@ class HeaderComponent extends Component {
     };
 
     componentDidMount() {
-        // Check login status via API (HttpOnly cookie)
         UserService.getCurrentUser()
             .then(() => this.setState({ loggedIn: true }))
             .catch(() => this.setState({ loggedIn: false }));
@@ -17,15 +16,13 @@ class HeaderComponent extends Component {
 
     doLogout = (e) => {
         e.preventDefault();
-        // Call backend logout to clear HttpOnly cookie
-        fetch(LOGOUT_LINK, {
-            method: 'POST',
-            credentials: 'include'
-        })
-            .finally(() => {
-                this.setState({ loggedIn: false });
+
+        UserService.doLogout().then(
+            () => {
+                this.setState({loggedIn: false})
                 window.location.href = '/login';
-            });
+            }
+        )
     };
 
     render() {
@@ -40,13 +37,13 @@ class HeaderComponent extends Component {
                         >
                             Link-shortening service
                         </a>
-                        <a
+                        {this.state.loggedIn && (<a
                             className="text-white d-block h3 text-primary font-weight-bold ml-5"
-                            style={{ textDecoration: 'none' }}
+                            style={{textDecoration: 'none'}}
                             href="/main"
                         >
                             Profile
-                        </a>
+                        </a>)}
                         {this.state.loggedIn && (
                             <a
                                 className="text-white d-block h3 text-primary font-weight-bold mr-5 ml-auto"

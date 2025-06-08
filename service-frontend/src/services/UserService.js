@@ -7,6 +7,7 @@ const api = axios.create({
 
 export default {
     doLogin: creds => api.post("/login", creds),
+    doLogout: () => api.post("/logout"),
     doRegistration: creds => api.post("/registration", creds),
     getCurrentUser: () => api.get("/current"),
     updateCurrentUser: user => api.patch("/update", user),

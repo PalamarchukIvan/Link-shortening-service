@@ -1,12 +1,16 @@
 package org.example.web.restControllers;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.example.dto.LoginRequestDto;
 import org.example.facade.UserControllerFacade;
 import org.example.model.User;
 import org.example.util.web.ResponseStatusFromResult;
 import org.example.web.ResultWithStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +28,30 @@ public class UserRestController {
             HttpServletResponse response
     ) {
         return userControllerFacade.doLogin(login, response);
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatusFromResult
+    public ResponseEntity<Void> doLogout(HttpServletRequest request,
+                                         HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        Cookie sess = new Cookie("JSESSIONID", "");
+        sess.setPath("/");
+        sess.setHttpOnly(true);
+        sess.setMaxAge(0);
+        response.addCookie(sess);
+
+        Cookie authToken = new Cookie("AUTH_TOKEN", "");
+        authToken.setPath("/");
+        authToken.setHttpOnly(true);
+        authToken.setMaxAge(0);
+        response.addCookie(authToken);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/registration")

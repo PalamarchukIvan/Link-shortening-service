@@ -17,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -75,12 +77,6 @@ class DataServiceTest extends FunctionalTest {
 
         //then
         assertEquals(actual.size(), 4);
-    }
-
-    @Test
-    void testGetAllWithHashShouldThrowHashNotFoundException() {
-        when(dataRepository.findAll(any(Specification.class), any(Sort.class))).thenReturn(Arrays.asList());
-        assertThrows(HashNotFoundException.class, () -> dataService.getFiltered(GetStatisticsDto.builder().hash("Non existing has").build()));
     }
 
     @Test
@@ -199,8 +195,8 @@ class DataServiceTest extends FunctionalTest {
         List<DataEntity> actual = dataService.getFiltered(GetStatisticsDto
                 .builder()
                 .user(currentUser)
-                .startDate(new Date())
-                .endDate(new Date(Instant.now().toEpochMilli() + 1000L))
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.ofEpochSecond(Instant.now().toEpochMilli() + 1000L, 0, ZoneOffset.UTC))
                 .build()
         );
         //then

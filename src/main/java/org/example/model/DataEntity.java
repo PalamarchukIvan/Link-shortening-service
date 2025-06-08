@@ -15,8 +15,6 @@ import java.time.Instant;
 @NoArgsConstructor
 public class DataEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "data_seq")
-    private long id;
     private Instant time;
     private String hash;
     @ManyToOne
